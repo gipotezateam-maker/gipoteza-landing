@@ -1,28 +1,33 @@
 /**
- * DESIGN PHILOSOPHY: Dark Cinematic / Comic-Book Noir
- * "Команда супергероев вебинарного маркетинга"
- * Colors: Deep black (#0A0A0F) + Electric gold + Neon blue
- * Typography: Bebas Neue (display) + Montserrat (body)
- * Layout: Asymmetric, diagonal dividers, large bg numbers, overlapping elements
+ * DESIGN PHILOSOPHY: Editorial Brutalism / ONY-style
+ * Ref: ONY.ru, Charmer Studio, CreativePeople, Magma
+ * Colors: #0A0A0A black + #F5F5F0 off-white + #FF2D20 red accent
+ * Typography: Oswald (display, uppercase, tight) + Space Grotesk (body)
+ * Layout: Asymmetric, full-bleed, editorial grid, NO rounded corners, NO gradients
+ * Structure: AJTBD — Oneliner → Core Job → Micro Jobs → Aha-момент → Ценности
+ *            → Узнаёт себя → Как мы делаем → Точка Б → Барьеры → Конкуренты → CTA
  */
 
 import { useState, useEffect, useRef } from "react";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 
-const HERO_BG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/hero-bg-73xexy543rbkv9VveVjfXv.webp";
-const TEAM_HERO = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/team-hero-g2GCjBGgukt5LKCCDMRqeY.webp";
-const WEBINAR_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/webinar-action-ZzRnCAE2mNBiy5Ej3tD8qq.webp";
+// Asset URLs
+const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/hero-webinar-dark-eYBV49eTLsbtDe6pWjuCgU.webp";
+const SCREEN_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/webinar-screen-glow-fGgcddaiWNH3J9bmXDFifb.webp";
+const TEAM_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/team-dark-editorial-VvF3qT2ToSCVv42ryELZPm.webp";
+const GRID_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/results-abstract-YDYZrzWWFfLuZoPRSM9Ndq.webp";
 
-// Fade-in animation wrapper
-function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
+// ─── Helpers ───────────────────────────────────────────────────────────────
+
+function FadeUp({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const inView = useInView(ref, { once: true, margin: "-60px" });
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 40 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+      transition={{ duration: 0.65, delay, ease: [0.16, 1, 0.3, 1] }}
       className={className}
     >
       {children}
@@ -30,444 +35,268 @@ function FadeIn({ children, delay = 0, className = "" }: { children: React.React
   );
 }
 
-// Stat counter animation
 function CountUp({ end, suffix = "" }: { end: number; suffix?: string }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
   const inView = useInView(ref, { once: true });
-
   useEffect(() => {
     if (!inView) return;
     let start = 0;
-    const duration = 1800;
-    const step = end / (duration / 16);
-    const timer = setInterval(() => {
+    const step = end / (1600 / 16);
+    const t = setInterval(() => {
       start += step;
-      if (start >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
+      if (start >= end) { setCount(end); clearInterval(t); }
+      else setCount(Math.floor(start));
     }, 16);
-    return () => clearInterval(timer);
+    return () => clearInterval(t);
   }, [inView, end]);
-
   return <span ref={ref}>{count}{suffix}</span>;
 }
 
-// Navigation
+// ─── Navigation ────────────────────────────────────────────────────────────
+
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-
+  const [open, setOpen] = useState(false);
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", handler);
-    return () => window.removeEventListener("scroll", handler);
+    const h = () => setScrolled(window.scrollY > 30);
+    window.addEventListener("scroll", h);
+    return () => window.removeEventListener("scroll", h);
   }, []);
-
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    setMenuOpen(false);
-  };
-
+  const go = (id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); setOpen(false); };
+  const links = [
+    { label: "Услуги", id: "services" },
+    { label: "Кейсы", id: "cases" },
+    { label: "Команда", id: "team" },
+    { label: "Контакт", id: "contact" },
+  ];
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-[#0A0A0F]/95 backdrop-blur-md border-b border-white/5" : "bg-transparent"
-      }`}
-    >
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-[#0A0A0A]/96 backdrop-blur-sm border-b border-white/5" : "bg-transparent"}`}>
       <div className="container flex items-center justify-between h-16">
-        <div className="flex items-center gap-2">
-          <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.6rem", letterSpacing: "0.08em" }}
-            className="text-white">
-            gipot<span className="text-gold-gradient">é</span>za
+        {/* Logo */}
+        <button onClick={() => go("hero")} className="flex items-baseline gap-1.5">
+          <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: "1.4rem", letterSpacing: "0.04em", textTransform: "uppercase", color: "#F5F5F0" }}>
+            ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА
           </span>
-          <span className="hidden sm:block text-xs text-white/30 font-medium tracking-widest uppercase ml-2 mt-1">
-            agency
-          </span>
-        </div>
+          <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", color: "#888", textTransform: "uppercase" }}>AGENCY</span>
+        </button>
 
-        {/* Desktop nav */}
+        {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
-          {[
-            { label: "Услуги", id: "services" },
-            { label: "Кейсы", id: "cases" },
-            { label: "Команда", id: "team" },
-            { label: "FAQ", id: "faq" },
-          ].map((item) => (
-            <button
-              key={item.id}
-              onClick={() => scrollTo(item.id)}
-              className="text-white/60 hover:text-white text-sm font-medium tracking-wide transition-colors"
-            >
-              {item.label}
+          {links.map(l => (
+            <button key={l.id} onClick={() => go(l.id)}
+              className="text-[#888] hover:text-[#F5F5F0] text-xs tracking-widest uppercase transition-colors font-medium">
+              {l.label}
             </button>
           ))}
-          <button
-            onClick={() => scrollTo("contact")}
-            className="btn-primary text-xs py-2.5 px-5"
-          >
+          <button onClick={() => go("contact")} className="btn-cta text-xs py-3 px-6">
             Оставить заявку
           </button>
         </div>
 
-        {/* Mobile menu button */}
-        <button
-          className="md:hidden text-white/70 hover:text-white"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            {menuOpen ? (
-              <path d="M18 6L6 18M6 6l12 12" />
-            ) : (
-              <path d="M3 12h18M3 6h18M3 18h18" />
-            )}
+        {/* Mobile toggle */}
+        <button className="md:hidden text-[#F5F5F0]" onClick={() => setOpen(!open)}>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.5">
+            {open ? <path d="M17 5L5 17M5 5l12 12" /> : <path d="M3 11h16M3 6h16M3 16h16" />}
           </svg>
         </button>
       </div>
 
       {/* Mobile menu */}
-      {menuOpen && (
-        <div className="md:hidden bg-[#0A0A0F]/98 border-b border-white/5 px-4 pb-4">
-          {[
-            { label: "Услуги", id: "services" },
-            { label: "Кейсы", id: "cases" },
-            { label: "Команда", id: "team" },
-            { label: "FAQ", id: "faq" },
-          ].map((item) => (
-            <button
-              key={item.id}
-              onClick={() => scrollTo(item.id)}
-              className="block w-full text-left text-white/70 hover:text-white py-3 text-sm font-medium border-b border-white/5"
-            >
-              {item.label}
-            </button>
-          ))}
-          <button
-            onClick={() => scrollTo("contact")}
-            className="btn-primary w-full mt-4 text-center"
-          >
-            Оставить заявку
-          </button>
-        </div>
-      )}
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+            className="md:hidden bg-[#0A0A0A] border-b border-white/5 overflow-hidden">
+            <div className="container pb-6 pt-2 flex flex-col gap-4">
+              {links.map(l => (
+                <button key={l.id} onClick={() => go(l.id)}
+                  className="text-left text-[#888] hover:text-[#F5F5F0] text-xs tracking-widest uppercase py-2 border-b border-white/5">
+                  {l.label}
+                </button>
+              ))}
+              <button onClick={() => go("contact")} className="btn-cta mt-2 text-center">Оставить заявку</button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
 
-// Hero Section
-function HeroSection() {
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 500], [0, 150]);
+// ─── Marquee ───────────────────────────────────────────────────────────────
 
+function Marquee({ items, speed = 30 }: { items: string[]; speed?: number }) {
+  const doubled = [...items, ...items];
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Background image with parallax */}
-      <motion.div className="absolute inset-0 z-0" style={{ y }}>
-        <img
-          src={HERO_BG}
-          alt=""
-          className="w-full h-full object-cover"
-          style={{ transform: "scale(1.1)" }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0F] via-[#0A0A0F]/85 to-[#0A0A0F]/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0F] via-transparent to-[#0A0A0F]/30" />
-      </motion.div>
+    <div className="overflow-hidden border-y border-white/8 py-4 bg-[#0A0A0A]">
+      <div style={{ display: "flex", animation: `marquee ${speed}s linear infinite`, whiteSpace: "nowrap" }}>
+        {doubled.map((item, i) => (
+          <span key={i} className="inline-flex items-center gap-6 px-6 text-xs tracking-widest uppercase text-[#555] font-medium">
+            <span style={{ color: "#FF2D20", fontSize: "0.5rem" }}>●</span>
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-      {/* Large background text */}
-      <div className="absolute inset-0 flex items-center justify-end pr-8 z-0 overflow-hidden pointer-events-none">
-        <span
-          style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(8rem, 20vw, 18rem)", lineHeight: 1, opacity: 0.04, letterSpacing: "0.05em" }}
-          className="text-white select-none"
-        >
-          HERO
-        </span>
+// ─── HERO (Oneliner + Core Job) ─────────────────────────────────────────────
+
+function Hero() {
+  return (
+    <section id="hero" className="relative min-h-screen flex flex-col justify-end overflow-hidden">
+      {/* Background image */}
+      <div className="absolute inset-0">
+        <img src={HERO_IMG} alt="" className="w-full h-full object-cover" style={{ filter: "brightness(0.35)" }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #0A0A0A 20%, transparent 70%)" }} />
       </div>
 
-      <div className="container relative z-10 pt-24 pb-16">
-        <div className="max-w-3xl">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="hero-badge inline-flex items-center gap-2 mb-6"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+      {/* Content */}
+      <div className="relative container pb-16 pt-32">
+        <div className="max-w-5xl">
+          {/* Label */}
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
+            className="section-label mb-8 flex items-center gap-3">
+            <span style={{ display: "inline-block", width: "2rem", height: "1px", background: "#FF2D20" }} />
             Агентство вебинарного продакшна
           </motion.div>
 
-          {/* Main headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(3.5rem, 9vw, 7rem)", lineHeight: 0.95, letterSpacing: "0.02em" }}
-            className="text-white mb-4"
-          >
-            Команда{" "}
-            <span className="text-gold-gradient">супергероев</span>
-            <br />
-            вебинарного
-            <br />
-            маркетинга
+          {/* Main headline — Oneliner */}
+          <motion.h1 initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="font-display text-[#F5F5F0] mb-8"
+            style={{ fontSize: "clamp(3.5rem, 10vw, 8rem)", lineHeight: 0.9, letterSpacing: "-0.02em" }}>
+            ВЕБИНАРЫ,<br />
+            КОТОРЫЕ<br />
+            <span style={{ color: "#FF2D20" }}>ПРОДАЮТ.</span>
           </motion.h1>
 
-          {/* Subheadline */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="text-white/65 text-lg font-medium leading-relaxed mb-8 max-w-xl"
-          >
-            Делаем вебинары и автоворонки под ключ для EdTech и крупных брендов.
-            Превращаем живые эфиры в предсказуемую машину продаж.
+          {/* Core Job */}
+          <motion.p initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.55 }}
+            className="text-[#888] max-w-xl mb-10"
+            style={{ fontSize: "1rem", lineHeight: 1.7, fontWeight: 400 }}>
+            Пересобираем вебинарные воронки и повышаем ROMI на холодном трафике —
+            чтобы вы кратно масштабировали выручку без найма новых людей в штат.
           </motion.p>
 
-          {/* Clients logos row */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
-            className="flex flex-wrap items-center gap-3 mb-10"
-          >
-            {["Skillbox", "SkillFactory", "Primecraft", "Логомашина"].map((brand) => (
-              <span
-                key={brand}
-                className="text-xs font-semibold tracking-widest uppercase text-white/30 border border-white/10 px-3 py-1.5 rounded"
-              >
-                {brand}
-              </span>
-            ))}
-          </motion.div>
-
-          {/* CTA buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-            className="flex flex-wrap gap-4"
-          >
-            <button
-              className="btn-primary"
-              onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-            >
-              Получить консультацию
+          {/* CTAs */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.7 }}
+            className="flex flex-wrap gap-4 items-center">
+            <button onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+              className="btn-cta">
+              Получить бесплатный аудит
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>
-            <button
-              className="btn-secondary"
-              onClick={() => document.getElementById("cases")?.scrollIntoView({ behavior: "smooth" })}
-            >
-              Смотреть кейсы →
+            <button onClick={() => document.getElementById("cases")?.scrollIntoView({ behavior: "smooth" })}
+              className="btn-ghost">
+              Смотреть кейсы
             </button>
           </motion.div>
         </div>
-      </div>
 
-      {/* Stats strip at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 z-10">
-        <div className="container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.7 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5 border-t border-white/5"
-          >
-            {[
-              { num: 5, suffix: "+ лет", label: "опыта в вебинарах" },
-              { num: 160, suffix: "%", label: "ROMI автоворонки" },
-              { num: 4, suffix: "x", label: "рост выручки без бюджета" },
-              { num: 70, suffix: "%+", label: "рост ROMI на холодном трафике" },
-            ].map((stat, i) => (
-              <div key={i} className="bg-[#0A0A0F]/80 backdrop-blur-sm px-6 py-5">
-                <div className="stat-number text-4xl">
-                  <CountUp end={stat.num} suffix={stat.suffix} />
-                </div>
-                <div className="text-white/40 text-xs font-medium mt-1 tracking-wide">{stat.label}</div>
+        {/* Stats bar */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 1 }}
+          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-0 border-t border-white/8 pt-8">
+          {[
+            { n: 5, s: "+", label: "лет в вебинарном маркетинге" },
+            { n: 70, s: "%+", label: "ROMI на холодном трафике" },
+            { n: 4, s: "×", label: "рост выручки у клиентов" },
+            { n: 50, s: "+", label: "вебинаров запущено" },
+          ].map((stat, i) => (
+            <div key={i} className="pr-8 pb-4 md:pb-0 border-r border-white/8 last:border-r-0 first:pl-0">
+              <div className="num-accent" style={{ fontSize: "2.5rem" }}>
+                <CountUp end={stat.n} suffix={stat.s} />
               </div>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// Problem Section — "Узнаёшь себя?"
-function ProblemSection() {
-  const problems = [
-    {
-      icon: "⚡",
-      title: "Вебинары есть, но продаж нет",
-      desc: "Эксперт выкладывается на 100%, зал собирается — а конверсия в продажу не растёт. Каждый запуск — лотерея.",
-    },
-    {
-      icon: "🔥",
-      title: "Команда выгорает на живых эфирах",
-      desc: "Каждый вебинар требует огромных ресурсов. Нет системы, нет автоматизации — только ручной труд снова и снова.",
-    },
-    {
-      icon: "🎯",
-      title: "Нет понимания, что работает",
-      desc: "Непонятно, какой оффер цепляет, какой сценарий конвертирует. Решения принимаются на ощущениях, не на данных.",
-    },
-    {
-      icon: "💸",
-      title: "Холодный трафик не окупается",
-      desc: "Вкладываете деньги в рекламу, а ROMI уходит в минус. Воронка не выстроена — каждый рубль сгорает впустую.",
-    },
-  ];
-
-  return (
-    <section className="py-24 bg-[#0A0A0F] relative overflow-hidden">
-      {/* Large background number */}
-      <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none select-none overflow-hidden">
-        <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "20rem", opacity: 0.025, color: "white", lineHeight: 1 }}>
-          ?
-        </span>
-      </div>
-
-      <div className="container relative z-10">
-        <FadeIn>
-          <div className="hero-badge inline-flex items-center gap-2 mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-current" />
-            Узнаёшь себя?
-          </div>
-        </FadeIn>
-
-        <FadeIn delay={0.1}>
-          <h2
-            style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(2.5rem, 6vw, 5rem)", lineHeight: 1, letterSpacing: "0.02em" }}
-            className="text-white mb-4"
-          >
-            Ты хочешь сделать вебинар
-            <br />
-            <span className="text-gold-gradient">машиной продаж</span>
-          </h2>
-        </FadeIn>
-
-        <FadeIn delay={0.2}>
-          <p className="text-white/50 text-lg mb-16 max-w-xl font-medium">
-            Но что-то мешает. Вот самые частые боли, с которыми к нам приходят:
-          </p>
-        </FadeIn>
-
-        <div className="grid md:grid-cols-2 gap-4">
-          {problems.map((p, i) => (
-            <FadeIn key={i} delay={0.1 * i}>
-              <div className="card-hero rounded-lg p-6 flex gap-4">
-                <div className="text-3xl flex-shrink-0">{p.icon}</div>
-                <div>
-                  <h3 className="text-white font-bold text-base mb-2">{p.title}</h3>
-                  <p className="text-white/50 text-sm leading-relaxed">{p.desc}</p>
-                </div>
-              </div>
-            </FadeIn>
+              <div className="text-[#555] text-xs mt-1 leading-tight">{stat.label}</div>
+            </div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-// Services Section
-function ServicesSection() {
+// ─── MARQUEE CLIENTS ────────────────────────────────────────────────────────
+
+function ClientsMarquee() {
+  const clients = ["Skillbox", "SkillFactory", "Primecraft", "Логомашина", "EdTech", "Онлайн-школы", "Федеральные бренды", "D2C-проекты"];
+  return <Marquee items={clients} speed={28} />;
+}
+
+// ─── MICRO JOBS (что мы делаем) ─────────────────────────────────────────────
+
+function Services() {
   const services = [
     {
       num: "01",
-      title: "Вебинар под ключ",
-      desc: "Сценарий, структура, слайды, технический продакшн, аналитика. Берём на себя всё — от идеи до цифр конверсии.",
-      features: ["Сценарий и оффер", "Слайды и визуал", "Технический продакшн", "Аналитика и отчёт"],
-      color: "gold",
+      title: "Аудит воронки",
+      desc: "Находим узкие горлышка, где вы теряете деньги прямо сейчас. Бесплатно для первого обращения.",
+      tag: "Micro Job 1",
     },
     {
       num: "02",
-      title: "Автоворонка на вебинаре",
-      desc: "Записываем один раз — продаём постоянно. Строим автоворонку с окупаемостью от 160% ROMI на холодном трафике.",
-      features: ["CJM и архитектура воронки", "Автовебинар + касания", "Трафик и аналитика", "Оптимизация ROMI"],
-      color: "blue",
+      title: "Сценарий и смыслы",
+      desc: "Разрабатываем продающий сценарий вебинара на основе реальных болей вашей ЦА. Спикер получает готовую презентацию.",
+      tag: "Micro Job 2",
     },
     {
       num: "03",
-      title: "Стратегия вебинарного маркетинга",
-      desc: "Аудит текущих вебинаров, разработка стратегии роста, внедрение системы тестирования гипотез.",
-      features: ["Аудит воронки", "Стратегия роста", "Фабрика гипотез", "Передача команде"],
-      color: "gold",
+      title: "Продакшн под ключ",
+      desc: "Студийная картинка, звук, режиссура эфира. Ваш бренд выглядит дорого — без технических сбоев.",
+      tag: "Micro Job 3",
     },
     {
       num: "04",
-      title: "Серия запусков",
-      desc: "Системная работа на 3–6 месяцев. Выстраиваем предсказуемый канал продаж через вебинары и живые эфиры.",
-      features: ["Регулярные запуски", "A/B тестирование", "Масштабирование", "Команда под ключ"],
-      color: "blue",
+      title: "Автоворонка",
+      desc: "Чат-боты, email, SMS — автоматизируем касания и увеличиваем доходимость до вебинара на 20–30%.",
+      tag: "Micro Job 4",
+    },
+    {
+      num: "05",
+      title: "Аналитика и ROMI",
+      desc: "Ежедневные отчёты по каждому вложенному рублю. Прозрачная экономика, понятная фаундерам.",
+      tag: "Micro Job 5",
+    },
+    {
+      num: "06",
+      title: "Масштабирование",
+      desc: "Запускаем новые направления без найма людей в штат. Система, которая работает без вас.",
+      tag: "Micro Job 6",
     },
   ];
 
   return (
-    <section id="services" className="py-24 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #0A0A0F 0%, #0D0D18 100%)" }}>
-      {/* Diagonal accent line */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent" />
-      </div>
-
-      <div className="container relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <div>
-            <FadeIn>
-              <div className="hero-badge inline-flex items-center gap-2 mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                Что мы делаем
-              </div>
-            </FadeIn>
-            <FadeIn delay={0.1}>
-              <h2
-                style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(2.5rem, 6vw, 5rem)", lineHeight: 1, letterSpacing: "0.02em" }}
-                className="text-white"
-              >
-                Суперсилы
-                <br />
-                <span className="text-gold-gradient">нашей команды</span>
+    <section id="services" className="py-24 bg-[#0A0A0A]">
+      <div className="container">
+        <FadeUp>
+          <div className="flex items-end justify-between mb-16 border-b border-white/8 pb-8">
+            <div>
+              <div className="section-label mb-4">Что мы делаем</div>
+              <h2 className="font-display text-[#F5F5F0]" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
+                ПОЛНЫЙ ЦИКЛ<br />
+                <span style={{ color: "#FF2D20" }}>ВЕБИНАРНОГО</span><br />
+                МАРКЕТИНГА
               </h2>
-            </FadeIn>
+            </div>
+            <div className="hidden md:block text-[#555] text-xs max-w-xs text-right leading-relaxed">
+              От аудита до масштабирования — берём на себя всё, чтобы ваша команда занималась продуктом.
+            </div>
           </div>
-          <FadeIn delay={0.2}>
-            <p className="text-white/50 text-base max-w-sm font-medium leading-relaxed">
-              5 лет делаем вебинары для лидеров рынка. Знаем, что работает — и делаем это быстро.
-            </p>
-          </FadeIn>
-        </div>
+        </FadeUp>
 
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
           {services.map((s, i) => (
-            <FadeIn key={i} delay={0.1 * i}>
-              <div className="card-hero rounded-xl p-8 h-full flex flex-col">
+            <FadeUp key={i} delay={i * 0.07}>
+              <div className="border-b border-r border-white/8 p-8 group hover:bg-[#111] transition-colors"
+                style={{ borderRight: (i + 1) % 3 === 0 ? "none" : undefined }}>
                 <div className="flex items-start justify-between mb-6">
-                  <span
-                    style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "4rem", lineHeight: 1, opacity: 0.15 }}
-                    className={s.color === "gold" ? "text-yellow-400" : "text-blue-400"}
-                  >
-                    {s.num}
-                  </span>
-                  <div className={`w-2 h-2 rounded-full mt-2 ${s.color === "gold" ? "bg-yellow-400" : "bg-blue-400"}`} />
+                  <span className="num-accent" style={{ fontSize: "1.1rem" }}>{s.num}</span>
+                  <span className="section-label" style={{ color: "#444", fontSize: "0.55rem" }}>{s.tag}</span>
                 </div>
-                <h3
-                  style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.8rem", letterSpacing: "0.03em", lineHeight: 1.1 }}
-                  className="text-white mb-3"
-                >
-                  {s.title}
-                </h3>
-                <p className="text-white/50 text-sm leading-relaxed mb-6 flex-grow">{s.desc}</p>
-                <div className="flex flex-wrap gap-2">
-                  {s.features.map((f, j) => (
-                    <span key={j} className="text-xs font-medium text-white/40 border border-white/10 px-2.5 py-1 rounded">
-                      {f}
-                    </span>
-                  ))}
-                </div>
+                <h3 className="font-display text-[#F5F5F0] mb-4" style={{ fontSize: "1.4rem" }}>{s.title}</h3>
+                <p className="text-[#666] text-sm leading-relaxed">{s.desc}</p>
               </div>
-            </FadeIn>
+            </FadeUp>
           ))}
         </div>
       </div>
@@ -475,118 +304,138 @@ function ServicesSection() {
   );
 }
 
-// Cases Section
-function CasesSection() {
+// ─── AHA-МОМЕНТ (кейсы с реальными вебинарами) ─────────────────────────────
+
+function Cases() {
   const cases = [
     {
+      client: "Онлайн-школа №1",
+      period: "2023–2024",
       tag: "EdTech",
       result: "ROMI +70%",
-      title: "Рост ROMI на холодном трафике",
-      before: "ROMI -30–0%, бюджет 300К/мес",
-      after: "ROMI +70%, бюджет 1M+/мес",
-      steps: ["Аудит воронки и рекламных каналов", "Сквозная аналитика, отключение минус-источников", "Пересборка концепции воронки", "Корректировка стратегии привлечения"],
-      color: "gold",
+      sub: "на холодном трафике за 1 месяц",
+      desc: "Год работы с крупнейшей онлайн-школой: пересобрали воронку, переписали сценарии, внедрили автоворонку. Холодный трафик начал окупаться.",
+      webinar: null,
+      bg: "#111",
     },
     {
-      tag: "Онлайн-школа",
-      result: "×2.5 выручка",
-      title: "Рост выручки школы в 2.5 раза",
-      before: "1M/мес, хаос в процессах",
-      after: "2.5M+/мес, системная работа",
-      steps: ["Аудит проекта и команд", "Переписали KPI, ввели мотивацию", "Мультиканальное привлечение (автоворонки, квизы)", "Внедрение аналитики подрядчиков"],
-      color: "blue",
+      client: "Primecraft",
+      period: "2024–2025",
+      tag: "Спортивное питание / D2C",
+      result: "×4 выручка",
+      sub: "в D2C-канале через вебинарную воронку",
+      desc: "Федеральный бренд спортивного питания. Запустили обучающие вебинары для D2C-продаж. Собрали собственную базу, снизили зависимость от маркетплейсов.",
+      webinar: "https://primecraft.ru",
+      bg: "#0D0D0D",
     },
     {
-      tag: "База клиентов",
-      result: "×4 без бюджета",
-      title: "Рост выручки в 4 раза без увеличения бюджета",
-      before: "2.5M/мес, хаос с базой",
-      after: "10M+/мес, системная работа",
-      steps: ["Диагностика базы и воронок", "Серия спецпроектов: ретаргет, e-mail, upsell", "Автоматизация CRM"],
-      color: "gold",
-    },
-    {
-      tag: "Автоворонка",
+      client: "SkillFactory",
+      period: "2022–2023",
+      tag: "EdTech",
       result: "ROMI 160%",
-      title: "Автоворонка на холодном трафике",
-      before: "Нет системы окупаемого привлечения",
-      after: "Автоворонка с ROMI 160%",
-      steps: ["Аудит проекта, упаковка ЦА и продукта", "Сборка CJM и автоворонки", "Ежедневная аналитика и оптимизация"],
-      color: "blue",
+      sub: "на запуске нового курса",
+      desc: "Продающие вебинары для запуска нового продуктового направления. Полный продакшн: сценарий, студия, автоворонка, аналитика.",
+      webinar: null,
+      bg: "#111",
     },
   ];
 
   return (
-    <section id="cases" className="py-24 bg-[#0A0A0F] relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
-      </div>
-
-      <div className="container relative z-10">
-        <FadeIn>
-          <div className="hero-badge inline-flex items-center gap-2 mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-current" />
-            Кейсы
-          </div>
-        </FadeIn>
-        <FadeIn delay={0.1}>
-          <h2
-            style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(2.5rem, 6vw, 5rem)", lineHeight: 1, letterSpacing: "0.02em" }}
-            className="text-white mb-16"
-          >
-            Результаты,
-            <br />
-            <span className="text-gold-gradient">которые говорят сами</span>
+    <section id="cases" className="py-24 bg-[#0A0A0A]">
+      <div className="container">
+        <FadeUp>
+          <div className="section-label mb-4">Aha-момент</div>
+          <h2 className="font-display text-[#F5F5F0] mb-16" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
+            КЕЙСЫ,<br />
+            КОТОРЫЕ<br />
+            <span style={{ color: "#FF2D20" }}>ГОВОРЯТ ЦИФРАМИ</span>
           </h2>
-        </FadeIn>
+        </FadeUp>
 
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 border border-white/8">
           {cases.map((c, i) => (
-            <FadeIn key={i} delay={0.1 * i}>
-              <div className="card-hero rounded-xl overflow-hidden">
-                {/* Header */}
-                <div className="p-6 pb-4 border-b border-white/5">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={`text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded ${
-                      c.color === "gold" ? "bg-yellow-400/10 text-yellow-400" : "bg-blue-400/10 text-blue-400"
-                    }`}>
-                      {c.tag}
-                    </span>
-                    <span className={`stat-number text-3xl ${c.color === "gold" ? "" : "text-blue-gradient"}`}>
-                      {c.result}
-                    </span>
+            <FadeUp key={i} delay={i * 0.1}>
+              <div className="p-8 border-r border-white/8 last:border-r-0 flex flex-col h-full" style={{ background: c.bg }}>
+                <div className="flex items-start justify-between mb-8">
+                  <div>
+                    <div className="section-label mb-1">{c.tag}</div>
+                    <div className="text-[#F5F5F0] font-semibold text-sm">{c.client}</div>
                   </div>
-                  <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.5rem", letterSpacing: "0.03em" }} className="text-white">
-                    {c.title}
-                  </h3>
+                  <div className="text-[#444] text-xs">{c.period}</div>
                 </div>
 
-                {/* Before/After */}
-                <div className="grid grid-cols-2 gap-px bg-white/5">
-                  <div className="bg-[#0A0A0F] p-4">
-                    <div className="text-xs text-white/30 font-semibold uppercase tracking-widest mb-1">Было</div>
-                    <div className="text-white/60 text-sm font-medium">{c.before}</div>
-                  </div>
-                  <div className={`p-4 ${c.color === "gold" ? "bg-yellow-400/5" : "bg-blue-400/5"}`}>
-                    <div className={`text-xs font-semibold uppercase tracking-widest mb-1 ${c.color === "gold" ? "text-yellow-400/60" : "text-blue-400/60"}`}>Стало</div>
-                    <div className={`text-sm font-bold ${c.color === "gold" ? "text-yellow-400" : "text-blue-400"}`}>{c.after}</div>
-                  </div>
+                <div className="mb-6">
+                  <div className="num-accent" style={{ fontSize: "3rem" }}>{c.result}</div>
+                  <div className="text-[#666] text-xs mt-1">{c.sub}</div>
                 </div>
 
-                {/* Steps */}
-                <div className="p-6 pt-4">
-                  <div className="text-xs text-white/30 font-semibold uppercase tracking-widest mb-3">Что сделали</div>
-                  <ul className="space-y-1.5">
-                    {c.steps.map((step, j) => (
-                      <li key={j} className="flex items-start gap-2 text-sm text-white/50">
-                        <span className={`mt-1.5 w-1 h-1 rounded-full flex-shrink-0 ${c.color === "gold" ? "bg-yellow-400" : "bg-blue-400"}`} />
-                        {step}
-                      </li>
-                    ))}
-                  </ul>
+                <p className="text-[#666] text-sm leading-relaxed flex-1 mb-6">{c.desc}</p>
+
+                {c.webinar ? (
+                  <a href={c.webinar} target="_blank" rel="noopener noreferrer"
+                    className="btn-ghost text-xs self-start">
+                    Смотреть проект →
+                  </a>
+                ) : (
+                  <span className="text-[#333] text-xs">NDA</span>
+                )}
+              </div>
+            </FadeUp>
+          ))}
+        </div>
+
+        {/* Screen image */}
+        <FadeUp delay={0.2}>
+          <div className="mt-0 border-x border-b border-white/8 overflow-hidden" style={{ height: "320px" }}>
+            <img src={SCREEN_IMG} alt="Аналитика вебинарной воронки" className="w-full h-full object-cover" style={{ filter: "brightness(0.7)" }} />
+          </div>
+        </FadeUp>
+      </div>
+    </section>
+  );
+}
+
+// ─── УЗНАЁШЬ СЕБЯ (боли, триггеры) ─────────────────────────────────────────
+
+function Recognition() {
+  const triggers = [
+    { q: "CPA вырос, а конверсия упала?", e: "Тревога за KPI перед фаундерами", p: "Старые связки выгорели" },
+    { q: "Конец квартала, план горит?", e: "Усталость от гипотез без результата", p: "Команда не справляется с объёмом" },
+    { q: "Реклама дорожает, маркетплейсы душат?", e: "Разочарование от падающего ROMI", p: "Нет экспертизы внутри для контентных воронок" },
+    { q: "Хочешь D2C, но не знаешь как?", e: "Страх не выполнить план по новым каналам", p: "Нет насмотренности на рынке" },
+  ];
+
+  return (
+    <section className="py-24 bg-[#0D0D0D]">
+      <div className="container">
+        <FadeUp>
+          <div className="section-label mb-4">Узнаёшь себя?</div>
+          <h2 className="font-display text-[#F5F5F0] mb-4" style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", lineHeight: 0.92 }}>
+            ТЫ ХОЧЕШЬ КРАТНЫЙ РОСТ —<br />
+            <span style={{ color: "#FF2D20" }}>НО ЧТО-ТО МЕШАЕТ.</span>
+          </h2>
+          <p className="text-[#666] mb-16 max-w-lg text-sm leading-relaxed">
+            Ты хочешь выполнить амбициозные KPI или запустить новый продукт — но старые инструменты уже не работают.
+          </p>
+        </FadeUp>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-white/8">
+          {triggers.map((t, i) => (
+            <FadeUp key={i} delay={i * 0.08}>
+              <div className="p-8 border-b border-r border-white/8" style={{ borderRight: i % 2 === 1 ? "none" : undefined, borderBottom: i >= 2 ? "none" : undefined }}>
+                <div className="text-[#F5F5F0] font-semibold mb-3 text-base">{t.q}</div>
+                <div className="flex gap-6 mt-4">
+                  <div>
+                    <div className="section-label mb-1" style={{ color: "#FF2D20", fontSize: "0.55rem" }}>Эмоция</div>
+                    <div className="text-[#666] text-xs leading-relaxed">{t.e}</div>
+                  </div>
+                  <div>
+                    <div className="section-label mb-1" style={{ color: "#444", fontSize: "0.55rem" }}>Проблема</div>
+                    <div className="text-[#555] text-xs leading-relaxed">{t.p}</div>
+                  </div>
                 </div>
               </div>
-            </FadeIn>
+            </FadeUp>
           ))}
         </div>
       </div>
@@ -594,181 +443,150 @@ function CasesSection() {
   );
 }
 
-// Webinar Section — aha-момент
-function WebinarSection() {
-  return (
-    <section className="py-24 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #0A0A0F 0%, #0D0D18 100%)" }}>
-      <div className="container relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <FadeIn>
-            <div>
-              <div className="hero-badge inline-flex items-center gap-2 mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                Наша суперсила
-              </div>
-              <h2
-                style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(2.5rem, 5vw, 4.5rem)", lineHeight: 1, letterSpacing: "0.02em" }}
-                className="text-white mb-6"
-              >
-                Мощнейшая
-                <br />
-                <span className="text-gold-gradient">вебинарная</span>
-                <br />
-                экспертиза
-                <br />
-                на рынке
-              </h2>
-              <p className="text-white/60 text-base leading-relaxed mb-8 font-medium">
-                5 лет я делаю вебинары для крупнейших EdTech-проектов России. Знаю изнутри, как устроена вебинарная машина Skillbox, SkillFactory, как строятся продающие сценарии, которые конвертируют в 2–3 раза лучше среднего по рынку.
-              </p>
-              <div className="space-y-4">
-                {[
-                  { icon: "🎬", text: "Сценарии вебинаров с конверсией выше рынка в 2–3 раза" },
-                  { icon: "📊", text: "Аналитика каждого эфира: где теряем, где усиливаем" },
-                  { icon: "🤖", text: "Автоворонки, которые работают без вашего участия" },
-                  { icon: "🚀", text: "Опыт запусков от 300К до 1M+/мес бюджета" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <span className="text-xl flex-shrink-0">{item.icon}</span>
-                    <span className="text-white/70 text-sm font-medium leading-relaxed">{item.text}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </FadeIn>
+// ─── КАК МЫ ДЕЛАЕМ (объясняем экспертизу) ──────────────────────────────────
 
-          <FadeIn delay={0.2}>
-            <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-yellow-500/10 to-blue-500/10 rounded-2xl blur-xl" />
-              <img
-                src={WEBINAR_IMG}
-                alt="Вебинарный продакшн"
-                className="relative rounded-xl w-full object-cover"
-                style={{ aspectRatio: "16/10" }}
-              />
-              {/* Overlay badge */}
-              <div className="absolute bottom-4 left-4 right-4 bg-[#0A0A0F]/90 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-xs text-white/40 font-medium uppercase tracking-widest mb-1">Текущий проект</div>
-                    <div className="text-white font-bold text-sm">Primecraft — федеральный бренд спортпита</div>
-                  </div>
-                  <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                </div>
+function HowWeDo() {
+  const steps = [
+    { n: "01", title: "Аудит за 48 часов", desc: "Смотрим вашу воронку и показываем 3 точки потери денег. Прозрачно, без воды." },
+    { n: "02", title: "Смысловая упаковка", desc: "Переписываем сценарий под боли холодной аудитории. Контент, который удерживает и конвертирует." },
+    { n: "03", title: "Продакшн эфира", desc: "Студийная картинка, режиссура, телесуфлёр. Ваш спикер выглядит как профи." },
+    { n: "04", title: "Автоматизация касаний", desc: "Боты и рассылки догревают тех, кто не дошёл. Доходимость +20–30%." },
+  ];
+
+  return (
+    <section className="py-24 bg-[#0A0A0A]" style={{ backgroundImage: `url(${GRID_IMG})`, backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode: "multiply" }}>
+      <div className="container">
+        <FadeUp>
+          <div className="section-label mb-4">Как мы выполним вашу задачу</div>
+          <h2 className="font-display text-[#F5F5F0] mb-16" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
+            СИСТЕМА,<br />
+            <span style={{ color: "#FF2D20" }}>НЕ РАЗОВАЯ</span><br />
+            УСЛУГА
+          </h2>
+        </FadeUp>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+          {steps.map((s, i) => (
+            <FadeUp key={i} delay={i * 0.1}>
+              <div className="p-10 border border-white/8 bg-[#0A0A0A]/80" style={{ marginTop: i >= 2 ? "-1px" : 0, marginLeft: i % 2 === 1 ? "-1px" : 0 }}>
+                <div className="num-accent mb-6" style={{ fontSize: "1rem" }}>{s.n}</div>
+                <h3 className="font-display text-[#F5F5F0] mb-4" style={{ fontSize: "1.5rem" }}>{s.title}</h3>
+                <p className="text-[#666] text-sm leading-relaxed">{s.desc}</p>
               </div>
-            </div>
-          </FadeIn>
+            </FadeUp>
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
-// Team Section
-function TeamSection() {
+// ─── ТОЧКА Б (образ результата) ─────────────────────────────────────────────
+
+function PointB() {
+  const outcomes = [
+    { icon: "📈", title: "Стабильно растущий ROMI", desc: "Вы видите предсказуемую окупаемость каждого вложенного рубля. Не гадаете — знаете." },
+    { icon: "🏆", title: "Выполненные KPI", desc: "Вы перевыполнили план. Фаундеры довольны. Вы получили заслуженный бонус и авторитет." },
+    { icon: "⚙️", title: "Система без вас", desc: "Воронка работает автоматически. Команда занимается продуктом, а не операционкой." },
+    { icon: "🚀", title: "Новые направления", desc: "Вы запустили новый продукт без найма людей. Масштаб без хаоса." },
+  ];
+
+  return (
+    <section className="py-24 bg-[#0D0D0D]">
+      <div className="container">
+        <FadeUp>
+          <div className="section-label mb-4">Точка Б</div>
+          <h2 className="font-display text-[#F5F5F0] mb-6" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
+            КАК ВЫ БУДЕТЕ<br />
+            <span style={{ color: "#FF2D20" }}>СЕБЯ ЧУВСТВОВАТЬ</span>
+          </h2>
+          <p className="text-[#666] mb-16 max-w-lg text-sm leading-relaxed">
+            Уверенность. Гордость. Облегчение. Вы делегировали сложный процесс надёжным партнёрам — и получили результат.
+          </p>
+        </FadeUp>
+
+        {/* Team image */}
+        <FadeUp delay={0.1}>
+          <div className="mb-0 overflow-hidden border border-white/8" style={{ height: "400px" }}>
+            <img src={TEAM_IMG} alt="Команда Гипотеза" className="w-full h-full object-cover" style={{ filter: "brightness(0.6)" }} />
+          </div>
+        </FadeUp>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border-x border-b border-white/8">
+          {outcomes.map((o, i) => (
+            <FadeUp key={i} delay={i * 0.08}>
+              <div className="p-8 border-r border-b border-white/8 last:border-r-0" style={{ borderBottom: "none" }}>
+                <div className="text-2xl mb-4">{o.icon}</div>
+                <h3 className="text-[#F5F5F0] font-semibold mb-3 text-sm">{o.title}</h3>
+                <p className="text-[#555] text-xs leading-relaxed">{o.desc}</p>
+              </div>
+            </FadeUp>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── КОМАНДА ────────────────────────────────────────────────────────────────
+
+function Team() {
   const team = [
     {
       name: "Денис Зюлин",
       role: "Стратегический маркетинг и продукт",
-      superpower: "Стратег",
-      desc: "Формирует маркетинговую стратегию и продуктовую логику. Погружается в бизнес как собственник, проводит исследования, помогает увидеть истинные точки роста и собрать систему, которая работает предсказуемо.",
-      exp: ["Skillfactory", "Skillbox", "Логомашина"],
-      color: "gold",
-      icon: "⚡",
+      color: "#FF2D20",
+      desc: "Формирует маркетинговую стратегию и продуктовую логику. Погружается в бизнес как собственник, проводит исследования, помогает увидеть истинные точки роста.",
+      exp: "5+ лет в EdTech",
     },
     {
       name: "Алексей Пономарёв",
       role: "Аналитика, трафик и стратегические механики",
-      superpower: "Аналитик",
+      color: "#4A9EFF",
       desc: "Формирует экономику и аналитику каналов. Управляет холодным трафиком и системными механиками, которые масштабируют выручку и делают маркетинг предсказуемым.",
-      exp: ["Логомашина", "Skillfactory", "Alteco"],
-      color: "blue",
-      icon: "🎯",
+      exp: "Автоворонки и трафик",
     },
     {
       name: "Алла Захарова",
       role: "Архитектура воронок и контента",
-      superpower: "Архитектор",
-      desc: "Создаёт концепции, воронки и живые запуски, которые дают стабильный поток заявок. Опыт в крупнейших EdTech-проектах страны.",
-      exp: ["Skillbox", "SkillFactory"],
-      color: "gold",
-      icon: "🔮",
+      color: "#F5F5F0",
+      desc: "Создаёт концепции, воронки и живые запуски, которые дают стабильный поток заявок. Работала в Skillbox, SkillFactory.",
+      exp: "Skillbox, SkillFactory",
     },
     {
       name: "Дмитрий Лебедев",
       role: "Операционная поддержка",
-      superpower: "Операционист",
+      color: "#888",
       desc: "Отчёты, аналитика, контроль процессов. Держит проекты в порядке и помогает команде быть быстрее.",
-      exp: ["Операционный менеджмент"],
-      color: "blue",
-      icon: "🛡️",
+      exp: "Операционный менеджмент",
     },
   ];
 
   return (
-    <section id="team" className="py-24 bg-[#0A0A0F] relative overflow-hidden">
-      {/* Team hero image */}
-      <div className="absolute inset-0 z-0">
-        <img src={TEAM_HERO} alt="" className="w-full h-full object-cover opacity-10" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0F] via-[#0A0A0F]/70 to-[#0A0A0F]" />
-      </div>
-
-      <div className="container relative z-10">
-        <FadeIn>
-          <div className="hero-badge inline-flex items-center gap-2 mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-current" />
-            Команда
-          </div>
-        </FadeIn>
-        <FadeIn delay={0.1}>
-          <h2
-            style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(2.5rem, 6vw, 5rem)", lineHeight: 1, letterSpacing: "0.02em" }}
-            className="text-white mb-4"
-          >
-            Ваши супергерои
-            <br />
-            <span className="text-gold-gradient">на проекте</span>
+    <section id="team" className="py-24 bg-[#0A0A0A]">
+      <div className="container">
+        <FadeUp>
+          <div className="section-label mb-4">Команда</div>
+          <h2 className="font-display text-[#F5F5F0] mb-16" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
+            ЧЕТЫРЕ<br />
+            <span style={{ color: "#FF2D20" }}>СУПЕРГЕРОЯ</span><br />
+            ВЕБИНАРОВ
           </h2>
-        </FadeIn>
-        <FadeIn delay={0.2}>
-          <p className="text-white/50 text-base mb-16 max-w-lg font-medium">
-            Каждый — специалист с реальным опытом в топовых проектах рынка. Не агентство-посредник, а команда практиков.
-          </p>
-        </FadeIn>
+        </FadeUp>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {team.map((member, i) => (
-            <FadeIn key={i} delay={0.1 * i}>
-              <div className="card-hero rounded-xl p-6 h-full flex flex-col">
-                {/* Avatar placeholder with icon */}
-                <div className={`w-16 h-16 rounded-xl flex items-center justify-center text-3xl mb-4 ${
-                  member.color === "gold" ? "bg-yellow-400/10" : "bg-blue-400/10"
-                }`}>
-                  {member.icon}
-                </div>
-
-                {/* Superpower badge */}
-                <span className={`text-xs font-bold tracking-widest uppercase mb-3 ${
-                  member.color === "gold" ? "text-yellow-400" : "text-blue-400"
-                }`}>
-                  {member.superpower}
-                </span>
-
-                <h3 className="text-white font-bold text-base mb-1">{member.name}</h3>
-                <p className={`text-xs font-semibold mb-3 ${member.color === "gold" ? "text-yellow-400/70" : "text-blue-400/70"}`}>
-                  {member.role}
-                </p>
-                <p className="text-white/45 text-xs leading-relaxed mb-4 flex-grow">{member.desc}</p>
-
-                <div className="flex flex-wrap gap-1.5">
-                  {member.exp.map((e, j) => (
-                    <span key={j} className="text-xs text-white/30 border border-white/8 px-2 py-0.5 rounded">
-                      {e}
-                    </span>
-                  ))}
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-white/8">
+          {team.map((m, i) => (
+            <FadeUp key={i} delay={i * 0.1}>
+              <div className="p-8 border-b border-r border-white/8 group"
+                style={{ borderRight: i % 2 === 1 ? "none" : undefined, borderBottom: i >= 2 ? "none" : undefined }}>
+                {/* Color accent line */}
+                <div style={{ width: "2rem", height: "2px", background: m.color, marginBottom: "1.5rem" }} />
+                <div className="text-[#F5F5F0] font-semibold text-base mb-1">{m.name}</div>
+                <div className="section-label mb-4" style={{ color: m.color, fontSize: "0.6rem" }}>{m.role}</div>
+                <p className="text-[#666] text-sm leading-relaxed mb-4">{m.desc}</p>
+                <div className="text-[#444] text-xs tracking-wide">{m.exp}</div>
               </div>
-            </FadeIn>
+            </FadeUp>
           ))}
         </div>
       </div>
@@ -776,155 +594,54 @@ function TeamSection() {
   );
 }
 
-// Why Us / Value Section
-function ValueSection() {
-  const values = [
+// ─── БАРЬЕРЫ ────────────────────────────────────────────────────────────────
+
+function Barriers() {
+  const items = [
     {
-      num: "01",
-      title: "Не подрядчик — партнёр",
-      desc: "Погружаемся в бизнес как собственники. Говорим на языке продукта и цифр, а не «ведём проекты».",
+      barrier: "У нас уже есть маркетолог",
+      answer: "Мы не замещаем вашего маркетолога — мы его усиливаем. Даём готовую систему и нашу насмотренность на рынке.",
     },
     {
-      num: "02",
-      title: "Насмотренность топ-проектов",
-      desc: "Видели изнутри, как устроен маркетинг Skillbox, SkillFactory. Знаем типовые ошибки и что реально работает.",
+      barrier: "Проще нанять человека в штат",
+      answer: "Найм и онбординг займут 2 месяца. Мы запустим первые тесты уже через неделю.",
     },
     {
-      num: "03",
-      title: "Система, а не разовый запуск",
-      desc: "Строим предсказуемую машину продаж. После работы с нами у вас остаётся документация, процессы, команда.",
+      barrier: "Боимся за утечку данных",
+      answer: "Работаем с EdTech годами, строго соблюдаем NDA. Ваши цифры не раскрываем.",
     },
     {
-      num: "04",
-      title: "Быстрее найма",
-      desc: "Найм ≈ 1.5–2 мес. + онбординг. Мы выстраиваем всё быстрее и дешевле, потом передаём вашему специалисту.",
+      barrier: "Слишком дорого для нас",
+      answer: "Стоимость одного выгоревшего запуска выше нашего ретейнера. Считаем вместе на первой встрече.",
     },
   ];
 
   return (
-    <section className="py-24 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #0D0D18 0%, #0A0A0F 100%)" }}>
-      <div className="container relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
-          <div>
-            <FadeIn>
-              <div className="hero-badge inline-flex items-center gap-2 mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                Почему мы
-              </div>
-            </FadeIn>
-            <FadeIn delay={0.1}>
-              <h2
-                style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(2.5rem, 5vw, 4.5rem)", lineHeight: 1, letterSpacing: "0.02em" }}
-                className="text-white mb-6"
-              >
-                Увольняем
-                <br />
-                <span className="text-gold-gradient">конкурентов</span>
-              </h2>
-            </FadeIn>
-            <FadeIn delay={0.2}>
-              <p className="text-white/50 text-base leading-relaxed font-medium mb-8">
-                Сравните нас с альтернативами — и вы поймёте, почему EdTech-лидеры выбирают нас.
-              </p>
-            </FadeIn>
-
-            {/* Comparison table */}
-            <FadeIn delay={0.3}>
-              <div className="rounded-xl overflow-hidden border border-white/8">
-                <div className="grid grid-cols-3 bg-white/5 text-xs font-bold uppercase tracking-widest text-white/40 px-4 py-3">
-                  <span>Критерий</span>
-                  <span className="text-center text-yellow-400">Гипотеза</span>
-                  <span className="text-center">Альтернативы</span>
-                </div>
-                {[
-                  ["Опыт в топ-EdTech", "✓", "Редко"],
-                  ["Вебинары + автоворонки", "✓", "Обычно одно"],
-                  ["Аналитика и ROMI", "✓", "Частично"],
-                  ["Скорость запуска", "1–2 нед.", "1–2 мес."],
-                  ["Передача процессов", "✓", "Нет"],
-                ].map(([crit, us, them], i) => (
-                  <div key={i} className={`grid grid-cols-3 px-4 py-3 text-sm border-t border-white/5 ${i % 2 === 0 ? "bg-[#0A0A0F]" : "bg-white/2"}`}>
-                    <span className="text-white/60 font-medium">{crit}</span>
-                    <span className="text-center text-yellow-400 font-bold">{us}</span>
-                    <span className="text-center text-white/30">{them}</span>
-                  </div>
-                ))}
-              </div>
-            </FadeIn>
-          </div>
-
-          <div className="space-y-4">
-            {values.map((v, i) => (
-              <FadeIn key={i} delay={0.1 * i}>
-                <div className="card-hero rounded-xl p-6 flex gap-4">
-                  <span
-                    style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "2.5rem", lineHeight: 1, opacity: 0.2 }}
-                    className="text-yellow-400 flex-shrink-0"
-                  >
-                    {v.num}
-                  </span>
-                  <div>
-                    <h3 className="text-white font-bold text-base mb-2">{v.title}</h3>
-                    <p className="text-white/50 text-sm leading-relaxed">{v.desc}</p>
-                  </div>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// Point B Section — "Точка Б"
-function PointBSection() {
-  const outcomes = [
-    { icon: "📈", text: "Вебинар стал предсказуемым каналом продаж с понятным ROMI" },
-    { icon: "🤖", text: "Автоворонка работает без вашего участия и окупает трафик" },
-    { icon: "😌", text: "Команда не выгорает — есть система, сценарии, процессы" },
-    { icon: "🎯", text: "Вы знаете, какой оффер работает, и масштабируете его" },
-    { icon: "💰", text: "Холодный трафик окупается с первого месяца" },
-    { icon: "🏆", text: "Ваш вебинар выглядит и продаёт как у лидеров рынка" },
-  ];
-
-  return (
-    <section className="py-24 bg-[#0A0A0F] relative overflow-hidden">
-      {/* Gold glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, oklch(0.82 0.15 85 / 5%) 0%, transparent 70%)" }} />
-
-      <div className="container relative z-10">
-        <FadeIn>
-          <div className="hero-badge inline-flex items-center gap-2 mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-current" />
-            Точка Б
-          </div>
-        </FadeIn>
-        <FadeIn delay={0.1}>
-          <h2
-            style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(2.5rem, 6vw, 5rem)", lineHeight: 1, letterSpacing: "0.02em" }}
-            className="text-white mb-4"
-          >
-            Как выглядит
-            <br />
-            <span className="text-gold-gradient">ваш результат</span>
+    <section className="py-24 bg-[#0D0D0D]">
+      <div className="container">
+        <FadeUp>
+          <div className="section-label mb-4">Снижаем барьеры</div>
+          <h2 className="font-display text-[#F5F5F0] mb-16" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
+            МЫ СЛЫШАЛИ<br />
+            <span style={{ color: "#FF2D20" }}>ЭТИ ВОЗРАЖЕНИЯ.</span>
           </h2>
-        </FadeIn>
-        <FadeIn delay={0.2}>
-          <p className="text-white/50 text-base mb-16 max-w-lg font-medium">
-            После работы с нами вы получаете не просто «проведённый вебинар» — а работающую систему.
-          </p>
-        </FadeIn>
+        </FadeUp>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {outcomes.map((o, i) => (
-            <FadeIn key={i} delay={0.08 * i}>
-              <div className="card-hero rounded-xl p-6 flex items-start gap-4">
-                <span className="text-2xl flex-shrink-0">{o.icon}</span>
-                <p className="text-white/70 text-sm font-medium leading-relaxed">{o.text}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-white/8">
+          {items.map((item, i) => (
+            <FadeUp key={i} delay={i * 0.08}>
+              <div className="p-8 border-b border-r border-white/8"
+                style={{ borderRight: i % 2 === 1 ? "none" : undefined, borderBottom: i >= 2 ? "none" : undefined }}>
+                <div className="flex gap-3 items-start mb-4">
+                  <span style={{ color: "#FF2D20", fontSize: "1rem", marginTop: "2px" }}>✕</span>
+                  <div className="text-[#F5F5F0] font-semibold text-sm">{item.barrier}</div>
+                </div>
+                <div className="flex gap-3 items-start">
+                  <span style={{ color: "#4A9EFF", fontSize: "1rem", marginTop: "2px" }}>✓</span>
+                  <div className="text-[#666] text-sm leading-relaxed">{item.answer}</div>
+                </div>
               </div>
-            </FadeIn>
+            </FadeUp>
           ))}
         </div>
       </div>
@@ -932,259 +649,191 @@ function PointBSection() {
   );
 }
 
-// FAQ Section
-function FAQSection() {
-  const [open, setOpen] = useState<number | null>(null);
+// ─── КОНКУРЕНТЫ ─────────────────────────────────────────────────────────────
 
-  const faqs = [
+function Competitors() {
+  const rows = [
     {
-      q: "У нас уже есть маркетолог. Зачем нам вы?",
-      a: "Мы не замещаем вашего маркетолога — мы усиливаем. Ваш маркетолог остаётся в фокусе — но теперь с поддержкой, стратегией и рабочей системой. Работаем в партнёрстве: глубоко погружаемся в продукт, разбираемся «по локоть», а не по верхам. Даём внешний взгляд с опытом десятков EdTech-проектов.",
+      them: "Инхаус-команда",
+      issue: "Не видит, что работает у других. Долго тестирует.",
+      us: "Насмотренность на 50+ проектов. Запуск гипотез за неделю.",
     },
     {
-      q: "Проще же нанять человека в команду?",
-      a: "В теории — да, но на практике: найм ≈ 1.5–2 мес. + онбординг, риски промаха. Стоимость + налоги = ≈ 200–250 тыс. ₽/мес за медла. Мы выстраиваем всё быстрее, потом можем передать процессы вашему специалисту — с документацией и обучением.",
+      them: "Обычные фрилансеры",
+      issue: "Делают одну часть. Нет системы, нет ответственности за ROMI.",
+      us: "Полный цикл под ключ: от смыслов до аналитики. Отвечаем за результат.",
     },
     {
-      q: "Вы работаете только с EdTech?",
-      a: "Нет. Наш основной опыт — EdTech и крупные онлайн-школы, но вебинарный маркетинг работает для любого бизнеса с экспертным продуктом. Сейчас, например, делаем вебинарку для Primecraft — федерального бренда спортивного питания.",
-    },
-    {
-      q: "Сколько стоят ваши услуги?",
-      a: "Стоимость зависит от объёма и формата работы. Разовый вебинар под ключ — от 150К. Системная работа на 3–6 месяцев — от 300К/мес. Оставьте заявку, и мы подготовим индивидуальное предложение под вашу задачу.",
-    },
-    {
-      q: "А если у нас NDA / чувствительная информация?",
-      a: "Спокойно. Мы работаем с EdTech, где это стандарт. Соблюдаем NDA юридически и по факту. Не раскрываем стратегии, данные и цифры. Наш фокус — рост вашего бизнеса, не «собирать портфолио».",
-    },
-    {
-      q: "Как быстро вы можете начать?",
-      a: "Обычно мы готовы стартовать в течение 1–2 недель после первой встречи. Для срочных проектов — быстрее. Оставьте заявку, и мы обсудим сроки на звонке.",
+      them: "Классические агентства",
+      issue: "Широкий профиль, нет глубины в вебинарах и EdTech.",
+      us: "Узкая специализация. 5 лет только вебинарный маркетинг.",
     },
   ];
 
   return (
-    <section id="faq" className="py-24 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #0A0A0F 0%, #0D0D18 100%)" }}>
-      <div className="container relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
-          <div>
-            <FadeIn>
-              <div className="hero-badge inline-flex items-center gap-2 mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                FAQ
-              </div>
-            </FadeIn>
-            <FadeIn delay={0.1}>
-              <h2
-                style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(2.5rem, 5vw, 4.5rem)", lineHeight: 1, letterSpacing: "0.02em" }}
-                className="text-white mb-6"
-              >
-                Снимаем
-                <br />
-                <span className="text-gold-gradient">барьеры</span>
-              </h2>
-            </FadeIn>
-            <FadeIn delay={0.2}>
-              <p className="text-white/50 text-base leading-relaxed font-medium">
-                Отвечаем на вопросы, которые возникают перед тем, как написать нам.
-              </p>
-            </FadeIn>
-          </div>
+    <section className="py-24 bg-[#0A0A0A]">
+      <div className="container">
+        <FadeUp>
+          <div className="section-label mb-4">Увольняем конкурентов</div>
+          <h2 className="font-display text-[#F5F5F0] mb-16" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
+            ПОЧЕМУ НЕ<br />
+            <span style={{ color: "#FF2D20" }}>ДРУГИЕ.</span>
+          </h2>
+        </FadeUp>
 
-          <div className="space-y-2">
-            {faqs.map((faq, i) => (
-              <FadeIn key={i} delay={0.08 * i}>
-                <div className="card-hero rounded-xl overflow-hidden">
-                  <button
-                    className="w-full text-left p-5 flex items-start justify-between gap-4"
-                    onClick={() => setOpen(open === i ? null : i)}
-                  >
-                    <span className="text-white font-semibold text-sm leading-relaxed">{faq.q}</span>
-                    <span className={`flex-shrink-0 text-yellow-400 transition-transform duration-300 ${open === i ? "rotate-45" : ""}`}>
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M10 4v12M4 10h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                      </svg>
-                    </span>
-                  </button>
-                  {open === i && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="px-5 pb-5"
-                    >
-                      <p className="text-white/50 text-sm leading-relaxed border-t border-white/5 pt-4">{faq.a}</p>
-                    </motion.div>
-                  )}
-                </div>
-              </FadeIn>
-            ))}
+        <div className="border border-white/8">
+          {/* Header */}
+          <div className="grid grid-cols-3 border-b border-white/8 bg-[#111]">
+            <div className="p-4 text-[#444] text-xs tracking-widest uppercase border-r border-white/8">Альтернатива</div>
+            <div className="p-4 text-[#444] text-xs tracking-widest uppercase border-r border-white/8">Проблема</div>
+            <div className="p-4 text-[#FF2D20] text-xs tracking-widest uppercase">Гипотеза</div>
           </div>
+          {rows.map((r, i) => (
+            <FadeUp key={i} delay={i * 0.08}>
+              <div className="grid grid-cols-3 border-b border-white/8 last:border-b-0 hover:bg-[#0D0D0D] transition-colors">
+                <div className="p-6 text-[#F5F5F0] text-sm font-medium border-r border-white/8">{r.them}</div>
+                <div className="p-6 text-[#555] text-sm leading-relaxed border-r border-white/8">{r.issue}</div>
+                <div className="p-6 text-[#F5F5F0] text-sm leading-relaxed">{r.us}</div>
+              </div>
+            </FadeUp>
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
-// Contact / CTA Section
-function ContactSection() {
-  const [form, setForm] = useState({ name: "", company: "", contact: "", message: "" });
+// ─── CONTACT (CTA + форма) ──────────────────────────────────────────────────
+
+function Contact() {
+  const [form, setForm] = useState({ name: "", company: "", phone: "", message: "" });
   const [sent, setSent] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setSent(true);
   };
 
   return (
-    <section id="contact" className="py-24 bg-[#0A0A0F] relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full"
-          style={{ background: "radial-gradient(ellipse, oklch(0.82 0.15 85 / 8%) 0%, transparent 70%)" }} />
-      </div>
-
-      <div className="container relative z-10">
-        <div className="max-w-2xl mx-auto text-center mb-12">
-          <FadeIn>
-            <div className="hero-badge inline-flex items-center gap-2 mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-              Начнём работу
-            </div>
-          </FadeIn>
-          <FadeIn delay={0.1}>
-            <h2
-              style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(2.5rem, 7vw, 5.5rem)", lineHeight: 1, letterSpacing: "0.02em" }}
-              className="text-white mb-4"
-            >
-              Готовы стать
-              <br />
-              <span className="text-gold-gradient">вашими супергероями?</span>
+    <section id="contact" className="py-24 bg-[#0D0D0D] border-t border-white/8">
+      <div className="container">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+          {/* Left */}
+          <FadeUp className="pr-0 lg:pr-16 border-b lg:border-b-0 lg:border-r border-white/8 pb-16 lg:pb-0">
+            <div className="section-label mb-4">Начать работу</div>
+            <h2 className="font-display text-[#F5F5F0] mb-6" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", lineHeight: 0.92 }}>
+              ПОЛУЧИТЕ<br />
+              БЕСПЛАТНЫЙ<br />
+              <span style={{ color: "#FF2D20" }}>АУДИТ ВОРОНКИ</span>
             </h2>
-          </FadeIn>
-          <FadeIn delay={0.2}>
-            <p className="text-white/50 text-base font-medium">
-              Оставьте заявку — обсудим вашу задачу на бесплатном звонке и предложим решение.
+            <p className="text-[#666] text-sm leading-relaxed mb-10 max-w-sm">
+              Оставьте заявку — и мы бесплатно покажем 3 узких горлышка, где вы теряете деньги прямо сейчас. Без обязательств.
             </p>
-          </FadeIn>
-        </div>
 
-        <FadeIn delay={0.3}>
-          <div className="max-w-lg mx-auto">
+            <div className="space-y-4">
+              {[
+                { icon: "📞", text: "Ответим в течение 2 часов в рабочее время" },
+                { icon: "🔒", text: "NDA по запросу. Ваши данные в безопасности" },
+                { icon: "⚡", text: "Первые выводы — уже на первой встрече" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 text-[#555] text-xs">
+                  <span>{item.icon}</span>
+                  <span>{item.text}</span>
+                </div>
+              ))}
+            </div>
+          </FadeUp>
+
+          {/* Right — Form */}
+          <FadeUp delay={0.15} className="pt-16 lg:pt-0 lg:pl-16">
             {sent ? (
-              <div className="card-hero rounded-xl p-12 text-center">
-                <div className="text-5xl mb-4">🚀</div>
-                <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "2rem", letterSpacing: "0.03em" }} className="text-white mb-3">
-                  Заявка отправлена!
-                </h3>
-                <p className="text-white/50 text-sm">Мы свяжемся с вами в течение 24 часов.</p>
+              <div className="flex flex-col items-start justify-center h-full gap-4">
+                <div className="num-accent" style={{ fontSize: "3rem" }}>✓</div>
+                <h3 className="font-display text-[#F5F5F0]" style={{ fontSize: "2rem" }}>ЗАЯВКА ОТПРАВЛЕНА</h3>
+                <p className="text-[#666] text-sm">Свяжемся с вами в течение 2 часов.</p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="card-hero rounded-xl p-8 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-semibold text-white/40 uppercase tracking-widest block mb-2">Имя</label>
-                    <input
-                      type="text"
-                      required
-                      value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      placeholder="Иван Иванов"
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:border-yellow-400/40 transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-white/40 uppercase tracking-widest block mb-2">Компания</label>
-                    <input
-                      type="text"
-                      value={form.company}
-                      onChange={(e) => setForm({ ...form, company: e.target.value })}
-                      placeholder="Название проекта"
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:border-yellow-400/40 transition-colors"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-white/40 uppercase tracking-widest block mb-2">Telegram / Телефон</label>
-                  <input
-                    type="text"
-                    required
-                    value={form.contact}
-                    onChange={(e) => setForm({ ...form, contact: e.target.value })}
-                    placeholder="@username или +7..."
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:border-yellow-400/40 transition-colors"
+              <form onSubmit={submit} className="space-y-4">
+                {[
+                  { name: "name", placeholder: "Ваше имя", type: "text", required: true },
+                  { name: "company", placeholder: "Компания / проект", type: "text", required: false },
+                  { name: "phone", placeholder: "Телефон или Telegram", type: "text", required: true },
+                ].map((field) => (
+                  <input key={field.name}
+                    type={field.type}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                    value={form[field.name as keyof typeof form]}
+                    onChange={e => setForm({ ...form, [field.name]: e.target.value })}
+                    className="w-full bg-transparent border-b border-white/15 text-[#F5F5F0] placeholder-[#444] text-sm py-3 px-0 focus:outline-none focus:border-[#FF2D20] transition-colors"
+                    style={{ borderRadius: 0 }}
                   />
+                ))}
+                <textarea
+                  placeholder="Расскажите о задаче (необязательно)"
+                  rows={3}
+                  value={form.message}
+                  onChange={e => setForm({ ...form, message: e.target.value })}
+                  className="w-full bg-transparent border-b border-white/15 text-[#F5F5F0] placeholder-[#444] text-sm py-3 px-0 focus:outline-none focus:border-[#FF2D20] transition-colors resize-none"
+                  style={{ borderRadius: 0 }}
+                />
+                <div className="pt-4">
+                  <button type="submit" className="btn-cta w-full justify-center">
+                    Получить бесплатный аудит
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </button>
                 </div>
-                <div>
-                  <label className="text-xs font-semibold text-white/40 uppercase tracking-widest block mb-2">Задача</label>
-                  <textarea
-                    value={form.message}
-                    onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    placeholder="Расскажите о вашем проекте и задаче..."
-                    rows={3}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:border-yellow-400/40 transition-colors resize-none"
-                  />
-                </div>
-                <button type="submit" className="btn-primary w-full text-center">
-                  Отправить заявку
-                </button>
-                <p className="text-white/25 text-xs text-center">
-                  Нажимая кнопку, вы соглашаетесь с политикой обработки данных
-                </p>
+                <p className="text-[#333] text-xs pt-2">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</p>
               </form>
             )}
-          </div>
-        </FadeIn>
+          </FadeUp>
+        </div>
       </div>
     </section>
   );
 }
 
-// Footer
+// ─── FOOTER ─────────────────────────────────────────────────────────────────
+
 function Footer() {
   return (
-    <footer className="border-t border-white/5 py-10" style={{ background: "#080810" }}>
-      <div className="container">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.4rem", letterSpacing: "0.08em" }} className="text-white">
-              gipot<span className="text-gold-gradient">é</span>za
+    <footer className="border-t border-white/8 bg-[#0A0A0A]">
+      <div className="container py-10">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div>
+            <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: "1.2rem", letterSpacing: "0.04em", textTransform: "uppercase", color: "#F5F5F0" }}>
+              ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА
             </span>
-            <span className="text-white/20 text-xs font-medium tracking-widest uppercase">agency</span>
+            <div className="text-[#333] text-xs mt-1">Агентство вебинарного продакшна</div>
           </div>
-
-          <div className="flex items-center gap-6 text-sm text-white/30">
-            <a href="mailto:gipoteza.team@gmail.com" className="hover:text-white/60 transition-colors">
-              gipoteza.team@gmail.com
-            </a>
-            <a href="#" className="hover:text-white/60 transition-colors">Политика обработки данных</a>
-            <a href="#" className="hover:text-white/60 transition-colors">Реквизиты</a>
+          <div className="flex gap-8 text-[#444] text-xs tracking-widest uppercase">
+            <a href="https://gipoteza-agency.ru" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF2D20] transition-colors">Старый сайт</a>
+            <a href="https://t.me/" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF2D20] transition-colors">Telegram</a>
           </div>
-
-          <div className="text-white/20 text-xs">
-            © 2025 Гипотеза. Все права защищены.
-          </div>
+          <div className="text-[#333] text-xs">© 2025 Гипотеза Agency</div>
         </div>
       </div>
     </footer>
   );
 }
 
-// Main Home component
+// ─── PAGE ────────────────────────────────────────────────────────────────────
+
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#0A0A0F]">
+    <div className="min-h-screen bg-[#0A0A0A]">
       <Nav />
-      <HeroSection />
-      <ProblemSection />
-      <ServicesSection />
-      <WebinarSection />
-      <CasesSection />
-      <TeamSection />
-      <PointBSection />
-      <ValueSection />
-      <FAQSection />
-      <ContactSection />
+      <Hero />
+      <ClientsMarquee />
+      <Services />
+      <Cases />
+      <Recognition />
+      <HowWeDo />
+      <PointB />
+      <Team />
+      <Barriers />
+      <Competitors />
+      <Contact />
       <Footer />
     </div>
   );
