@@ -58,11 +58,16 @@ function Nav() {
     >
       <div className="container flex items-center justify-between h-16">
         {/* Logo */}
-        <button onClick={() => go("hero")} className="flex items-center">
+        <button onClick={() => go("hero")} className="flex items-center gap-2">
+          {/* Planet icon */}
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="14" cy="14" r="7" stroke="#F5F5F0" strokeWidth="1.5" fill="none"/>
+            <ellipse cx="14" cy="14" rx="13" ry="5" stroke="#F5F5F0" strokeWidth="1.5" fill="none"/>
+            <circle cx="14" cy="14" r="2" fill="#FF2D20"/>
+          </svg>
           <span className="font-display" style={{ fontSize: "1.15rem", fontWeight: 900, letterSpacing: "0.06em", color: "#F5F5F0" }}>
             ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА
           </span>
-          <span style={{ fontSize: "0.6rem", color: "rgba(255,255,255,0.35)", marginLeft: "0.5rem", letterSpacing: "0.15em", fontFamily: "Inter", fontWeight: 400, textTransform: "uppercase" }}>AGENCY</span>
         </button>
 
         {/* Desktop links */}
@@ -207,7 +212,7 @@ function Hero() {
 // ─── Marquee ─────────────────────────────────────────────────────────────────
 
 function Marquee() {
-  const items = ["Skyeng", "Онлайн-колледж №1", "Primekraft", "SkillFactory", "Skillbox", "LogoMachine", "Онлайн-школа №1"];
+  const items = ["Логомашина", "Онлайн-колледж №1", "Primekraft", "SkillFactory", "Skillbox", "Школа вокала Этери Бериашвили", "Онлайн-школа №1"];
   const doubled = [...items, ...items];
   return (
     <div style={{ background: "#0A0A0A", borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", overflow: "hidden", padding: "1rem 0" }}>
@@ -328,7 +333,7 @@ function Services() {
 // ─── Cases / Webinars ─────────────────────────────────────────────────────────
 
 function Cases() {
-  const [active, setActive] = useState<string | null>(null);
+  const [_active, _setActive] = useState<string | null>(null);
 
   const cases = [
     {
@@ -386,7 +391,7 @@ function Cases() {
                 style={{ background: "#0A0A0A", padding: "2.5rem 2rem", cursor: "pointer", transition: "background 0.2s" }}
                 onMouseEnter={e => (e.currentTarget.style.background = "#111")}
                 onMouseLeave={e => (e.currentTarget.style.background = "#0A0A0A")}
-                onClick={() => setActive(active === c.id ? null : c.id)}
+                onClick={() => _setActive(_active === c.id ? null : c.id)}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
                   <span className="pill">{c.tag}</span>
@@ -561,10 +566,10 @@ function Competitors() {
 
 function Team() {
   const members = [
-    { name: "Денис Зюлин", role: "Стратегия и продукт", desc: "Погружается в бизнес как собственник. Находит точки роста, которые не видны изнутри." },
-    { name: "Алексей Пономарёв", role: "Трафик и аналитика", desc: "Управляет холодным трафиком. Делает маркетинг предсказуемым — в хорошем смысле." },
-    { name: "Алла Захарова", role: "Воронки и контент", desc: "Знает, как устроена голова покупателя на каждом этапе воронки." },
-    { name: "Дмитрий Лебедев", role: "Операционка", desc: "Держит проекты в порядке, когда всё идёт не по плану. А оно всегда идёт не по плану." },
+    { name: "Денис Зюлин", role: "Стратегия и продукт", desc: "Погружается в бизнес как собственник. Находит точки роста, которые не видны изнутри.", photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/denis_30d9c6b7.jpg" },
+    { name: "Алла Захарова", role: "Воронки и контент", desc: "Знает, как устроена голова покупателя на каждом этапе воронки.", photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alla_c7f64f85.jpg" },
+    { name: "Алексей Пономарёв", role: "Трафик и аналитика", desc: "Управляет холодным трафиком. Делает маркетинг предсказуемым — в хорошем смысле.", photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alexey_68167dc3.jpg" },
+    { name: "Дмитрий Лебедев", role: "Операционка", desc: "Держит проекты в порядке, когда всё идёт не по плану. А оно всегда идёт не по плану.", photo: null },
   ];
 
   return (
@@ -579,11 +584,15 @@ function Team() {
           {members.map((m, i) => (
             <FadeUp key={i} delay={i * 0.08}>
               <div style={{ background: "#0A0A0A", padding: "2.5rem 2rem" }}>
-                {/* Avatar placeholder */}
-                <div style={{ width: "4rem", height: "4rem", borderRadius: "50%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.5rem" }}>
-                  <span style={{ fontFamily: "Inter", fontSize: "1.2rem", color: "rgba(255,255,255,0.2)" }}>
-                    {m.name.charAt(0)}
-                  </span>
+                {/* Avatar */}
+                <div style={{ width: "5rem", height: "5rem", borderRadius: "50%", overflow: "hidden", marginBottom: "1.5rem", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.06)", flexShrink: 0 }}>
+                  {m.photo ? (
+                    <img src={m.photo} alt={m.name} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }} />
+                  ) : (
+                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ fontFamily: "Inter", fontSize: "1.4rem", color: "rgba(255,255,255,0.2)" }}>{m.name.charAt(0)}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="font-display" style={{ fontSize: "1.1rem", fontWeight: 700, color: "#F5F5F0", marginBottom: "0.3rem" }}>{m.name}</div>
                 <div style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "#FF2D20", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "1rem" }}>{m.role}</div>
