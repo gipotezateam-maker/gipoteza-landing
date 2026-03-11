@@ -565,237 +565,325 @@ function Competitors() {
 // ─── Team ─────────────────────────────────────────────────────────────────────
 
 function Team() {
-  const heroes = [
+  const members = [
     {
-      num: "01",
+      num: "001",
       codename: "СТРАТЕГ",
       name: "Денис Зюлин",
       role: "Основатель",
-      power: "Видит воронку насквозь",
-      desc: "Погружается в бизнес как собственник. Находит точки роста, которые не видны изнутри. 5 лет — только вебинары.",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/denis_30d9c6b7.jpg",
       accent: "#FF2D20",
+      facts: [
+        { label: "Опыт", value: "5 лет только вебинары" },
+        { label: "Запусков", value: "40+" },
+        { label: "Суперсила", value: "Видит воронку насквозь" },
+      ],
+      desc: "Погружается в бизнес как собственник. Находит точки роста, которые не видны изнутри.",
     },
     {
-      num: "02",
+      num: "002",
       codename: "ПРОДЮСЕР",
       name: "Алла Захарова",
       role: "Партнёр, контент",
-      power: "Знает голову покупателя",
-      desc: "Skyeng, Skillbox — за плечами. Пишет сценарии, которые ведут к покупке без ощущения, что тебя разводят.",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alla_c7f64f85.jpg",
       accent: "#B5F23D",
+      facts: [
+        { label: "Опыт", value: "Skyeng, Skillbox" },
+        { label: "Специализация", value: "Сценарии и смыслы" },
+        { label: "Суперсила", value: "Знает голову покупателя" },
+      ],
+      desc: "Пишет сценарии, которые ведут к покупке без ощущения, что тебя разводят.",
     },
     {
-      num: "03",
+      num: "003",
       codename: "ТРАФИК",
       name: "Алексей Пономарёв",
       role: "Партнёр, автоматизация",
-      power: "Делает маркетинг предсказуемым",
-      desc: "Управляет холодным трафиком и автоворонками. Строит системы, которые работают без ручного управления.",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alexey_68167dc3.jpg",
       accent: "#FF2D20",
+      facts: [
+        { label: "Специализация", value: "Холодный трафик" },
+        { label: "Инструменты", value: "Боты, автоворонки" },
+        { label: "Суперсила", value: "Делает маркетинг предсказуемым" },
+      ],
+      desc: "Управляет холодным трафиком и автоворонками. Строит системы, которые работают без ручного управления.",
     },
   ];
 
   return (
-    <section id="team" style={{ background: "#0A0A0A", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)", overflow: "hidden" }}>
+    <section id="team" style={{ background: "#0A0A0A", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="container">
 
-        {/* Header */}
+        {/* ── Header ── */}
         <FadeUp>
-          <div style={{ marginBottom: "5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", marginBottom: "1rem" }}>
-              <div style={{ width: "3px", height: "4rem", background: "#FF2D20", flexShrink: 0 }} />
-              <div>
-                <div style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "#FF2D20", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "0.3rem" }}>SUPERHERO SQUAD</div>
-                <h2 className="font-display" style={{ fontSize: "clamp(3rem, 7vw, 6rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.03em", lineHeight: 0.9, margin: 0 }}>
-                  CORE<br />КОМАНДА.
-                </h2>
-              </div>
+          <div style={{ marginBottom: "6rem" }}>
+            {/* Human headline */}
+            <h2
+              className="font-display"
+              style={{
+                fontSize: "clamp(3.5rem, 9vw, 8rem)",
+                fontWeight: 900,
+                color: "#F5F5F0",
+                letterSpacing: "-0.04em",
+                lineHeight: 0.88,
+                margin: "0 0 1.5rem",
+              }}
+            >
+              МЫ —<br />это люди
+            </h2>
+            {/* League label */}
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div style={{ height: "1px", width: "3rem", background: "#FF2D20" }} />
+              <span
+                className="font-display"
+                style={{
+                  fontSize: "0.7rem",
+                  fontWeight: 900,
+                  color: "#FF2D20",
+                  letterSpacing: "0.3em",
+                  textTransform: "uppercase",
+                }}
+              >
+                Лига вебинарных воронок
+              </span>
             </div>
-            <p style={{ fontFamily: "Inter", fontSize: "0.85rem", color: "rgba(255,255,255,0.3)", marginLeft: "calc(3px + 1.5rem)", letterSpacing: "0.05em" }}>
-              Четыре роли. Одна система. Ваш результат.
-            </p>
           </div>
         </FadeUp>
 
-        {/* Comic-style hero cards grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2.5rem" }} className="team-comic-grid">
-          {heroes.map((h, i) => (
-            <FadeUp key={i} delay={i * 0.15}>
-              <div style={{ position: "relative" }}>
-
-                {/* Big ghost number — comic issue style */}
+        {/* ── Dossier cards ── */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "0",
+            borderTop: "1px solid rgba(255,255,255,0.08)",
+          }}
+          className="team-dossier-grid"
+        >
+          {members.map((m, i) => (
+            <FadeUp key={i} delay={i * 0.12}>
+              <div
+                style={{
+                  borderRight: i < 2 ? "1px solid rgba(255,255,255,0.08)" : "none",
+                  padding: "3rem 2.5rem 3rem",
+                  position: "relative",
+                  transition: "background 0.3s ease",
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.02)"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = "transparent"; }}
+              >
+                {/* Ghost number */}
                 <div
                   className="font-display"
                   style={{
                     position: "absolute",
-                    top: "-2rem",
-                    right: "-1rem",
-                    fontSize: "9rem",
+                    top: "1.5rem",
+                    right: "1.5rem",
+                    fontSize: "5rem",
                     fontWeight: 900,
                     color: "transparent",
-                    WebkitTextStroke: `1px ${h.accent}18`,
+                    WebkitTextStroke: "1px rgba(255,255,255,0.05)",
                     lineHeight: 1,
-                    zIndex: 0,
+                    userSelect: "none",
                     pointerEvents: "none",
                     letterSpacing: "-0.05em",
-                    userSelect: "none",
                   }}
                 >
-                  {h.num}
+                  {m.num}
                 </div>
 
-                {/* Photo with comic-book frame */}
+                {/* Photo — no frame, full bleed, natural */}
                 <div
                   style={{
-                    position: "relative",
-                    zIndex: 1,
-                    border: `3px solid ${h.accent}`,
-                    clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%)",
+                    width: "100%",
+                    aspectRatio: "4/5",
                     overflow: "hidden",
-                    aspectRatio: "3/4",
-                    background: "#111",
-                    transition: "transform 0.35s ease, box-shadow 0.35s ease",
-                  }}
-                  onMouseEnter={e => {
-                    const el = e.currentTarget as HTMLDivElement;
-                    el.style.transform = "translate(-5px, -5px)";
-                    el.style.boxShadow = `7px 7px 0px ${h.accent}`;
-                  }}
-                  onMouseLeave={e => {
-                    const el = e.currentTarget as HTMLDivElement;
-                    el.style.transform = "translate(0, 0)";
-                    el.style.boxShadow = "none";
+                    marginBottom: "2rem",
+                    position: "relative",
                   }}
                 >
                   <img
-                    src={h.photo}
-                    alt={h.name}
+                    src={m.photo}
+                    alt={m.name}
                     style={{
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
                       objectPosition: "center top",
                       display: "block",
-                      filter: "contrast(1.08) saturate(0.85)",
+                      filter: "grayscale(8%) contrast(1.02)",
+                      transition: "transform 0.6s ease",
                     }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.02)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; }}
                   />
-                  {/* Diagonal color wash — comic panel feel */}
+                  {/* Subtle bottom fade */}
                   <div style={{
                     position: "absolute",
-                    inset: 0,
-                    background: `linear-gradient(135deg, transparent 55%, ${h.accent}20 100%)`,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "25%",
+                    background: "linear-gradient(to top, #0A0A0A 0%, transparent 100%)",
                     pointerEvents: "none",
                   }} />
                 </div>
 
-                {/* Corner accent triangle — fills the cut */}
-                <div style={{
-                  position: "absolute",
-                  bottom: "calc(0px + 3px)",
-                  right: "calc(0px + 3px)",
-                  width: "22px",
-                  height: "22px",
-                  background: h.accent,
-                  clipPath: "polygon(100% 0, 100% 100%, 0 100%)",
-                  zIndex: 2,
-                }} />
-
-                {/* Info below photo */}
-                <div style={{ paddingTop: "1.4rem", position: "relative", zIndex: 1 }}>
-
-                  {/* Codename with line */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.5rem" }}>
-                    <div style={{ width: "1.8rem", height: "2px", background: h.accent, flexShrink: 0 }} />
-                    <span
-                      className="font-display"
-                      style={{
-                        fontSize: "0.65rem",
-                        fontWeight: 900,
-                        color: h.accent,
-                        letterSpacing: "0.3em",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      {h.codename}
-                    </span>
-                  </div>
-
-                  {/* Name */}
-                  <div
+                {/* Codename */}
+                <div style={{ display: "flex", alignItems: "center", gap: "0.7rem", marginBottom: "0.6rem" }}>
+                  <div style={{ width: "1.5rem", height: "2px", background: m.accent, flexShrink: 0 }} />
+                  <span
                     className="font-display"
                     style={{
-                      fontSize: "clamp(1.4rem, 2vw, 1.85rem)",
+                      fontSize: "0.62rem",
                       fontWeight: 900,
-                      color: "#F5F5F0",
-                      lineHeight: 1,
-                      letterSpacing: "-0.02em",
+                      color: m.accent,
+                      letterSpacing: "0.28em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {m.codename}
+                  </span>
+                </div>
+
+                {/* Name */}
+                <div
+                  className="font-display"
+                  style={{
+                    fontSize: "clamp(1.6rem, 2.2vw, 2.1rem)",
+                    fontWeight: 900,
+                    color: "#F5F5F0",
+                    lineHeight: 1,
+                    letterSpacing: "-0.02em",
+                    marginBottom: "0.3rem",
+                  }}
+                >
+                  {m.name}
+                </div>
+
+                {/* Role */}
+                <div
+                  style={{
+                    fontFamily: "Inter",
+                    fontSize: "0.68rem",
+                    color: "rgba(255,255,255,0.3)",
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    marginBottom: "2rem",
+                  }}
+                >
+                  {m.role}
+                </div>
+
+                {/* Dossier facts */}
+                <div
+                  style={{
+                    borderTop: "1px solid rgba(255,255,255,0.07)",
+                    paddingTop: "1.5rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.75rem",
+                    marginBottom: "1.5rem",
+                  }}
+                >
+                  {/* Dossier header */}
+                  <div
+                    style={{
+                      fontFamily: "Inter",
+                      fontSize: "0.58rem",
+                      color: "rgba(255,255,255,0.2)",
+                      letterSpacing: "0.2em",
+                      textTransform: "uppercase",
                       marginBottom: "0.25rem",
                     }}
                   >
-                    {h.name}
+                    ▸ Личное дело
                   </div>
-
-                  {/* Role */}
-                  <div style={{ fontFamily: "Inter", fontSize: "0.68rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1rem" }}>
-                    {h.role}
-                  </div>
-
-                  {/* Superpower — speech bubble with cut corner */}
-                  <div style={{
-                    background: h.accent,
-                    padding: "0.5rem 1rem 0.5rem 0.9rem",
-                    display: "inline-block",
-                    marginBottom: "1rem",
-                    clipPath: "polygon(0 0, 100% 0, 100% 60%, calc(100% - 14px) 100%, 0 100%)",
-                  }}>
-                    <span className="font-display" style={{
-                      fontSize: "0.72rem",
-                      fontWeight: 900,
-                      color: h.accent === "#B5F23D" ? "#0A0A0A" : "#fff",
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
-                    }}>
-                      {h.power}
-                    </span>
-                  </div>
-
-                  {/* Desc */}
-                  <p style={{ fontFamily: "Inter", fontSize: "0.82rem", color: "rgba(255,255,255,0.38)", lineHeight: 1.65, margin: 0 }}>{h.desc}</p>
+                  {m.facts.map((f, fi) => (
+                    <div key={fi} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "1rem" }}>
+                      <span
+                        style={{
+                          fontFamily: "Inter",
+                          fontSize: "0.68rem",
+                          color: "rgba(255,255,255,0.25)",
+                          letterSpacing: "0.08em",
+                          textTransform: "uppercase",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {f.label}
+                      </span>
+                      <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)", margin: "0 0.5rem", alignSelf: "center" }} />
+                      <span
+                        style={{
+                          fontFamily: "Inter",
+                          fontSize: "0.78rem",
+                          color: "rgba(255,255,255,0.65)",
+                          fontWeight: 500,
+                          textAlign: "right",
+                        }}
+                      >
+                        {f.value}
+                      </span>
+                    </div>
+                  ))}
                 </div>
+
+                {/* Desc */}
+                <p
+                  style={{
+                    fontFamily: "Inter",
+                    fontSize: "0.82rem",
+                    color: "rgba(255,255,255,0.35)",
+                    lineHeight: 1.7,
+                    margin: 0,
+                  }}
+                >
+                  {m.desc}
+                </p>
               </div>
             </FadeUp>
           ))}
         </div>
 
-        {/* Bottom row: Dmitry + caption */}
-        <FadeUp delay={0.4}>
-          <div style={{ marginTop: "4rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "2rem", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "2.5rem" }}>
-
-            {/* Dmitry — mini comic card */}
-            <div style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
-              <div style={{
-                width: "4.5rem",
-                height: "4.5rem",
-                border: "2px solid rgba(255,255,255,0.12)",
-                clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%)",
-                background: "rgba(255,255,255,0.03)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}>
-                <span className="font-display" style={{ fontSize: "1.4rem", fontWeight: 900, color: "rgba(255,255,255,0.18)" }}>Д</span>
+        {/* ── Bottom row: Dmitry + caption ── */}
+        <FadeUp delay={0.35}>
+          <div
+            style={{
+              marginTop: "0",
+              borderTop: "1px solid rgba(255,255,255,0.08)",
+              padding: "2.5rem 0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "2rem",
+            }}
+          >
+            {/* Dmitry */}
+            <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+              {/* Small photo placeholder */}
+              <div
+                style={{
+                  width: "5rem",
+                  height: "5rem",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                  background: "rgba(255,255,255,0.04)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <span className="font-display" style={{ fontSize: "1.6rem", fontWeight: 900, color: "rgba(255,255,255,0.15)" }}>Д</span>
               </div>
               <div>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.2rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.7rem", marginBottom: "0.3rem" }}>
                   <div style={{ width: "1rem", height: "2px", background: "rgba(255,255,255,0.15)" }} />
                   <span className="font-display" style={{ fontSize: "0.58rem", fontWeight: 900, color: "rgba(255,255,255,0.2)", letterSpacing: "0.28em" }}>ОПЕРАЦИОНКА</span>
                 </div>
-                <div className="font-display" style={{ fontSize: "1.1rem", fontWeight: 900, color: "rgba(255,255,255,0.38)", letterSpacing: "-0.01em" }}>Дмитрий Лебедев</div>
-                <div style={{ fontFamily: "Inter", fontSize: "0.7rem", color: "rgba(255,255,255,0.18)", marginTop: "0.2rem" }}>Держит проекты в порядке, когда всё идёт не по плану.</div>
+                <div className="font-display" style={{ fontSize: "1.15rem", fontWeight: 900, color: "rgba(255,255,255,0.45)", letterSpacing: "-0.01em" }}>Дмитрий Лебедев</div>
+                <div style={{ fontFamily: "Inter", fontSize: "0.72rem", color: "rgba(255,255,255,0.2)", marginTop: "0.25rem" }}>Держит проекты в порядке, когда всё идёт не по плану.</div>
               </div>
             </div>
 
@@ -803,10 +891,10 @@ function Team() {
             <div
               className="font-display"
               style={{
-                fontSize: "clamp(1.8rem, 4vw, 3.5rem)",
+                fontSize: "clamp(1.5rem, 3.5vw, 3rem)",
                 fontWeight: 900,
                 color: "transparent",
-                WebkitTextStroke: "1px rgba(255,255,255,0.08)",
+                WebkitTextStroke: "1px rgba(255,255,255,0.07)",
                 letterSpacing: "-0.02em",
                 fontStyle: "italic",
                 lineHeight: 0.95,
