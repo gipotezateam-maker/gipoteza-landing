@@ -567,141 +567,134 @@ function Competitors() {
 function Team() {
   const members = [
     {
-      num: "001",
+      id: "ДЗ-001",
       codename: "СТРАТЕГ",
       name: "Денис Зюлин",
       role: "Основатель",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/denis_30d9c6b7.jpg",
       accent: "#FF2D20",
-      facts: [
-        { label: "Опыт", value: "5 лет только вебинары" },
-        { label: "Запусков", value: "40+" },
-        { label: "Суперсила", value: "Видит воронку насквозь" },
+      rows: [
+        { k: "Опыт", v: "5 лет — только вебинары" },
+        { k: "Запусков", v: "40+" },
+        { k: "Суперсила", v: "Видит воронку насквозь" },
       ],
-      desc: "Погружается в бизнес как собственник. Находит точки роста, которые не видны изнутри.",
     },
     {
-      num: "002",
+      id: "АЗ-002",
       codename: "ПРОДЮСЕР",
       name: "Алла Захарова",
       role: "Партнёр, контент",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alla_c7f64f85.jpg",
       accent: "#B5F23D",
-      facts: [
-        { label: "Опыт", value: "Skyeng, Skillbox" },
-        { label: "Специализация", value: "Сценарии и смыслы" },
-        { label: "Суперсила", value: "Знает голову покупателя" },
+      rows: [
+        { k: "Опыт", v: "Skyeng, Skillbox" },
+        { k: "Специализация", v: "Сценарии и смыслы" },
+        { k: "Суперсила", v: "Знает голову покупателя" },
       ],
-      desc: "Пишет сценарии, которые ведут к покупке без ощущения, что тебя разводят.",
     },
     {
-      num: "003",
+      id: "АП-003",
       codename: "ТРАФИК",
       name: "Алексей Пономарёв",
       role: "Партнёр, автоматизация",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alexey_68167dc3.jpg",
       accent: "#FF2D20",
-      facts: [
-        { label: "Специализация", value: "Холодный трафик" },
-        { label: "Инструменты", value: "Боты, автоворонки" },
-        { label: "Суперсила", value: "Делает маркетинг предсказуемым" },
+      rows: [
+        { k: "Специализация", v: "Холодный трафик" },
+        { k: "Инструменты", v: "Боты, автоворонки" },
+        { k: "Суперсила", v: "Маркетинг без угадайки" },
       ],
-      desc: "Управляет холодным трафиком и автоворонками. Строит системы, которые работают без ручного управления.",
     },
   ];
 
   return (
-    <section id="team" style={{ background: "#0A0A0A", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+    <section
+      id="team"
+      style={{
+        background: "#0A0A0A",
+        padding: "8rem 0 6rem",
+        borderTop: "1px solid rgba(255,255,255,0.06)",
+      }}
+    >
       <div className="container">
 
-        {/* ── Header ── */}
+        {/* ── Заголовок секции ── */}
         <FadeUp>
-          <div style={{ marginBottom: "6rem" }}>
-            {/* Human headline */}
-            <h2
-              className="font-display"
-              style={{
-                fontSize: "clamp(3.5rem, 9vw, 8rem)",
-                fontWeight: 900,
-                color: "#F5F5F0",
-                letterSpacing: "-0.04em",
-                lineHeight: 0.88,
-                margin: "0 0 1.5rem",
-              }}
-            >
-              МЫ —<br />это люди
-            </h2>
-            {/* League label */}
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <div style={{ height: "1px", width: "3rem", background: "#FF2D20" }} />
+          <div style={{ marginBottom: "5rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem" }}>
               <span
-                className="font-display"
                 style={{
-                  fontSize: "0.7rem",
-                  fontWeight: 900,
-                  color: "#FF2D20",
-                  letterSpacing: "0.3em",
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "0.65rem",
+                  fontWeight: 600,
+                  color: "rgba(255,255,255,0.25)",
+                  letterSpacing: "0.25em",
                   textTransform: "uppercase",
                 }}
               >
-                Лига вебинарных воронок
+                КОМАНДА
+              </span>
+              <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.08)" }} />
+              <span
+                style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "0.65rem",
+                  fontWeight: 600,
+                  color: "rgba(255,255,255,0.15)",
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                }}
+              >
+                3 ЧЕЛОВЕКА
               </span>
             </div>
+            <h2
+              className="font-display"
+              style={{
+                fontSize: "clamp(2.8rem, 6vw, 5.5rem)",
+                fontWeight: 900,
+                color: "#F5F5F0",
+                letterSpacing: "-0.04em",
+                lineHeight: 0.9,
+                margin: 0,
+              }}
+            >
+              Лига вебинарных<br />
+              <span style={{ color: "#FF2D20" }}>воронок.</span>
+            </h2>
           </div>
         </FadeUp>
 
-        {/* ── Dossier cards ── */}
+        {/* ── Карточки ── */}
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "0",
-            borderTop: "1px solid rgba(255,255,255,0.08)",
+            gap: "2px",
+            background: "rgba(255,255,255,0.05)",
           }}
-          className="team-dossier-grid"
+          className="team-grid"
         >
           {members.map((m, i) => (
-            <FadeUp key={i} delay={i * 0.12}>
+            <FadeUp key={i} delay={i * 0.1}>
               <div
                 style={{
-                  borderRight: i < 2 ? "1px solid rgba(255,255,255,0.08)" : "none",
-                  padding: "3rem 2.5rem 3rem",
-                  position: "relative",
-                  transition: "background 0.3s ease",
+                  background: "#0A0A0A",
+                  padding: "0",
+                  display: "flex",
+                  flexDirection: "column",
+                  transition: "background 0.25s",
+                  cursor: "default",
                 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.02)"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = "transparent"; }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLDivElement).style.background = "#111";
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLDivElement).style.background = "#0A0A0A";
+                }}
               >
-                {/* Ghost number */}
-                <div
-                  className="font-display"
-                  style={{
-                    position: "absolute",
-                    top: "1.5rem",
-                    right: "1.5rem",
-                    fontSize: "5rem",
-                    fontWeight: 900,
-                    color: "transparent",
-                    WebkitTextStroke: "1px rgba(255,255,255,0.05)",
-                    lineHeight: 1,
-                    userSelect: "none",
-                    pointerEvents: "none",
-                    letterSpacing: "-0.05em",
-                  }}
-                >
-                  {m.num}
-                </div>
-
-                {/* Photo — no frame, full bleed, natural */}
-                <div
-                  style={{
-                    width: "100%",
-                    aspectRatio: "4/5",
-                    overflow: "hidden",
-                    marginBottom: "2rem",
-                    position: "relative",
-                  }}
-                >
+                {/* Фото */}
+                <div style={{ position: "relative", overflow: "hidden", aspectRatio: "3/4" }}>
                   <img
                     src={m.photo}
                     alt={m.name}
@@ -711,193 +704,234 @@ function Team() {
                       objectFit: "cover",
                       objectPosition: "center top",
                       display: "block",
-                      filter: "grayscale(8%) contrast(1.02)",
-                      transition: "transform 0.6s ease",
+                      transition: "transform 0.5s ease",
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.02)"; }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.04)"; }}
                     onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; }}
                   />
-                  {/* Subtle bottom fade */}
-                  <div style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "25%",
-                    background: "linear-gradient(to top, #0A0A0A 0%, transparent 100%)",
-                    pointerEvents: "none",
-                  }} />
-                </div>
-
-                {/* Codename */}
-                <div style={{ display: "flex", alignItems: "center", gap: "0.7rem", marginBottom: "0.6rem" }}>
-                  <div style={{ width: "1.5rem", height: "2px", background: m.accent, flexShrink: 0 }} />
-                  <span
-                    className="font-display"
-                    style={{
-                      fontSize: "0.62rem",
-                      fontWeight: 900,
-                      color: m.accent,
-                      letterSpacing: "0.28em",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    {m.codename}
-                  </span>
-                </div>
-
-                {/* Name */}
-                <div
-                  className="font-display"
-                  style={{
-                    fontSize: "clamp(1.6rem, 2.2vw, 2.1rem)",
-                    fontWeight: 900,
-                    color: "#F5F5F0",
-                    lineHeight: 1,
-                    letterSpacing: "-0.02em",
-                    marginBottom: "0.3rem",
-                  }}
-                >
-                  {m.name}
-                </div>
-
-                {/* Role */}
-                <div
-                  style={{
-                    fontFamily: "Inter",
-                    fontSize: "0.68rem",
-                    color: "rgba(255,255,255,0.3)",
-                    letterSpacing: "0.12em",
-                    textTransform: "uppercase",
-                    marginBottom: "2rem",
-                  }}
-                >
-                  {m.role}
-                </div>
-
-                {/* Dossier facts */}
-                <div
-                  style={{
-                    borderTop: "1px solid rgba(255,255,255,0.07)",
-                    paddingTop: "1.5rem",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0.75rem",
-                    marginBottom: "1.5rem",
-                  }}
-                >
-                  {/* Dossier header */}
+                  {/* ID badge — верхний левый */}
                   <div
                     style={{
-                      fontFamily: "Inter",
-                      fontSize: "0.58rem",
-                      color: "rgba(255,255,255,0.2)",
-                      letterSpacing: "0.2em",
-                      textTransform: "uppercase",
-                      marginBottom: "0.25rem",
+                      position: "absolute",
+                      top: "1rem",
+                      left: "1rem",
+                      background: "#0A0A0A",
+                      padding: "0.25rem 0.6rem",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.4rem",
                     }}
                   >
-                    ▸ Личное дело
+                    <div style={{ width: "6px", height: "6px", background: m.accent, borderRadius: "50%" }} />
+                    <span
+                      style={{
+                        fontFamily: "Inter, monospace",
+                        fontSize: "0.6rem",
+                        fontWeight: 700,
+                        color: "rgba(255,255,255,0.5)",
+                        letterSpacing: "0.15em",
+                      }}
+                    >
+                      {m.id}
+                    </span>
                   </div>
-                  {m.facts.map((f, fi) => (
-                    <div key={fi} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "1rem" }}>
+                  {/* Кодовое имя — нижний правый */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "1rem",
+                      right: "1rem",
+                      background: m.accent,
+                      padding: "0.3rem 0.7rem",
+                    }}
+                  >
+                    <span
+                      className="font-display"
+                      style={{
+                        fontSize: "0.6rem",
+                        fontWeight: 900,
+                        color: m.accent === "#B5F23D" ? "#0A0A0A" : "#fff",
+                        letterSpacing: "0.2em",
+                      }}
+                    >
+                      {m.codename}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Имя и роль */}
+                <div
+                  style={{
+                    padding: "1.5rem 1.5rem 0",
+                    borderTop: `2px solid ${m.accent}`,
+                  }}
+                >
+                  <div
+                    className="font-display"
+                    style={{
+                      fontSize: "clamp(1.4rem, 2vw, 1.8rem)",
+                      fontWeight: 900,
+                      color: "#F5F5F0",
+                      letterSpacing: "-0.02em",
+                      lineHeight: 1,
+                      marginBottom: "0.4rem",
+                    }}
+                  >
+                    {m.name}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: "0.65rem",
+                      color: "rgba(255,255,255,0.3)",
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                      marginBottom: "1.5rem",
+                    }}
+                  >
+                    {m.role}
+                  </div>
+                </div>
+
+                {/* Досье — строки */}
+                <div
+                  style={{
+                    padding: "0 1.5rem 1.5rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0",
+                    flex: 1,
+                  }}
+                >
+                  {m.rows.map((row, ri) => (
+                    <div
+                      key={ri}
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: "0.5rem",
+                        padding: "0.7rem 0",
+                        borderBottom: ri < m.rows.length - 1
+                          ? "1px solid rgba(255,255,255,0.06)"
+                          : "none",
+                        alignItems: "baseline",
+                      }}
+                    >
                       <span
                         style={{
-                          fontFamily: "Inter",
-                          fontSize: "0.68rem",
+                          fontFamily: "Inter, sans-serif",
+                          fontSize: "0.6rem",
                           color: "rgba(255,255,255,0.25)",
-                          letterSpacing: "0.08em",
+                          letterSpacing: "0.12em",
                           textTransform: "uppercase",
-                          flexShrink: 0,
+                          fontWeight: 600,
                         }}
                       >
-                        {f.label}
+                        {row.k}
                       </span>
-                      <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)", margin: "0 0.5rem", alignSelf: "center" }} />
                       <span
                         style={{
-                          fontFamily: "Inter",
+                          fontFamily: "Inter, sans-serif",
                           fontSize: "0.78rem",
-                          color: "rgba(255,255,255,0.65)",
+                          color: "#F5F5F0",
                           fontWeight: 500,
-                          textAlign: "right",
+                          lineHeight: 1.3,
                         }}
                       >
-                        {f.value}
+                        {row.v}
                       </span>
                     </div>
                   ))}
                 </div>
-
-                {/* Desc */}
-                <p
-                  style={{
-                    fontFamily: "Inter",
-                    fontSize: "0.82rem",
-                    color: "rgba(255,255,255,0.35)",
-                    lineHeight: 1.7,
-                    margin: 0,
-                  }}
-                >
-                  {m.desc}
-                </p>
               </div>
             </FadeUp>
           ))}
         </div>
 
-        {/* ── Bottom row: Dmitry + caption ── */}
-        <FadeUp delay={0.35}>
+        {/* ── Дмитрий + ghost ── */}
+        <FadeUp delay={0.3}>
           <div
             style={{
-              marginTop: "0",
-              borderTop: "1px solid rgba(255,255,255,0.08)",
-              padding: "2.5rem 0",
+              marginTop: "2px",
+              background: "rgba(255,255,255,0.02)",
+              padding: "2rem 2rem",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              flexWrap: "wrap",
               gap: "2rem",
+              flexWrap: "wrap",
             }}
           >
-            {/* Dmitry */}
-            <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-              {/* Small photo placeholder */}
+            <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
               <div
                 style={{
-                  width: "5rem",
-                  height: "5rem",
-                  overflow: "hidden",
-                  flexShrink: 0,
+                  width: "4rem",
+                  height: "4rem",
                   background: "rgba(255,255,255,0.04)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  flexShrink: 0,
+                  border: "1px solid rgba(255,255,255,0.08)",
                 }}
               >
-                <span className="font-display" style={{ fontSize: "1.6rem", fontWeight: 900, color: "rgba(255,255,255,0.15)" }}>Д</span>
+                <span
+                  className="font-display"
+                  style={{ fontSize: "1.4rem", fontWeight: 900, color: "rgba(255,255,255,0.15)" }}
+                >
+                  Д
+                </span>
               </div>
               <div>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.7rem", marginBottom: "0.3rem" }}>
-                  <div style={{ width: "1rem", height: "2px", background: "rgba(255,255,255,0.15)" }} />
-                  <span className="font-display" style={{ fontSize: "0.58rem", fontWeight: 900, color: "rgba(255,255,255,0.2)", letterSpacing: "0.28em" }}>ОПЕРАЦИОНКА</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
+                  <div style={{ width: "0.75rem", height: "1px", background: "rgba(255,255,255,0.2)" }} />
+                  <span
+                    style={{
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: "0.55rem",
+                      fontWeight: 700,
+                      color: "rgba(255,255,255,0.2)",
+                      letterSpacing: "0.2em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    ДЛ-004 · ОПЕРАЦИОНКА
+                  </span>
                 </div>
-                <div className="font-display" style={{ fontSize: "1.15rem", fontWeight: 900, color: "rgba(255,255,255,0.45)", letterSpacing: "-0.01em" }}>Дмитрий Лебедев</div>
-                <div style={{ fontFamily: "Inter", fontSize: "0.72rem", color: "rgba(255,255,255,0.2)", marginTop: "0.25rem" }}>Держит проекты в порядке, когда всё идёт не по плану.</div>
+                <div
+                  className="font-display"
+                  style={{
+                    fontSize: "1.1rem",
+                    fontWeight: 900,
+                    color: "rgba(255,255,255,0.4)",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  Дмитрий Лебедев
+                </div>
+                <div
+                  style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "0.68rem",
+                    color: "rgba(255,255,255,0.18)",
+                    marginTop: "0.2rem",
+                  }}
+                >
+                  Держит проекты в порядке, когда всё идёт не по плану.
+                </div>
               </div>
             </div>
 
-            {/* Ghost caption */}
             <div
               className="font-display"
               style={{
-                fontSize: "clamp(1.5rem, 3.5vw, 3rem)",
+                fontSize: "clamp(1.2rem, 2.5vw, 2.2rem)",
                 fontWeight: 900,
-                color: "transparent",
-                WebkitTextStroke: "1px rgba(255,255,255,0.07)",
-                letterSpacing: "-0.02em",
                 fontStyle: "italic",
-                lineHeight: 0.95,
+                color: "transparent",
+                WebkitTextStroke: "1px rgba(255,255,255,0.08)",
+                letterSpacing: "-0.02em",
+                lineHeight: 1,
                 textAlign: "right",
               }}
             >
@@ -907,6 +941,14 @@ function Team() {
         </FadeUp>
 
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .team-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }
