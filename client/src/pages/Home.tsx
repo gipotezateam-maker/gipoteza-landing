@@ -567,100 +567,203 @@ function Competitors() {
 function Team() {
   const heroes = [
     {
+      num: "01",
       codename: "СТРАТЕГ",
       name: "Денис Зюлин",
       role: "Основатель",
       power: "Видит воронку насквозь",
       desc: "Погружается в бизнес как собственник. Находит точки роста, которые не видны изнутри. 5 лет — только вебинары.",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/denis_30d9c6b7.jpg",
-      icon: "⚡",
       accent: "#FF2D20",
     },
     {
+      num: "02",
       codename: "ПРОДЮСЕР",
       name: "Алла Захарова",
       role: "Партнёр, контент",
       power: "Знает голову покупателя",
       desc: "Skyeng, Skillbox — за плечами. Пишет сценарии, которые ведут к покупке без ощущения, что тебя разводят.",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alla_c7f64f85.jpg",
-      icon: "✦",
       accent: "#B5F23D",
     },
     {
+      num: "03",
       codename: "ТРАФИК",
       name: "Алексей Пономарёв",
       role: "Партнёр, автоматизация",
       power: "Делает маркетинг предсказуемым",
       desc: "Управляет холодным трафиком и автоворонками. Строит системы, которые работают без ручного управления.",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alexey_68167dc3.jpg",
-      icon: "◈",
       accent: "#FF2D20",
     },
   ];
 
   return (
-    <section id="team" style={{ background: "#0A0A0A", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+    <section id="team" style={{ background: "#0A0A0A", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)", overflow: "hidden" }}>
       <div className="container">
 
         {/* Header */}
         <FadeUp>
-          <div style={{ display: "flex", alignItems: "baseline", gap: "1.5rem", marginBottom: "5rem", flexWrap: "wrap" }}>
-            <h2 className="font-display" style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", lineHeight: 0.95, margin: 0 }}>
-              CORE<br />КОМАНДА.
-            </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", paddingBottom: "0.3rem" }}>
-              <span style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Четыре роли.</span>
-              <span style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Одна система.</span>
-              <span style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Ваш результат.</span>
+          <div style={{ marginBottom: "5rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", marginBottom: "1rem" }}>
+              <div style={{ width: "3px", height: "4rem", background: "#FF2D20", flexShrink: 0 }} />
+              <div>
+                <div style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "#FF2D20", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "0.3rem" }}>SUPERHERO SQUAD</div>
+                <h2 className="font-display" style={{ fontSize: "clamp(3rem, 7vw, 6rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.03em", lineHeight: 0.9, margin: 0 }}>
+                  CORE<br />КОМАНДА.
+                </h2>
+              </div>
             </div>
+            <p style={{ fontFamily: "Inter", fontSize: "0.85rem", color: "rgba(255,255,255,0.3)", marginLeft: "calc(3px + 1.5rem)", letterSpacing: "0.05em" }}>
+              Четыре роли. Одна система. Ваш результат.
+            </p>
           </div>
         </FadeUp>
 
-        {/* Hero cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1px", background: "rgba(255,255,255,0.06)" }}>
+        {/* Comic-style hero cards grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2.5rem" }} className="team-comic-grid">
           {heroes.map((h, i) => (
-            <FadeUp key={i} delay={i * 0.12}>
-              <div
-                style={{ background: "#0A0A0A", overflow: "hidden", cursor: "default" }}
-                onMouseEnter={e => { const card = e.currentTarget; card.style.background = "#111"; }}
-                onMouseLeave={e => { const card = e.currentTarget; card.style.background = "#0A0A0A"; }}
-              >
-                {/* Photo block — clean, no text overlay */}
-                <div style={{ position: "relative", aspectRatio: "4/5", overflow: "hidden", background: "#111" }}>
+            <FadeUp key={i} delay={i * 0.15}>
+              <div style={{ position: "relative" }}>
+
+                {/* Big ghost number — comic issue style */}
+                <div
+                  className="font-display"
+                  style={{
+                    position: "absolute",
+                    top: "-2rem",
+                    right: "-1rem",
+                    fontSize: "9rem",
+                    fontWeight: 900,
+                    color: "transparent",
+                    WebkitTextStroke: `1px ${h.accent}18`,
+                    lineHeight: 1,
+                    zIndex: 0,
+                    pointerEvents: "none",
+                    letterSpacing: "-0.05em",
+                    userSelect: "none",
+                  }}
+                >
+                  {h.num}
+                </div>
+
+                {/* Photo with comic-book frame */}
+                <div
+                  style={{
+                    position: "relative",
+                    zIndex: 1,
+                    border: `3px solid ${h.accent}`,
+                    clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%)",
+                    overflow: "hidden",
+                    aspectRatio: "3/4",
+                    background: "#111",
+                    transition: "transform 0.35s ease, box-shadow 0.35s ease",
+                  }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLDivElement;
+                    el.style.transform = "translate(-5px, -5px)";
+                    el.style.boxShadow = `7px 7px 0px ${h.accent}`;
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLDivElement;
+                    el.style.transform = "translate(0, 0)";
+                    el.style.boxShadow = "none";
+                  }}
+                >
                   <img
                     src={h.photo}
                     alt={h.name}
-                    style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block", transition: "transform 0.7s ease", filter: "grayscale(15%)" }}
-                    onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.03)")}
-                    onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: "center top",
+                      display: "block",
+                      filter: "contrast(1.08) saturate(0.85)",
+                    }}
                   />
-                  {/* Codename badge — top left */}
-                  <div style={{ position: "absolute", top: "1.25rem", left: "1.25rem", background: "rgba(10,10,10,0.85)", backdropFilter: "blur(8px)", border: `1px solid ${h.accent}40`, padding: "0.3rem 0.8rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                    <span style={{ fontSize: "0.7rem", color: h.accent }}>{h.icon}</span>
-                    <span className="font-display" style={{ fontSize: "0.65rem", fontWeight: 900, color: h.accent, letterSpacing: "0.2em" }}>{h.codename}</span>
-                  </div>
-                  {/* Bottom fade — subtle, not covering face */}
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%", background: "linear-gradient(to top, #0A0A0A 0%, transparent 100%)" }} />
+                  {/* Diagonal color wash — comic panel feel */}
+                  <div style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: `linear-gradient(135deg, transparent 55%, ${h.accent}20 100%)`,
+                    pointerEvents: "none",
+                  }} />
                 </div>
 
-                {/* Info block — fully below photo, no overlap */}
-                <div style={{ padding: "1.75rem 1.75rem 2rem" }}>
-                  {/* Name + role row */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem", gap: "0.5rem" }}>
-                    <div>
-                      <div className="font-display" style={{ fontSize: "1.35rem", fontWeight: 900, color: "#F5F5F0", lineHeight: 1.05, letterSpacing: "-0.01em" }}>{h.name}</div>
-                      <div style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.15em", textTransform: "uppercase", marginTop: "0.3rem" }}>{h.role}</div>
-                    </div>
+                {/* Corner accent triangle — fills the cut */}
+                <div style={{
+                  position: "absolute",
+                  bottom: "calc(0px + 3px)",
+                  right: "calc(0px + 3px)",
+                  width: "22px",
+                  height: "22px",
+                  background: h.accent,
+                  clipPath: "polygon(100% 0, 100% 100%, 0 100%)",
+                  zIndex: 2,
+                }} />
+
+                {/* Info below photo */}
+                <div style={{ paddingTop: "1.4rem", position: "relative", zIndex: 1 }}>
+
+                  {/* Codename with line */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.5rem" }}>
+                    <div style={{ width: "1.8rem", height: "2px", background: h.accent, flexShrink: 0 }} />
+                    <span
+                      className="font-display"
+                      style={{
+                        fontSize: "0.65rem",
+                        fontWeight: 900,
+                        color: h.accent,
+                        letterSpacing: "0.3em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {h.codename}
+                    </span>
                   </div>
 
-                  {/* Superpower line */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem", padding: "0.5rem 0.75rem", background: `${h.accent}10`, borderLeft: `2px solid ${h.accent}` }}>
-                    <span style={{ fontFamily: "Inter", fontSize: "0.7rem", color: h.accent, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>Суперсила:</span>
-                    <span style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", fontWeight: 400 }}>{h.power}</span>
+                  {/* Name */}
+                  <div
+                    className="font-display"
+                    style={{
+                      fontSize: "clamp(1.4rem, 2vw, 1.85rem)",
+                      fontWeight: 900,
+                      color: "#F5F5F0",
+                      lineHeight: 1,
+                      letterSpacing: "-0.02em",
+                      marginBottom: "0.25rem",
+                    }}
+                  >
+                    {h.name}
                   </div>
 
-                  {/* Description */}
-                  <p style={{ fontFamily: "Inter", fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.65, margin: 0 }}>{h.desc}</p>
+                  {/* Role */}
+                  <div style={{ fontFamily: "Inter", fontSize: "0.68rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1rem" }}>
+                    {h.role}
+                  </div>
+
+                  {/* Superpower — speech bubble with cut corner */}
+                  <div style={{
+                    background: h.accent,
+                    padding: "0.5rem 1rem 0.5rem 0.9rem",
+                    display: "inline-block",
+                    marginBottom: "1rem",
+                    clipPath: "polygon(0 0, 100% 0, 100% 60%, calc(100% - 14px) 100%, 0 100%)",
+                  }}>
+                    <span className="font-display" style={{
+                      fontSize: "0.72rem",
+                      fontWeight: 900,
+                      color: h.accent === "#B5F23D" ? "#0A0A0A" : "#fff",
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                    }}>
+                      {h.power}
+                    </span>
+                  </div>
+
+                  {/* Desc */}
+                  <p style={{ fontFamily: "Inter", fontSize: "0.82rem", color: "rgba(255,255,255,0.38)", lineHeight: 1.65, margin: 0 }}>{h.desc}</p>
                 </div>
               </div>
             </FadeUp>
@@ -668,29 +771,49 @@ function Team() {
         </div>
 
         {/* Bottom row: Dmitry + caption */}
-        <FadeUp delay={0.3}>
-          <div style={{ marginTop: "1px", background: "rgba(255,255,255,0.06)", padding: "1px" }}>
-            <div style={{ background: "#0A0A0A", padding: "2rem 2rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1.5rem" }}>
-              {/* Dmitry card */}
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <div style={{ width: "3.5rem", height: "3.5rem", borderRadius: "50%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <span className="font-display" style={{ fontSize: "1.1rem", fontWeight: 900, color: "rgba(255,255,255,0.3)" }}>Д</span>
-                </div>
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.2rem" }}>
-                    <div className="font-display" style={{ fontSize: "1rem", fontWeight: 900, color: "rgba(255,255,255,0.55)", letterSpacing: "-0.01em" }}>Дмитрий Лебедев</div>
-                    <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", padding: "0.15rem 0.5rem" }}>
-                      <span className="font-display" style={{ fontSize: "0.55rem", fontWeight: 900, color: "rgba(255,255,255,0.3)", letterSpacing: "0.15em" }}>ОПЕРАЦИОНКА</span>
-                    </div>
-                  </div>
-                  <div style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", lineHeight: 1.5 }}>Держит проекты в порядке, когда всё идёт не по плану.</div>
-                </div>
-              </div>
+        <FadeUp delay={0.4}>
+          <div style={{ marginTop: "4rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "2rem", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "2.5rem" }}>
 
-              {/* Caption */}
-              <div className="font-display" style={{ fontSize: "clamp(1.4rem, 3.5vw, 2.8rem)", fontWeight: 900, color: "rgba(255,255,255,0.1)", letterSpacing: "-0.02em", fontStyle: "italic", lineHeight: 1 }}>
-                ...и другие<br />классные ребята
+            {/* Dmitry — mini comic card */}
+            <div style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
+              <div style={{
+                width: "4.5rem",
+                height: "4.5rem",
+                border: "2px solid rgba(255,255,255,0.12)",
+                clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%)",
+                background: "rgba(255,255,255,0.03)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}>
+                <span className="font-display" style={{ fontSize: "1.4rem", fontWeight: 900, color: "rgba(255,255,255,0.18)" }}>Д</span>
               </div>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.2rem" }}>
+                  <div style={{ width: "1rem", height: "2px", background: "rgba(255,255,255,0.15)" }} />
+                  <span className="font-display" style={{ fontSize: "0.58rem", fontWeight: 900, color: "rgba(255,255,255,0.2)", letterSpacing: "0.28em" }}>ОПЕРАЦИОНКА</span>
+                </div>
+                <div className="font-display" style={{ fontSize: "1.1rem", fontWeight: 900, color: "rgba(255,255,255,0.38)", letterSpacing: "-0.01em" }}>Дмитрий Лебедев</div>
+                <div style={{ fontFamily: "Inter", fontSize: "0.7rem", color: "rgba(255,255,255,0.18)", marginTop: "0.2rem" }}>Держит проекты в порядке, когда всё идёт не по плану.</div>
+              </div>
+            </div>
+
+            {/* Ghost caption */}
+            <div
+              className="font-display"
+              style={{
+                fontSize: "clamp(1.8rem, 4vw, 3.5rem)",
+                fontWeight: 900,
+                color: "transparent",
+                WebkitTextStroke: "1px rgba(255,255,255,0.08)",
+                letterSpacing: "-0.02em",
+                fontStyle: "italic",
+                lineHeight: 0.95,
+                textAlign: "right",
+              }}
+            >
+              ...и другие<br />классные ребята
             </div>
           </div>
         </FadeUp>
