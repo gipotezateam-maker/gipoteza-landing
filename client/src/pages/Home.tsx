@@ -573,35 +573,64 @@ function Team() {
   ];
 
   return (
-    <section id="team" style={{ background: "#0A0A0A", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-      <div className="container">
+    <section id="team" style={{ background: "#0A0A0A", padding: "8rem 0 0", borderTop: "1px solid rgba(255,255,255,0.06)", overflow: "hidden" }}>
+      {/* Section header */}
+      <div className="container" style={{ marginBottom: "4rem" }}>
         <FadeUp>
-          <h2 className="font-display" style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", marginBottom: "4rem", lineHeight: 0.95 }}>
+          <h2 className="font-display" style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", lineHeight: 0.95 }}>
             КОМАНДА.
           </h2>
+          <p style={{ fontFamily: "Inter", fontSize: "0.9rem", color: "rgba(255,255,255,0.3)", marginTop: "1.2rem" }}>
+            Люди, которые делают вебинары, которые продают.
+          </p>
         </FadeUp>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1px", background: "rgba(255,255,255,0.06)" }}>
-          {members.map((m, i) => (
-            <FadeUp key={i} delay={i * 0.08}>
-              <div style={{ background: "#0A0A0A", padding: "2.5rem 2rem" }}>
-                {/* Avatar */}
-                <div style={{ width: "5rem", height: "5rem", borderRadius: "50%", overflow: "hidden", marginBottom: "1.5rem", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.06)", flexShrink: 0 }}>
-                  {m.photo ? (
-                    <img src={m.photo} alt={m.name} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }} />
-                  ) : (
-                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <span style={{ fontFamily: "Inter", fontSize: "1.4rem", color: "rgba(255,255,255,0.2)" }}>{m.name.charAt(0)}</span>
-                    </div>
-                  )}
-                </div>
-                <div className="font-display" style={{ fontSize: "1.1rem", fontWeight: 700, color: "#F5F5F0", marginBottom: "0.3rem" }}>{m.name}</div>
-                <div style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "#FF2D20", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "1rem" }}>{m.role}</div>
-                <p style={{ fontFamily: "Inter", fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>{m.desc}</p>
-              </div>
-            </FadeUp>
-          ))}
-        </div>
       </div>
+
+      {/* Big photo cards — horizontal scroll on mobile, grid on desktop */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1px", background: "rgba(255,255,255,0.06)" }} className="team-grid">
+        {members.filter(m => m.photo).map((m, i) => (
+          <FadeUp key={i} delay={i * 0.1}>
+            <div style={{ position: "relative", aspectRatio: "3/4", overflow: "hidden", background: "#111" }}>
+              <img
+                src={m.photo!}
+                alt={m.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", transition: "transform 0.6s ease", display: "block" }}
+                onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.04)")}
+                onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+              />
+              {/* Gradient overlay */}
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.2) 50%, transparent 100%)" }} />
+              {/* Text */}
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "2rem" }}>
+                <div style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "#FF2D20", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "0.5rem" }}>{m.role}</div>
+                <div className="font-display" style={{ fontSize: "clamp(1.3rem, 2.5vw, 2rem)", fontWeight: 900, color: "#F5F5F0", lineHeight: 1.05, letterSpacing: "-0.01em" }}>{m.name}</div>
+                <p style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.5)", marginTop: "0.6rem", lineHeight: 1.55 }}>{m.desc}</p>
+              </div>
+            </div>
+          </FadeUp>
+        ))}
+      </div>
+
+      {/* "And other great people" footer row */}
+      <FadeUp>
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", padding: "3rem 0", display: "flex", alignItems: "center", gap: "2rem", flexWrap: "wrap" }}>
+          <div className="container" style={{ display: "flex", alignItems: "center", gap: "2rem", flexWrap: "wrap" }}>
+            {/* Dmitry as small pill */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "100px", padding: "0.6rem 1.2rem" }}>
+              <div style={{ width: "2.2rem", height: "2.2rem", borderRadius: "50%", background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <span style={{ fontFamily: "Inter", fontSize: "0.85rem", color: "rgba(255,255,255,0.35)", fontWeight: 600 }}>Д</span>
+              </div>
+              <div>
+                <div style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "#F5F5F0", fontWeight: 500 }}>Дмитрий Лебедев</div>
+                <div style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Операционка</div>
+              </div>
+            </div>
+            <div className="font-display" style={{ fontSize: "clamp(1.2rem, 3vw, 2.2rem)", fontWeight: 900, color: "rgba(255,255,255,0.18)", letterSpacing: "-0.01em", fontStyle: "italic" }}>
+              ...и другие классные ребята
+            </div>
+          </div>
+        </div>
+      </FadeUp>
     </section>
   );
 }
