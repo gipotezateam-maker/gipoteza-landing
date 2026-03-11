@@ -1,33 +1,25 @@
 /**
- * DESIGN PHILOSOPHY: Editorial Brutalism / ONY-style
- * Ref: ONY.ru, Charmer Studio, CreativePeople, Magma
- * Colors: #0A0A0A black + #F5F5F0 off-white + #FF2D20 red accent
- * Typography: Oswald (display, uppercase, tight) + Space Grotesk (body)
- * Layout: Asymmetric, full-bleed, editorial grid, NO rounded corners, NO gradients
- * Structure: AJTBD — Oneliner → Core Job → Micro Jobs → Aha-момент → Ценности
- *            → Узнаёт себя → Как мы делаем → Точка Б → Барьеры → Конкуренты → CTA
+ * ГИПОТЕЗА AGENCY — Landing Page
+ * Design: Magic Camp style — black bg, huge serif/display type, stickers, pill tags
+ * Font: Unbounded (display) + Inter (body)
+ * Colors: #111 black · #F5F5F0 white · #FF2D20 red accent · #B5F23D lime sticker
+ * Structure: AJTBD — Hero → Clients → "Узнаёшь себя?" → Услуги → Вебинары → Почему мы → Точка Б → Барьеры → Конкуренты → Команда → CTA
  */
 
 import { useState, useEffect, useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 
-// Asset URLs
-const HERO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/hero-webinar-dark-eYBV49eTLsbtDe6pWjuCgU.webp";
-const SCREEN_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/webinar-screen-glow-fGgcddaiWNH3J9bmXDFifb.webp";
-const TEAM_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/team-dark-editorial-VvF3qT2ToSCVv42ryELZPm.webp";
-const GRID_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/results-abstract-YDYZrzWWFfLuZoPRSM9Ndq.webp";
-
-// ─── Helpers ───────────────────────────────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────────────
 
 function FadeUp({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const inView = useInView(ref, { once: true, margin: "-80px" });
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 50 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.65, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
       className={className}
     >
       {children}
@@ -35,87 +27,84 @@ function FadeUp({ children, delay = 0, className = "" }: { children: React.React
   );
 }
 
-function CountUp({ end, suffix = "" }: { end: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
-  useEffect(() => {
-    if (!inView) return;
-    let start = 0;
-    const step = end / (1600 / 16);
-    const t = setInterval(() => {
-      start += step;
-      if (start >= end) { setCount(end); clearInterval(t); }
-      else setCount(Math.floor(start));
-    }, 16);
-    return () => clearInterval(t);
-  }, [inView, end]);
-  return <span ref={ref}>{count}{suffix}</span>;
-}
-
-// ─── Navigation ────────────────────────────────────────────────────────────
+// ─── Nav ────────────────────────────────────────────────────────────────────
 
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 30);
+    const h = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", h);
     return () => window.removeEventListener("scroll", h);
   }, []);
-  const go = (id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); setOpen(false); };
+
+  const go = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setOpen(false);
+  };
+
   const links = [
     { label: "Услуги", id: "services" },
     { label: "Кейсы", id: "cases" },
     { label: "Команда", id: "team" },
     { label: "Контакт", id: "contact" },
   ];
+
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-[#0A0A0A]/96 backdrop-blur-sm border-b border-white/5" : "bg-transparent"}`}>
+    <nav
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      style={{ background: scrolled ? "rgba(10,10,10,0.95)" : "transparent", backdropFilter: scrolled ? "blur(8px)" : "none", borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none" }}
+    >
       <div className="container flex items-center justify-between h-16">
         {/* Logo */}
-        <button onClick={() => go("hero")} className="flex items-baseline gap-1.5">
-          <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: "1.4rem", letterSpacing: "0.04em", textTransform: "uppercase", color: "#F5F5F0" }}>
+        <button onClick={() => go("hero")} className="flex items-center">
+          <span className="font-display" style={{ fontSize: "1.15rem", fontWeight: 900, letterSpacing: "0.06em", color: "#F5F5F0" }}>
             ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА
           </span>
-          <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", color: "#888", textTransform: "uppercase" }}>AGENCY</span>
+          <span style={{ fontSize: "0.6rem", color: "rgba(255,255,255,0.35)", marginLeft: "0.5rem", letterSpacing: "0.15em", fontFamily: "Inter", fontWeight: 400, textTransform: "uppercase" }}>AGENCY</span>
         </button>
 
-        {/* Desktop */}
+        {/* Desktop links */}
         <div className="hidden md:flex items-center gap-8">
           {links.map(l => (
             <button key={l.id} onClick={() => go(l.id)}
-              className="text-[#888] hover:text-[#F5F5F0] text-xs tracking-widest uppercase transition-colors font-medium">
+              style={{ fontFamily: "Inter", fontSize: "0.875rem", color: "rgba(255,255,255,0.6)", fontWeight: 400 }}
+              className="hover:text-white transition-colors duration-200">
               {l.label}
             </button>
           ))}
-          <button onClick={() => go("contact")} className="btn-cta text-xs py-3 px-6">
+          <button onClick={() => go("contact")}
+            className="pill"
+            style={{ borderColor: "rgba(255,255,255,0.3)", color: "#F5F5F0", fontSize: "0.8rem" }}>
             Оставить заявку
           </button>
         </div>
 
-        {/* Mobile toggle */}
-        <button className="md:hidden text-[#F5F5F0]" onClick={() => setOpen(!open)}>
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.5">
-            {open ? <path d="M17 5L5 17M5 5l12 12" /> : <path d="M3 11h16M3 6h16M3 16h16" />}
-          </svg>
+        {/* Mobile burger */}
+        <button className="md:hidden flex flex-col gap-1.5 p-2" onClick={() => setOpen(!open)}>
+          <span style={{ width: 22, height: 1.5, background: "#F5F5F0", display: "block", transition: "transform 0.2s", transform: open ? "rotate(45deg) translate(2px, 5px)" : "none" }} />
+          <span style={{ width: 22, height: 1.5, background: "#F5F5F0", display: "block", opacity: open ? 0 : 1, transition: "opacity 0.2s" }} />
+          <span style={{ width: 22, height: 1.5, background: "#F5F5F0", display: "block", transition: "transform 0.2s", transform: open ? "rotate(-45deg) translate(2px, -5px)" : "none" }} />
         </button>
       </div>
 
       {/* Mobile menu */}
       <AnimatePresence>
         {open && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-            className="md:hidden bg-[#0A0A0A] border-b border-white/5 overflow-hidden">
-            <div className="container pb-6 pt-2 flex flex-col gap-4">
-              {links.map(l => (
-                <button key={l.id} onClick={() => go(l.id)}
-                  className="text-left text-[#888] hover:text-[#F5F5F0] text-xs tracking-widest uppercase py-2 border-b border-white/5">
-                  {l.label}
-                </button>
-              ))}
-              <button onClick={() => go("contact")} className="btn-cta mt-2 text-center">Оставить заявку</button>
-            </div>
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+            style={{ background: "#0A0A0A", borderTop: "1px solid rgba(255,255,255,0.06)" }}
+            className="md:hidden px-6 py-6 flex flex-col gap-5">
+            {links.map(l => (
+              <button key={l.id} onClick={() => go(l.id)}
+                style={{ fontFamily: "Inter", fontSize: "1.1rem", color: "#F5F5F0", textAlign: "left" }}>
+                {l.label}
+              </button>
+            ))}
+            <button onClick={() => go("contact")}
+              style={{ fontFamily: "Inter", fontSize: "1rem", color: "#FF2D20", textAlign: "left", fontWeight: 600 }}>
+              Оставить заявку →
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -123,17 +112,110 @@ function Nav() {
   );
 }
 
-// ─── Marquee ───────────────────────────────────────────────────────────────
+// ─── Hero ────────────────────────────────────────────────────────────────────
 
-function Marquee({ items, speed = 30 }: { items: string[]; speed?: number }) {
+function Hero() {
+  return (
+    <section id="hero" style={{ background: "#0A0A0A", minHeight: "100vh", paddingTop: "7rem", paddingBottom: "4rem" }}>
+      <div className="container">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3rem" }}>
+
+          {/* Main layout: big title left, description right */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem" }} className="lg:grid-cols-[1fr_280px]">
+
+            {/* Big title */}
+            <motion.div initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}>
+              <div className="font-display" style={{ fontSize: "clamp(3.5rem, 10vw, 9rem)", lineHeight: 0.92, fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em" }}>
+                <div>ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА —</div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.3em", flexWrap: "wrap" }}>
+                  <span style={{ display: "inline-block", background: "#FF2D20", borderRadius: "999px", padding: "0.05em 0.4em", fontSize: "0.85em", transform: "rotate(-2deg)", position: "relative", top: "-0.05em" }}>
+                    <span style={{ fontSize: "0.55em", fontFamily: "Inter", fontWeight: 700, letterSpacing: "0.05em" }}>это</span>
+                  </span>
+                  вебинары,
+                </div>
+                <div>которые</div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.2em", flexWrap: "wrap" }}>
+                  продают
+                  <span style={{
+                    display: "inline-block",
+                    background: "#B5F23D",
+                    clipPath: "polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)",
+                    width: "1.2em", height: "1.2em",
+                    fontSize: "0.45em",
+                    transform: "rotate(20deg)",
+                    position: "relative",
+                    top: "-0.3em"
+                  }} />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right column: description + pills */}
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: "1.5rem", paddingBottom: "0.5rem" }}>
+              <p style={{ fontFamily: "Inter", fontSize: "0.95rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.6, fontWeight: 300 }}>
+                Делаем вебинарные воронки под ключ для EdTech и крупных брендов. Окупаем холодный трафик.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                {["Онлайн-колледж №1", "Primekraft", "SkillFactory", "Skyeng", "Skillbox"].map(c => (
+                  <span key={c} className="pill" style={{ display: "block", width: "fit-content" }}>{c}</span>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Stats row */}
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.5 }}
+            style={{ display: "flex", gap: "3rem", flexWrap: "wrap", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "2rem" }}>
+            {[
+              { n: "5 лет", l: "только вебинары" },
+              { n: "40+", l: "запущенных воронок" },
+              { n: "160%", l: "ROMI на холодном трафике" },
+            ].map(s => (
+              <div key={s.n}>
+                <div className="font-display" style={{ fontSize: "2rem", fontWeight: 900, color: "#F5F5F0" }}>{s.n}</div>
+                <div style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.4)", marginTop: "0.2rem" }}>{s.l}</div>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* CTA buttons */}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.7 }}
+            style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+            <button
+              onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+              className="font-display"
+              style={{ background: "#FF2D20", color: "#fff", border: "none", padding: "0.85rem 2rem", fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.08em", cursor: "pointer", transition: "opacity 0.2s" }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
+              onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
+              ХОЧУ ТАКУЮ ВОРОНКУ →
+            </button>
+            <button
+              onClick={() => document.getElementById("cases")?.scrollIntoView({ behavior: "smooth" })}
+              style={{ background: "transparent", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.15)", padding: "0.85rem 2rem", fontSize: "0.85rem", fontFamily: "Inter", cursor: "pointer", transition: "all 0.2s" }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)"; e.currentTarget.style.color = "#fff"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "rgba(255,255,255,0.6)"; }}>
+              Смотреть кейсы
+            </button>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Marquee ─────────────────────────────────────────────────────────────────
+
+function Marquee() {
+  const items = ["Skyeng", "Онлайн-колледж №1", "Primekraft", "SkillFactory", "Skillbox", "LogoMachine", "Онлайн-школа №1"];
   const doubled = [...items, ...items];
   return (
-    <div className="overflow-hidden border-y border-white/8 py-4 bg-[#0A0A0A]">
-      <div style={{ display: "flex", animation: `marquee ${speed}s linear infinite`, whiteSpace: "nowrap" }}>
+    <div style={{ background: "#0A0A0A", borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", overflow: "hidden", padding: "1rem 0" }}>
+      <div className="marquee-track">
         {doubled.map((item, i) => (
-          <span key={i} className="inline-flex items-center gap-6 px-6 text-xs tracking-widest uppercase text-[#555] font-medium">
+          <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: "2rem", paddingRight: "2rem" }}>
+            <span style={{ fontFamily: "Inter", fontSize: "0.85rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.05em" }}>{item}</span>
             <span style={{ color: "#FF2D20", fontSize: "0.5rem" }}>●</span>
-            {item}
           </span>
         ))}
       </div>
@@ -141,160 +223,99 @@ function Marquee({ items, speed = 30 }: { items: string[]; speed?: number }) {
   );
 }
 
-// ─── HERO (Oneliner + Core Job) ─────────────────────────────────────────────
+// ─── "Узнаёшь себя?" ─────────────────────────────────────────────────────────
 
-function Hero() {
+function RecognizeYourself() {
   return (
-    <section id="hero" className="relative min-h-screen flex flex-col justify-end overflow-hidden">
-      {/* Background image */}
-      <div className="absolute inset-0">
-        <img src={HERO_IMG} alt="" className="w-full h-full object-cover" style={{ filter: "brightness(0.35)" }} />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #0A0A0A 20%, transparent 70%)" }} />
-      </div>
+    <section style={{ background: "#0A0A0A", padding: "8rem 0" }}>
+      <div className="container">
+        <FadeUp>
+          <div style={{ maxWidth: "900px" }}>
+            <p style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "3rem" }}>
+              — Стоп. Это про тебя?
+            </p>
 
-      {/* Content */}
-      <div className="relative container pb-16 pt-32">
-        <div className="max-w-5xl">
-          {/* Label */}
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-            className="section-label mb-8 flex items-center gap-3">
-            <span style={{ display: "inline-block", width: "2rem", height: "1px", background: "#FF2D20" }} />
-            Агентство вебинарного продакшна
-          </motion.div>
-
-          {/* Main headline — Oneliner */}
-          <motion.h1 initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="font-display text-[#F5F5F0] mb-8"
-            style={{ fontSize: "clamp(3.5rem, 10vw, 8rem)", lineHeight: 0.9, letterSpacing: "-0.02em" }}>
-            ВЕБИНАРЫ,<br />
-            КОТОРЫЕ<br />
-            <span style={{ color: "#FF2D20" }}>ПРОДАЮТ.</span>
-          </motion.h1>
-
-          {/* Core Job */}
-          <motion.p initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.55 }}
-            className="text-[#888] max-w-xl mb-10"
-            style={{ fontSize: "1rem", lineHeight: 1.7, fontWeight: 400 }}>
-            Пересобираем вебинарные воронки и повышаем ROMI на холодном трафике —
-            чтобы вы кратно масштабировали выручку без найма новых людей в штат.
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.7 }}
-            className="flex flex-wrap gap-4 items-center">
-            <button onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-              className="btn-cta">
-              Получить бесплатный аудит
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            </button>
-            <button onClick={() => document.getElementById("cases")?.scrollIntoView({ behavior: "smooth" })}
-              className="btn-ghost">
-              Смотреть кейсы
-            </button>
-          </motion.div>
-        </div>
-
-        {/* Stats bar */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 1 }}
-          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-0 border-t border-white/8 pt-8">
-          {[
-            { n: 5, s: "+", label: "лет в вебинарном маркетинге" },
-            { n: 70, s: "%+", label: "ROMI на холодном трафике" },
-            { n: 4, s: "×", label: "рост выручки у клиентов" },
-            { n: 50, s: "+", label: "вебинаров запущено" },
-          ].map((stat, i) => (
-            <div key={i} className="pr-8 pb-4 md:pb-0 border-r border-white/8 last:border-r-0 first:pl-0">
-              <div className="num-accent" style={{ fontSize: "2.5rem" }}>
-                <CountUp end={stat.n} suffix={stat.s} />
-              </div>
-              <div className="text-[#555] text-xs mt-1 leading-tight">{stat.label}</div>
+            <div className="font-display" style={{ fontSize: "clamp(2rem, 5vw, 4.5rem)", lineHeight: 1.05, fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em" }}>
+              <div>Вебинары запускаешь.</div>
+              <div style={{ color: "rgba(255,255,255,0.35)" }}>ROMI не сходится.</div>
             </div>
-          ))}
-        </motion.div>
+
+            <div style={{ marginTop: "2.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {[
+                "Деньги в трафик льёшь — холодная аудитория не доходит.",
+                "Менял спикера, переписывал оффер, крутил аудитории.",
+                "Каждый запуск начинается с вопроса: «Ну может на этот раз?»",
+              ].map((line, i) => (
+                <p key={i} style={{ fontFamily: "Inter", fontSize: "1.05rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.5, fontWeight: 300 }}>
+                  {line}
+                </p>
+              ))}
+            </div>
+
+            <div style={{ margin: "3.5rem 0", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "3.5rem" }}>
+              <div className="font-display" style={{ fontSize: "clamp(1.5rem, 3.5vw, 3rem)", lineHeight: 1.1, fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em" }}>
+                <span style={{ color: "rgba(255,255,255,0.3)" }}>Или</span> видишь, что у конкурентов
+                <br />вебинары работают.
+                <br /><span style={{ color: "rgba(255,255,255,0.35)" }}>А внутри — никого, кто умеет.</span>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap" }}>
+              <div className="font-display" style={{ fontSize: "clamp(1.8rem, 4vw, 3.5rem)", fontWeight: 900, color: "#FF2D20", letterSpacing: "-0.02em" }}>
+                Мы знаем, где сломано.
+              </div>
+              <span style={{
+                display: "inline-block",
+                background: "#B5F23D",
+                clipPath: "polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)",
+                width: "3rem", height: "3rem",
+                flexShrink: 0
+              }} />
+            </div>
+          </div>
+        </FadeUp>
       </div>
     </section>
   );
 }
 
-// ─── MARQUEE CLIENTS ────────────────────────────────────────────────────────
-
-function ClientsMarquee() {
-  const clients = ["Skillbox", "SkillFactory", "Primecraft", "Логомашина", "EdTech", "Онлайн-школы", "Федеральные бренды", "D2C-проекты"];
-  return <Marquee items={clients} speed={28} />;
-}
-
-// ─── MICRO JOBS (что мы делаем) ─────────────────────────────────────────────
+// ─── Services ────────────────────────────────────────────────────────────────
 
 function Services() {
-  const services = [
-    {
-      num: "01",
-      title: "Аудит воронки",
-      desc: "Находим узкие горлышка, где вы теряете деньги прямо сейчас. Бесплатно для первого обращения.",
-      tag: "Micro Job 1",
-    },
-    {
-      num: "02",
-      title: "Сценарий и смыслы",
-      desc: "Разрабатываем продающий сценарий вебинара на основе реальных болей вашей ЦА. Спикер получает готовую презентацию.",
-      tag: "Micro Job 2",
-    },
-    {
-      num: "03",
-      title: "Продакшн под ключ",
-      desc: "Студийная картинка, звук, режиссура эфира. Ваш бренд выглядит дорого — без технических сбоев.",
-      tag: "Micro Job 3",
-    },
-    {
-      num: "04",
-      title: "Автоворонка",
-      desc: "Чат-боты, email, SMS — автоматизируем касания и увеличиваем доходимость до вебинара на 20–30%.",
-      tag: "Micro Job 4",
-    },
-    {
-      num: "05",
-      title: "Аналитика и ROMI",
-      desc: "Ежедневные отчёты по каждому вложенному рублю. Прозрачная экономика, понятная фаундерам.",
-      tag: "Micro Job 5",
-    },
-    {
-      num: "06",
-      title: "Масштабирование",
-      desc: "Запускаем новые направления без найма людей в штат. Система, которая работает без вас.",
-      tag: "Micro Job 6",
-    },
+  const items = [
+    { n: "01", title: "Юнит-экономика до старта", desc: "Считаем окупаемость до первого рубля в трафик. Скучно, но именно это отделяет прибыльный запуск от «ну мы попробовали»." },
+    { n: "02", title: "Сценарий и смыслы", desc: "Контент, который не бесит холодную аудиторию и ведёт к покупке без ощущения, что тебя разводят." },
+    { n: "03", title: "Подбор и подготовка спикера", desc: "Хороший продукт + деревянный спикер = деньги на ветер. Найдём или подготовим." },
+    { n: "04", title: "Презентация", desc: "Та, которую не стыдно показать. Не набор буллетов на синем фоне." },
+    { n: "05", title: "Продакшн", desc: "Студийная картинка, свет, звук, стриминг. Без «технических неполадок» в прямом эфире." },
+    { n: "06", title: "Боты и автоворонка", desc: "Telegram-боты, email-рассылки, дожимы. Поднимаем доходимость на 20–30%." },
+    { n: "07", title: "Аналитика и ROMI", desc: "Ежедневные отчёты. Знаем, где воронка течёт, и чиним до следующего запуска." },
   ];
 
   return (
-    <section id="services" className="py-24 bg-[#0A0A0A]">
+    <section id="services" style={{ background: "#0A0A0A", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="container">
         <FadeUp>
-          <div className="flex items-end justify-between mb-16 border-b border-white/8 pb-8">
-            <div>
-              <div className="section-label mb-4">Что мы делаем</div>
-              <h2 className="font-display text-[#F5F5F0]" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
-                ПОЛНЫЙ ЦИКЛ<br />
-                <span style={{ color: "#FF2D20" }}>ВЕБИНАРНОГО</span><br />
-                МАРКЕТИНГА
-              </h2>
-            </div>
-            <div className="hidden md:block text-[#555] text-xs max-w-xs text-right leading-relaxed">
-              От аудита до масштабирования — берём на себя всё, чтобы ваша команда занималась продуктом.
-            </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "4rem", flexWrap: "wrap", gap: "1rem" }}>
+            <h2 className="font-display" style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", lineHeight: 0.95 }}>
+              ПОД<br />КЛЮЧ.
+            </h2>
+            <p style={{ fontFamily: "Inter", fontSize: "0.9rem", color: "rgba(255,255,255,0.4)", maxWidth: "280px", lineHeight: 1.6 }}>
+              Всё, что нужно для вебинара, который продаёт — от стратегии до аналитики.
+            </p>
           </div>
         </FadeUp>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
-          {services.map((s, i) => (
-            <FadeUp key={i} delay={i * 0.07}>
-              <div className="border-b border-r border-white/8 p-8 group hover:bg-[#111] transition-colors"
-                style={{ borderRight: (i + 1) % 3 === 0 ? "none" : undefined }}>
-                <div className="flex items-start justify-between mb-6">
-                  <span className="num-accent" style={{ fontSize: "1.1rem" }}>{s.num}</span>
-                  <span className="section-label" style={{ color: "#444", fontSize: "0.55rem" }}>{s.tag}</span>
-                </div>
-                <h3 className="font-display text-[#F5F5F0] mb-4" style={{ fontSize: "1.4rem" }}>{s.title}</h3>
-                <p className="text-[#666] text-sm leading-relaxed">{s.desc}</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0" }}>
+          {items.map((item, i) => (
+            <FadeUp key={item.n} delay={i * 0.05}>
+              <div
+                style={{ display: "grid", gridTemplateColumns: "3rem 1fr 1fr", gap: "2rem", padding: "1.75rem 0", borderBottom: "1px solid rgba(255,255,255,0.06)", alignItems: "start" }}
+                className="hover:bg-white/[0.02] transition-colors duration-200 px-2 -mx-2 rounded"
+              >
+                <span style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", paddingTop: "0.2rem" }}>{item.n}</span>
+                <span className="font-display" style={{ fontSize: "1rem", fontWeight: 700, color: "#F5F5F0", letterSpacing: "0.02em" }}>{item.title}</span>
+                <span style={{ fontFamily: "Inter", fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>{item.desc}</span>
               </div>
             </FadeUp>
           ))}
@@ -304,342 +325,192 @@ function Services() {
   );
 }
 
-// ─── AHA-МОМЕНТ (кейсы с реальными вебинарами) ─────────────────────────────
+// ─── Cases / Webinars ─────────────────────────────────────────────────────────
 
 function Cases() {
+  const [active, setActive] = useState<string | null>(null);
+
   const cases = [
     {
+      id: "school1",
       client: "Онлайн-школа №1",
-      period: "2023–2024",
       tag: "EdTech",
       result: "ROMI +70%",
-      sub: "на холодном трафике за 1 месяц",
-      desc: "Год работы с крупнейшей онлайн-школой: пересобрали воронку, переписали сценарии, внедрили автоворонку. Холодный трафик начал окупаться.",
-      webinar: null,
-      bg: "#111",
+      desc: "Продающий вебинар на холодную аудиторию. Пересобрали воронку, переписали сценарий, подключили автоворонку.",
+      videoUrl: null, // добавьте ссылку
     },
     {
-      client: "Primecraft",
-      period: "2024–2025",
-      tag: "Спортивное питание / D2C",
+      id: "college1",
+      client: "Онлайн-колледж №1",
+      tag: "EdTech",
+      result: "×3 доходимость",
+      desc: "Запустили серию вебинаров с нуля. Боты, рассылки, студийный продакшн.",
+      videoUrl: null,
+    },
+    {
+      id: "primekraft",
+      client: "Primekraft",
+      tag: "D2C / FMCG",
       result: "×4 выручка",
-      sub: "в D2C-канале через вебинарную воронку",
-      desc: "Федеральный бренд спортивного питания. Запустили обучающие вебинары для D2C-продаж. Собрали собственную базу, снизили зависимость от маркетплейсов.",
-      webinar: "https://primecraft.ru",
-      bg: "#0D0D0D",
+      desc: "Первый вебинарный канал продаж для спортивного питания. Считали юнит-экономику до старта.",
+      videoUrl: null,
     },
     {
+      id: "skillfactory",
       client: "SkillFactory",
-      period: "2022–2023",
       tag: "EdTech",
       result: "ROMI 160%",
-      sub: "на запуске нового курса",
-      desc: "Продающие вебинары для запуска нового продуктового направления. Полный продакшн: сценарий, студия, автоворонка, аналитика.",
-      webinar: null,
-      bg: "#111",
+      desc: "Запуск нового курса на холодный трафик. Сценарий + продакшн + аналитика.",
+      videoUrl: null,
     },
   ];
 
   return (
-    <section id="cases" className="py-24 bg-[#0A0A0A]">
+    <section id="cases" style={{ background: "#0A0A0A", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="container">
         <FadeUp>
-          <div className="section-label mb-4">Aha-момент</div>
-          <h2 className="font-display text-[#F5F5F0] mb-16" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
-            КЕЙСЫ,<br />
-            КОТОРЫЕ<br />
-            <span style={{ color: "#FF2D20" }}>ГОВОРЯТ ЦИФРАМИ</span>
-          </h2>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "4rem", flexWrap: "wrap", gap: "1rem" }}>
+            <h2 className="font-display" style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", lineHeight: 0.95 }}>
+              НЕ ВЕРЬТЕ<br />НА СЛОВО.
+            </h2>
+            <p style={{ fontFamily: "Inter", fontSize: "0.9rem", color: "rgba(255,255,255,0.4)", maxWidth: "280px", lineHeight: 1.6 }}>
+              Реальные кейсы с цифрами. Скоро добавим видео — смотрите прямо здесь.
+            </p>
+          </div>
         </FadeUp>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 border border-white/8">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1px", background: "rgba(255,255,255,0.06)" }}>
           {cases.map((c, i) => (
-            <FadeUp key={i} delay={i * 0.1}>
-              <div className="p-8 border-r border-white/8 last:border-r-0 flex flex-col h-full" style={{ background: c.bg }}>
-                <div className="flex items-start justify-between mb-8">
-                  <div>
-                    <div className="section-label mb-1">{c.tag}</div>
-                    <div className="text-[#F5F5F0] font-semibold text-sm">{c.client}</div>
-                  </div>
-                  <div className="text-[#444] text-xs">{c.period}</div>
+            <FadeUp key={c.id} delay={i * 0.08}>
+              <div
+                style={{ background: "#0A0A0A", padding: "2.5rem 2rem", cursor: "pointer", transition: "background 0.2s" }}
+                onMouseEnter={e => (e.currentTarget.style.background = "#111")}
+                onMouseLeave={e => (e.currentTarget.style.background = "#0A0A0A")}
+                onClick={() => setActive(active === c.id ? null : c.id)}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
+                  <span className="pill">{c.tag}</span>
+                  <span style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)" }}>0{i + 1}</span>
                 </div>
-
-                <div className="mb-6">
-                  <div className="num-accent" style={{ fontSize: "3rem" }}>{c.result}</div>
-                  <div className="text-[#666] text-xs mt-1">{c.sub}</div>
+                <div className="font-display" style={{ fontSize: "1.4rem", fontWeight: 900, color: "#F5F5F0", lineHeight: 1.1, marginBottom: "0.75rem" }}>
+                  {c.client}
                 </div>
-
-                <p className="text-[#666] text-sm leading-relaxed flex-1 mb-6">{c.desc}</p>
-
-                {c.webinar ? (
-                  <a href={c.webinar} target="_blank" rel="noopener noreferrer"
-                    className="btn-ghost text-xs self-start">
-                    Смотреть проект →
+                <div style={{ fontFamily: "Inter", fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+                  {c.desc}
+                </div>
+                <div className="font-display" style={{ fontSize: "2rem", fontWeight: 900, color: "#FF2D20" }}>
+                  {c.result}
+                </div>
+                {c.videoUrl && (
+                  <a href={c.videoUrl} target="_blank" rel="noopener noreferrer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", marginTop: "1rem", fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.5)", textDecoration: "none" }}
+                    onClick={e => e.stopPropagation()}>
+                    ▶ Смотреть вебинар
                   </a>
-                ) : (
-                  <span className="text-[#333] text-xs">NDA</span>
                 )}
               </div>
             </FadeUp>
           ))}
         </div>
-
-        {/* Screen image */}
-        <FadeUp delay={0.2}>
-          <div className="mt-0 border-x border-b border-white/8 overflow-hidden" style={{ height: "320px" }}>
-            <img src={SCREEN_IMG} alt="Аналитика вебинарной воронки" className="w-full h-full object-cover" style={{ filter: "brightness(0.7)" }} />
-          </div>
-        </FadeUp>
       </div>
     </section>
   );
 }
 
-// ─── УЗНАЁШЬ СЕБЯ (боли, триггеры) ─────────────────────────────────────────
+// ─── Why Us ───────────────────────────────────────────────────────────────────
 
-function Recognition() {
-  const triggers = [
-    { q: "CPA вырос, а конверсия упала?", e: "Тревога за KPI перед фаундерами", p: "Старые связки выгорели" },
-    { q: "Конец квартала, план горит?", e: "Усталость от гипотез без результата", p: "Команда не справляется с объёмом" },
-    { q: "Реклама дорожает, маркетплейсы душат?", e: "Разочарование от падающего ROMI", p: "Нет экспертизы внутри для контентных воронок" },
-    { q: "Хочешь D2C, но не знаешь как?", e: "Страх не выполнить план по новым каналам", p: "Нет насмотренности на рынке" },
-  ];
-
+function WhyUs() {
   return (
-    <section className="py-24 bg-[#0D0D0D]">
+    <section style={{ background: "#0A0A0A", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="container">
-        <FadeUp>
-          <div className="section-label mb-4">Узнаёшь себя?</div>
-          <h2 className="font-display text-[#F5F5F0] mb-4" style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", lineHeight: 0.92 }}>
-            ТЫ ХОЧЕШЬ КРАТНЫЙ РОСТ —<br />
-            <span style={{ color: "#FF2D20" }}>НО ЧТО-ТО МЕШАЕТ.</span>
-          </h2>
-          <p className="text-[#666] mb-16 max-w-lg text-sm leading-relaxed">
-            Ты хочешь выполнить амбициозные KPI или запустить новый продукт — но старые инструменты уже не работают.
-          </p>
-        </FadeUp>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-white/8">
-          {triggers.map((t, i) => (
-            <FadeUp key={i} delay={i * 0.08}>
-              <div className="p-8 border-b border-r border-white/8" style={{ borderRight: i % 2 === 1 ? "none" : undefined, borderBottom: i >= 2 ? "none" : undefined }}>
-                <div className="text-[#F5F5F0] font-semibold mb-3 text-base">{t.q}</div>
-                <div className="flex gap-6 mt-4">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "4rem" }} className="lg:grid-cols-2">
+          <FadeUp>
+            <h2 className="font-display" style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", lineHeight: 0.95 }}>
+              5 ЛЕТ.<br />ТОЛЬКО<br />ВЕБИНАРЫ.
+            </h2>
+          </FadeUp>
+          <FadeUp delay={0.15}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
+              <p style={{ fontFamily: "Inter", fontSize: "1rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.7 }}>
+                Не контекст, не SMM, не «комплексный маркетинг» — только вебинарные воронки. Работали внутри Skillbox, SkillFactory, Skyeng. Знаем, как устроен маркетинг в крупных EdTech изнутри.
+              </p>
+              {[
+                { title: "Считаем юнит-экономику до старта", desc: "Вы знаете результат до того, как вложили деньги в трафик." },
+                { title: "Полный цикл без субподрядчиков", desc: "Стратегия, продакшн, боты, аналитика — одна команда." },
+                { title: "Насмотренность из 40+ запусков", desc: "Ваш бюджет не тратится на наши эксперименты." },
+              ].map((item, i) => (
+                <div key={i} style={{ display: "flex", gap: "1.5rem" }}>
+                  <span style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "#FF2D20", paddingTop: "0.25rem", flexShrink: 0 }}>0{i + 1}</span>
                   <div>
-                    <div className="section-label mb-1" style={{ color: "#FF2D20", fontSize: "0.55rem" }}>Эмоция</div>
-                    <div className="text-[#666] text-xs leading-relaxed">{t.e}</div>
-                  </div>
-                  <div>
-                    <div className="section-label mb-1" style={{ color: "#444", fontSize: "0.55rem" }}>Проблема</div>
-                    <div className="text-[#555] text-xs leading-relaxed">{t.p}</div>
+                    <div className="font-display" style={{ fontSize: "0.95rem", fontWeight: 700, color: "#F5F5F0", marginBottom: "0.3rem" }}>{item.title}</div>
+                    <div style={{ fontFamily: "Inter", fontSize: "0.875rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>{item.desc}</div>
                   </div>
                 </div>
-              </div>
-            </FadeUp>
-          ))}
+              ))}
+            </div>
+          </FadeUp>
         </div>
       </div>
     </section>
   );
 }
 
-// ─── КАК МЫ ДЕЛАЕМ (объясняем экспертизу) ──────────────────────────────────
-
-function HowWeDo() {
-  const steps = [
-    { n: "01", title: "Аудит за 48 часов", desc: "Смотрим вашу воронку и показываем 3 точки потери денег. Прозрачно, без воды." },
-    { n: "02", title: "Смысловая упаковка", desc: "Переписываем сценарий под боли холодной аудитории. Контент, который удерживает и конвертирует." },
-    { n: "03", title: "Продакшн эфира", desc: "Студийная картинка, режиссура, телесуфлёр. Ваш спикер выглядит как профи." },
-    { n: "04", title: "Автоматизация касаний", desc: "Боты и рассылки догревают тех, кто не дошёл. Доходимость +20–30%." },
-  ];
-
-  return (
-    <section className="py-24 bg-[#0A0A0A]" style={{ backgroundImage: `url(${GRID_IMG})`, backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode: "multiply" }}>
-      <div className="container">
-        <FadeUp>
-          <div className="section-label mb-4">Как мы выполним вашу задачу</div>
-          <h2 className="font-display text-[#F5F5F0] mb-16" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
-            СИСТЕМА,<br />
-            <span style={{ color: "#FF2D20" }}>НЕ РАЗОВАЯ</span><br />
-            УСЛУГА
-          </h2>
-        </FadeUp>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-          {steps.map((s, i) => (
-            <FadeUp key={i} delay={i * 0.1}>
-              <div className="p-10 border border-white/8 bg-[#0A0A0A]/80" style={{ marginTop: i >= 2 ? "-1px" : 0, marginLeft: i % 2 === 1 ? "-1px" : 0 }}>
-                <div className="num-accent mb-6" style={{ fontSize: "1rem" }}>{s.n}</div>
-                <h3 className="font-display text-[#F5F5F0] mb-4" style={{ fontSize: "1.5rem" }}>{s.title}</h3>
-                <p className="text-[#666] text-sm leading-relaxed">{s.desc}</p>
-              </div>
-            </FadeUp>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── ТОЧКА Б (образ результата) ─────────────────────────────────────────────
+// ─── Point B ──────────────────────────────────────────────────────────────────
 
 function PointB() {
-  const outcomes = [
-    { icon: "📈", title: "Стабильно растущий ROMI", desc: "Вы видите предсказуемую окупаемость каждого вложенного рубля. Не гадаете — знаете." },
-    { icon: "🏆", title: "Выполненные KPI", desc: "Вы перевыполнили план. Фаундеры довольны. Вы получили заслуженный бонус и авторитет." },
-    { icon: "⚙️", title: "Система без вас", desc: "Воронка работает автоматически. Команда занимается продуктом, а не операционкой." },
-    { icon: "🚀", title: "Новые направления", desc: "Вы запустили новый продукт без найма людей. Масштаб без хаоса." },
-  ];
-
   return (
-    <section className="py-24 bg-[#0D0D0D]">
+    <section style={{ background: "#111", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="container">
         <FadeUp>
-          <div className="section-label mb-4">Точка Б</div>
-          <h2 className="font-display text-[#F5F5F0] mb-6" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
-            КАК ВЫ БУДЕТЕ<br />
-            <span style={{ color: "#FF2D20" }}>СЕБЯ ЧУВСТВОВАТЬ</span>
-          </h2>
-          <p className="text-[#666] mb-16 max-w-lg text-sm leading-relaxed">
-            Уверенность. Гордость. Облегчение. Вы делегировали сложный процесс надёжным партнёрам — и получили результат.
+          <p style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "3rem" }}>
+            — Через 2 месяца работы
           </p>
-        </FadeUp>
-
-        {/* Team image */}
-        <FadeUp delay={0.1}>
-          <div className="mb-0 overflow-hidden border border-white/8" style={{ height: "400px" }}>
-            <img src={TEAM_IMG} alt="Команда Гипотеза" className="w-full h-full object-cover" style={{ filter: "brightness(0.6)" }} />
+          <div className="font-display" style={{ fontSize: "clamp(2rem, 5vw, 4.5rem)", lineHeight: 1.05, fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", maxWidth: "800px" }}>
+            Ты знаешь, сколько принесёт следующий вебинар{" "}
+            <span style={{ color: "#FF2D20" }}>ещё до запуска.</span>
+          </div>
+          <div style={{ marginTop: "3rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", maxWidth: "700px" }} className="sm:grid-cols-2">
+            {[
+              { label: "Для EdTech", text: "Воронка, которая окупает холодный трафик стабильно, а не «иногда»." },
+              { label: "Для брендов", text: "Собственный D2C-канал через вебинары без зависимости от маркетплейсов." },
+            ].map(item => (
+              <div key={item.label} style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1.5rem" }}>
+                <div style={{ fontFamily: "Inter", fontSize: "0.7rem", color: "#FF2D20", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>{item.label}</div>
+                <div style={{ fontFamily: "Inter", fontSize: "0.95rem", color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>{item.text}</div>
+              </div>
+            ))}
           </div>
         </FadeUp>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border-x border-b border-white/8">
-          {outcomes.map((o, i) => (
-            <FadeUp key={i} delay={i * 0.08}>
-              <div className="p-8 border-r border-b border-white/8 last:border-r-0" style={{ borderBottom: "none" }}>
-                <div className="text-2xl mb-4">{o.icon}</div>
-                <h3 className="text-[#F5F5F0] font-semibold mb-3 text-sm">{o.title}</h3>
-                <p className="text-[#555] text-xs leading-relaxed">{o.desc}</p>
-              </div>
-            </FadeUp>
-          ))}
-        </div>
       </div>
     </section>
   );
 }
 
-// ─── КОМАНДА ────────────────────────────────────────────────────────────────
-
-function Team() {
-  const team = [
-    {
-      name: "Денис Зюлин",
-      role: "Стратегический маркетинг и продукт",
-      color: "#FF2D20",
-      desc: "Формирует маркетинговую стратегию и продуктовую логику. Погружается в бизнес как собственник, проводит исследования, помогает увидеть истинные точки роста.",
-      exp: "5+ лет в EdTech",
-    },
-    {
-      name: "Алексей Пономарёв",
-      role: "Аналитика, трафик и стратегические механики",
-      color: "#4A9EFF",
-      desc: "Формирует экономику и аналитику каналов. Управляет холодным трафиком и системными механиками, которые масштабируют выручку и делают маркетинг предсказуемым.",
-      exp: "Автоворонки и трафик",
-    },
-    {
-      name: "Алла Захарова",
-      role: "Архитектура воронок и контента",
-      color: "#F5F5F0",
-      desc: "Создаёт концепции, воронки и живые запуски, которые дают стабильный поток заявок. Работала в Skillbox, SkillFactory.",
-      exp: "Skillbox, SkillFactory",
-    },
-    {
-      name: "Дмитрий Лебедев",
-      role: "Операционная поддержка",
-      color: "#888",
-      desc: "Отчёты, аналитика, контроль процессов. Держит проекты в порядке и помогает команде быть быстрее.",
-      exp: "Операционный менеджмент",
-    },
-  ];
-
-  return (
-    <section id="team" className="py-24 bg-[#0A0A0A]">
-      <div className="container">
-        <FadeUp>
-          <div className="section-label mb-4">Команда</div>
-          <h2 className="font-display text-[#F5F5F0] mb-16" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
-            ЧЕТЫРЕ<br />
-            <span style={{ color: "#FF2D20" }}>СУПЕРГЕРОЯ</span><br />
-            ВЕБИНАРОВ
-          </h2>
-        </FadeUp>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-white/8">
-          {team.map((m, i) => (
-            <FadeUp key={i} delay={i * 0.1}>
-              <div className="p-8 border-b border-r border-white/8 group"
-                style={{ borderRight: i % 2 === 1 ? "none" : undefined, borderBottom: i >= 2 ? "none" : undefined }}>
-                {/* Color accent line */}
-                <div style={{ width: "2rem", height: "2px", background: m.color, marginBottom: "1.5rem" }} />
-                <div className="text-[#F5F5F0] font-semibold text-base mb-1">{m.name}</div>
-                <div className="section-label mb-4" style={{ color: m.color, fontSize: "0.6rem" }}>{m.role}</div>
-                <p className="text-[#666] text-sm leading-relaxed mb-4">{m.desc}</p>
-                <div className="text-[#444] text-xs tracking-wide">{m.exp}</div>
-              </div>
-            </FadeUp>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── БАРЬЕРЫ ────────────────────────────────────────────────────────────────
+// ─── Barriers ────────────────────────────────────────────────────────────────
 
 function Barriers() {
   const items = [
-    {
-      barrier: "У нас уже есть маркетолог",
-      answer: "Мы не замещаем вашего маркетолога — мы его усиливаем. Даём готовую систему и нашу насмотренность на рынке.",
-    },
-    {
-      barrier: "Проще нанять человека в штат",
-      answer: "Найм и онбординг займут 2 месяца. Мы запустим первые тесты уже через неделю.",
-    },
-    {
-      barrier: "Боимся за утечку данных",
-      answer: "Работаем с EdTech годами, строго соблюдаем NDA. Ваши цифры не раскрываем.",
-    },
-    {
-      barrier: "Слишком дорого для нас",
-      answer: "Стоимость одного выгоревшего запуска выше нашего ретейнера. Считаем вместе на первой встрече.",
-    },
+    { q: "«У нас есть маркетолог»", a: "Мы его не замещаем — берём на себя весь продакшн, пока он занимается трафиком." },
+    { q: "«Проще нанять в штат»", a: "Найм + онбординг = полгода. Мы запускаем за 2–3 недели. И стоим дешевле одного хорошего специалиста." },
+    { q: "«Мы уже пробовали — не сработало»", a: "Покажите предыдущий запуск. В 90% случаев видим конкретную точку, где сломано." },
+    { q: "«Непонятно, сколько стоит»", a: "Начинаем с бесплатного аудита. После — конкретное предложение с цифрами." },
   ];
 
   return (
-    <section className="py-24 bg-[#0D0D0D]">
+    <section style={{ background: "#0A0A0A", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="container">
         <FadeUp>
-          <div className="section-label mb-4">Снижаем барьеры</div>
-          <h2 className="font-display text-[#F5F5F0] mb-16" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
-            МЫ СЛЫШАЛИ<br />
-            <span style={{ color: "#FF2D20" }}>ЭТИ ВОЗРАЖЕНИЯ.</span>
+          <h2 className="font-display" style={{ fontSize: "clamp(2rem, 5vw, 4rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", marginBottom: "4rem", lineHeight: 0.95 }}>
+            МЫ УГАДАЕМ,<br />ЧТО ВЫ ДУМАЕТЕ.
           </h2>
         </FadeUp>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-white/8">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0" }}>
           {items.map((item, i) => (
             <FadeUp key={i} delay={i * 0.08}>
-              <div className="p-8 border-b border-r border-white/8"
-                style={{ borderRight: i % 2 === 1 ? "none" : undefined, borderBottom: i >= 2 ? "none" : undefined }}>
-                <div className="flex gap-3 items-start mb-4">
-                  <span style={{ color: "#FF2D20", fontSize: "1rem", marginTop: "2px" }}>✕</span>
-                  <div className="text-[#F5F5F0] font-semibold text-sm">{item.barrier}</div>
-                </div>
-                <div className="flex gap-3 items-start">
-                  <span style={{ color: "#4A9EFF", fontSize: "1rem", marginTop: "2px" }}>✓</span>
-                  <div className="text-[#666] text-sm leading-relaxed">{item.answer}</div>
-                </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", padding: "2rem 0", borderBottom: "1px solid rgba(255,255,255,0.06)", alignItems: "start" }}
+                className="sm:grid-cols-2">
+                <div className="font-display" style={{ fontSize: "1.1rem", fontWeight: 700, color: "rgba(255,255,255,0.5)", lineHeight: 1.3 }}>{item.q}</div>
+                <div style={{ fontFamily: "Inter", fontSize: "0.9rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.7 }}>{item.a}</div>
               </div>
             </FadeUp>
           ))}
@@ -649,51 +520,34 @@ function Barriers() {
   );
 }
 
-// ─── КОНКУРЕНТЫ ─────────────────────────────────────────────────────────────
+// ─── Competitors ──────────────────────────────────────────────────────────────
 
 function Competitors() {
-  const rows = [
-    {
-      them: "Инхаус-команда",
-      issue: "Не видит, что работает у других. Долго тестирует.",
-      us: "Насмотренность на 50+ проектов. Запуск гипотез за неделю.",
-    },
-    {
-      them: "Обычные фрилансеры",
-      issue: "Делают одну часть. Нет системы, нет ответственности за ROMI.",
-      us: "Полный цикл под ключ: от смыслов до аналитики. Отвечаем за результат.",
-    },
-    {
-      them: "Классические агентства",
-      issue: "Широкий профиль, нет глубины в вебинарах и EdTech.",
-      us: "Узкая специализация. 5 лет только вебинарный маркетинг.",
-    },
+  const items = [
+    { who: "Фрилансер", why: "Закроет одну задачу. Собирать систему из фрилансеров — ваша операционка и ваши нервы." },
+    { who: "Агентство полного цикла", why: "Делают всё — значит ничего по-настоящему хорошо. Вебинары для них — один из двадцати инструментов." },
+    { who: "Штатный сотрудник", why: "Один человек не закроет весь цикл. Мы — готовая команда из 4 ролей с насмотренностью из 40+ запусков." },
   ];
 
   return (
-    <section className="py-24 bg-[#0A0A0A]">
+    <section style={{ background: "#0A0A0A", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="container">
         <FadeUp>
-          <div className="section-label mb-4">Увольняем конкурентов</div>
-          <h2 className="font-display text-[#F5F5F0] mb-16" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 0.92 }}>
-            ПОЧЕМУ НЕ<br />
-            <span style={{ color: "#FF2D20" }}>ДРУГИЕ.</span>
+          <h2 className="font-display" style={{ fontSize: "clamp(2rem, 5vw, 4rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", marginBottom: "4rem", lineHeight: 0.95 }}>
+            ПОЧЕМУ<br />НЕ ОНИ.
           </h2>
         </FadeUp>
-
-        <div className="border border-white/8">
-          {/* Header */}
-          <div className="grid grid-cols-3 border-b border-white/8 bg-[#111]">
-            <div className="p-4 text-[#444] text-xs tracking-widest uppercase border-r border-white/8">Альтернатива</div>
-            <div className="p-4 text-[#444] text-xs tracking-widest uppercase border-r border-white/8">Проблема</div>
-            <div className="p-4 text-[#FF2D20] text-xs tracking-widest uppercase">Гипотеза</div>
-          </div>
-          {rows.map((r, i) => (
-            <FadeUp key={i} delay={i * 0.08}>
-              <div className="grid grid-cols-3 border-b border-white/8 last:border-b-0 hover:bg-[#0D0D0D] transition-colors">
-                <div className="p-6 text-[#F5F5F0] text-sm font-medium border-r border-white/8">{r.them}</div>
-                <div className="p-6 text-[#555] text-sm leading-relaxed border-r border-white/8">{r.issue}</div>
-                <div className="p-6 text-[#F5F5F0] text-sm leading-relaxed">{r.us}</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "1px", background: "rgba(255,255,255,0.06)" }}>
+          {items.map((item, i) => (
+            <FadeUp key={i} delay={i * 0.1}>
+              <div style={{ background: "#0A0A0A", padding: "2.5rem 2rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
+                  <span style={{ width: "1.5rem", height: "1.5rem", borderRadius: "50%", border: "1px solid rgba(255,45,32,0.4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <span style={{ color: "#FF2D20", fontSize: "0.7rem" }}>✕</span>
+                  </span>
+                  <span className="font-display" style={{ fontSize: "1rem", fontWeight: 700, color: "#F5F5F0" }}>{item.who}</span>
+                </div>
+                <p style={{ fontFamily: "Inter", fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.7 }}>{item.why}</p>
               </div>
             </FadeUp>
           ))}
@@ -703,87 +557,128 @@ function Competitors() {
   );
 }
 
-// ─── CONTACT (CTA + форма) ──────────────────────────────────────────────────
+// ─── Team ─────────────────────────────────────────────────────────────────────
+
+function Team() {
+  const members = [
+    { name: "Денис Зюлин", role: "Стратегия и продукт", desc: "Погружается в бизнес как собственник. Находит точки роста, которые не видны изнутри." },
+    { name: "Алексей Пономарёв", role: "Трафик и аналитика", desc: "Управляет холодным трафиком. Делает маркетинг предсказуемым — в хорошем смысле." },
+    { name: "Алла Захарова", role: "Воронки и контент", desc: "Знает, как устроена голова покупателя на каждом этапе воронки." },
+    { name: "Дмитрий Лебедев", role: "Операционка", desc: "Держит проекты в порядке, когда всё идёт не по плану. А оно всегда идёт не по плану." },
+  ];
+
+  return (
+    <section id="team" style={{ background: "#0A0A0A", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="container">
+        <FadeUp>
+          <h2 className="font-display" style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", marginBottom: "4rem", lineHeight: 0.95 }}>
+            КОМАНДА.
+          </h2>
+        </FadeUp>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1px", background: "rgba(255,255,255,0.06)" }}>
+          {members.map((m, i) => (
+            <FadeUp key={i} delay={i * 0.08}>
+              <div style={{ background: "#0A0A0A", padding: "2.5rem 2rem" }}>
+                {/* Avatar placeholder */}
+                <div style={{ width: "4rem", height: "4rem", borderRadius: "50%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.5rem" }}>
+                  <span style={{ fontFamily: "Inter", fontSize: "1.2rem", color: "rgba(255,255,255,0.2)" }}>
+                    {m.name.charAt(0)}
+                  </span>
+                </div>
+                <div className="font-display" style={{ fontSize: "1.1rem", fontWeight: 700, color: "#F5F5F0", marginBottom: "0.3rem" }}>{m.name}</div>
+                <div style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "#FF2D20", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "1rem" }}>{m.role}</div>
+                <p style={{ fontFamily: "Inter", fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>{m.desc}</p>
+              </div>
+            </FadeUp>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Contact / CTA ────────────────────────────────────────────────────────────
 
 function Contact() {
-  const [form, setForm] = useState({ name: "", company: "", phone: "", message: "" });
+  const [form, setForm] = useState({ name: "", company: "", telegram: "" });
   const [sent, setSent] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSent(true);
   };
 
   return (
-    <section id="contact" className="py-24 bg-[#0D0D0D] border-t border-white/8">
+    <section id="contact" style={{ background: "#111", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="container">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-          {/* Left */}
-          <FadeUp className="pr-0 lg:pr-16 border-b lg:border-b-0 lg:border-r border-white/8 pb-16 lg:pb-0">
-            <div className="section-label mb-4">Начать работу</div>
-            <h2 className="font-display text-[#F5F5F0] mb-6" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", lineHeight: 0.92 }}>
-              ПОЛУЧИТЕ<br />
-              БЕСПЛАТНЫЙ<br />
-              <span style={{ color: "#FF2D20" }}>АУДИТ ВОРОНКИ</span>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "4rem" }} className="lg:grid-cols-2">
+          <FadeUp>
+            <h2 className="font-display" style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", lineHeight: 0.95 }}>
+              БЕСПЛАТНЫЙ<br />АУДИТ<br />ВОРОНКИ.
             </h2>
-            <p className="text-[#666] text-sm leading-relaxed mb-10 max-w-sm">
-              Оставьте заявку — и мы бесплатно покажем 3 узких горлышка, где вы теряете деньги прямо сейчас. Без обязательств.
+            <p style={{ fontFamily: "Inter", fontSize: "0.95rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.7, marginTop: "2rem", maxWidth: "380px" }}>
+              За 48 часов покажем 3 точки, где теряются деньги. Конкретно, без «ну это зависит от задач».
             </p>
-
-            <div className="space-y-4">
-              {[
-                { icon: "📞", text: "Ответим в течение 2 часов в рабочее время" },
-                { icon: "🔒", text: "NDA по запросу. Ваши данные в безопасности" },
-                { icon: "⚡", text: "Первые выводы — уже на первой встрече" },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 text-[#555] text-xs">
-                  <span>{item.icon}</span>
-                  <span>{item.text}</span>
+            <div style={{ marginTop: "2rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {["Разбор текущей воронки", "3 точки потери денег", "Рекомендации по исправлению", "Оценка потенциального ROMI"].map(item => (
+                <div key={item} style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                  <span style={{ color: "#FF2D20", fontSize: "0.7rem" }}>●</span>
+                  <span style={{ fontFamily: "Inter", fontSize: "0.875rem", color: "rgba(255,255,255,0.5)" }}>{item}</span>
                 </div>
               ))}
             </div>
           </FadeUp>
 
-          {/* Right — Form */}
-          <FadeUp delay={0.15} className="pt-16 lg:pt-0 lg:pl-16">
+          <FadeUp delay={0.15}>
             {sent ? (
-              <div className="flex flex-col items-start justify-center h-full gap-4">
-                <div className="num-accent" style={{ fontSize: "3rem" }}>✓</div>
-                <h3 className="font-display text-[#F5F5F0]" style={{ fontSize: "2rem" }}>ЗАЯВКА ОТПРАВЛЕНА</h3>
-                <p className="text-[#666] text-sm">Свяжемся с вами в течение 2 часов.</p>
+              <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", gap: "1rem" }}>
+                <div className="font-display" style={{ fontSize: "2.5rem", fontWeight: 900, color: "#FF2D20" }}>Отлично!</div>
+                <p style={{ fontFamily: "Inter", fontSize: "1rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>
+                  Мы получили вашу заявку и ответим в течение 2 часов.
+                </p>
               </div>
             ) : (
-              <form onSubmit={submit} className="space-y-4">
+              <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {[
-                  { name: "name", placeholder: "Ваше имя", type: "text", required: true },
-                  { name: "company", placeholder: "Компания / проект", type: "text", required: false },
-                  { name: "phone", placeholder: "Телефон или Telegram", type: "text", required: true },
-                ].map((field) => (
-                  <input key={field.name}
-                    type={field.type}
-                    placeholder={field.placeholder}
-                    required={field.required}
-                    value={form[field.name as keyof typeof form]}
-                    onChange={e => setForm({ ...form, [field.name]: e.target.value })}
-                    className="w-full bg-transparent border-b border-white/15 text-[#F5F5F0] placeholder-[#444] text-sm py-3 px-0 focus:outline-none focus:border-[#FF2D20] transition-colors"
-                    style={{ borderRadius: 0 }}
-                  />
+                  { key: "name", label: "Имя", placeholder: "Как вас зовут?" },
+                  { key: "company", label: "Компания / проект", placeholder: "Название проекта" },
+                  { key: "telegram", label: "Telegram или телефон", placeholder: "@username или +7..." },
+                ].map(field => (
+                  <div key={field.key} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                    <label style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", textTransform: "uppercase" }}>{field.label}</label>
+                    <input
+                      type="text"
+                      placeholder={field.placeholder}
+                      value={form[field.key as keyof typeof form]}
+                      onChange={e => setForm({ ...form, [field.key]: e.target.value })}
+                      required
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        borderBottom: "1px solid rgba(255,255,255,0.15)",
+                        color: "#F5F5F0",
+                        fontFamily: "Inter",
+                        fontSize: "1rem",
+                        padding: "0.75rem 0",
+                        outline: "none",
+                        transition: "border-color 0.2s",
+                      }}
+                      onFocus={e => (e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.5)")}
+                      onBlur={e => (e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.15)")}
+                    />
+                  </div>
                 ))}
-                <textarea
-                  placeholder="Расскажите о задаче (необязательно)"
-                  rows={3}
-                  value={form.message}
-                  onChange={e => setForm({ ...form, message: e.target.value })}
-                  className="w-full bg-transparent border-b border-white/15 text-[#F5F5F0] placeholder-[#444] text-sm py-3 px-0 focus:outline-none focus:border-[#FF2D20] transition-colors resize-none"
-                  style={{ borderRadius: 0 }}
-                />
-                <div className="pt-4">
-                  <button type="submit" className="btn-cta w-full justify-center">
-                    Получить бесплатный аудит
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  </button>
-                </div>
-                <p className="text-[#333] text-xs pt-2">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</p>
+                <button
+                  type="submit"
+                  className="font-display"
+                  style={{ marginTop: "1rem", background: "#FF2D20", color: "#fff", border: "none", padding: "1rem 2rem", fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.08em", cursor: "pointer", transition: "opacity 0.2s", alignSelf: "flex-start" }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
+                  ПОЛУЧИТЬ АУДИТ →
+                </button>
+                <p style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", marginTop: "0.5rem" }}>
+                  Отвечаем в течение 2 часов · Разобрали 40+ воронок
+                </p>
               </form>
             )}
           </FadeUp>
@@ -793,46 +688,59 @@ function Contact() {
   );
 }
 
-// ─── FOOTER ─────────────────────────────────────────────────────────────────
+// ─── Footer ───────────────────────────────────────────────────────────────────
 
 function Footer() {
   return (
-    <footer className="border-t border-white/8 bg-[#0A0A0A]">
-      <div className="container py-10">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div>
-            <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 700, fontSize: "1.2rem", letterSpacing: "0.04em", textTransform: "uppercase", color: "#F5F5F0" }}>
-              ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА
-            </span>
-            <div className="text-[#333] text-xs mt-1">Агентство вебинарного продакшна</div>
-          </div>
-          <div className="flex gap-8 text-[#444] text-xs tracking-widest uppercase">
-            <a href="https://gipoteza-agency.ru" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF2D20] transition-colors">Старый сайт</a>
-            <a href="https://t.me/" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF2D20] transition-colors">Telegram</a>
-          </div>
-          <div className="text-[#333] text-xs">© 2025 Гипотеза Agency</div>
+    <footer style={{ background: "#0A0A0A", borderTop: "1px solid rgba(255,255,255,0.06)", padding: "3rem 0" }}>
+      <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1.5rem" }}>
+        <div>
+          <span className="font-display" style={{ fontSize: "1rem", fontWeight: 900, letterSpacing: "0.06em", color: "#F5F5F0" }}>
+            ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА
+          </span>
+          <span style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "rgba(255,255,255,0.25)", marginLeft: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase" }}>AGENCY</span>
+          <p style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", marginTop: "0.4rem" }}>
+            Агентство вебинарного продакшна
+          </p>
         </div>
+        <div style={{ display: "flex", gap: "2rem" }}>
+          <a href="https://t.me/" target="_blank" rel="noopener noreferrer"
+            style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.35)", textDecoration: "none" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#F5F5F0")}
+            onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.35)")}>
+            Telegram
+          </a>
+          <a href="mailto:hello@gipoteza-agency.ru"
+            style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.35)", textDecoration: "none" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#F5F5F0")}
+            onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.35)")}>
+            Email
+          </a>
+        </div>
+        <p style={{ fontFamily: "Inter", fontSize: "0.7rem", color: "rgba(255,255,255,0.2)" }}>
+          © 2025 Гипотеза Agency
+        </p>
       </div>
     </footer>
   );
 }
 
-// ─── PAGE ────────────────────────────────────────────────────────────────────
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
+    <div style={{ background: "#0A0A0A", minHeight: "100vh" }}>
       <Nav />
       <Hero />
-      <ClientsMarquee />
+      <Marquee />
+      <RecognizeYourself />
       <Services />
       <Cases />
-      <Recognition />
-      <HowWeDo />
+      <WhyUs />
       <PointB />
-      <Team />
       <Barriers />
       <Competitors />
+      <Team />
       <Contact />
       <Footer />
     </div>
