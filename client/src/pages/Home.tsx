@@ -565,72 +565,137 @@ function Competitors() {
 // ─── Team ─────────────────────────────────────────────────────────────────────
 
 function Team() {
-  const members = [
-    { name: "Денис Зюлин", role: "Стратегия и продукт", desc: "Погружается в бизнес как собственник. Находит точки роста, которые не видны изнутри.", photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/denis_30d9c6b7.jpg" },
-    { name: "Алла Захарова", role: "Воронки и контент", desc: "Знает, как устроена голова покупателя на каждом этапе воронки.", photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alla_c7f64f85.jpg" },
-    { name: "Алексей Пономарёв", role: "Трафик и аналитика", desc: "Управляет холодным трафиком. Делает маркетинг предсказуемым — в хорошем смысле.", photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alexey_68167dc3.jpg" },
-    { name: "Дмитрий Лебедев", role: "Операционка", desc: "Держит проекты в порядке, когда всё идёт не по плану. А оно всегда идёт не по плану.", photo: null },
+  const heroes = [
+    {
+      codename: "СТРАТЕГ",
+      name: "Денис Зюлин",
+      role: "Основатель",
+      power: "Видит воронку насквозь",
+      desc: "Погружается в бизнес как собственник. Находит точки роста, которые не видны изнутри. 5 лет — только вебинары.",
+      photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/denis_30d9c6b7.jpg",
+      icon: "⚡",
+      accent: "#FF2D20",
+    },
+    {
+      codename: "ПРОДЮСЕР",
+      name: "Алла Захарова",
+      role: "Партнёр, контент",
+      power: "Знает голову покупателя",
+      desc: "Skyeng, Skillbox — за плечами. Пишет сценарии, которые ведут к покупке без ощущения, что тебя разводят.",
+      photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alla_c7f64f85.jpg",
+      icon: "✦",
+      accent: "#B5F23D",
+    },
+    {
+      codename: "ТРАФИК",
+      name: "Алексей Пономарёв",
+      role: "Партнёр, автоматизация",
+      power: "Делает маркетинг предсказуемым",
+      desc: "Управляет холодным трафиком и автоворонками. Строит системы, которые работают без ручного управления.",
+      photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alexey_68167dc3.jpg",
+      icon: "◈",
+      accent: "#FF2D20",
+    },
   ];
 
   return (
-    <section id="team" style={{ background: "#0A0A0A", padding: "8rem 0 0", borderTop: "1px solid rgba(255,255,255,0.06)", overflow: "hidden" }}>
-      {/* Section header */}
-      <div className="container" style={{ marginBottom: "4rem" }}>
+    <section id="team" style={{ background: "#0A0A0A", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="container">
+
+        {/* Header */}
         <FadeUp>
-          <h2 className="font-display" style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", lineHeight: 0.95 }}>
-            КОМАНДА.
-          </h2>
-          <p style={{ fontFamily: "Inter", fontSize: "0.9rem", color: "rgba(255,255,255,0.3)", marginTop: "1.2rem" }}>
-            Люди, которые делают вебинары, которые продают.
-          </p>
-        </FadeUp>
-      </div>
-
-      {/* Big photo cards — horizontal scroll on mobile, grid on desktop */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1px", background: "rgba(255,255,255,0.06)" }} className="team-grid">
-        {members.filter(m => m.photo).map((m, i) => (
-          <FadeUp key={i} delay={i * 0.1}>
-            <div style={{ position: "relative", aspectRatio: "3/4", overflow: "hidden", background: "#111" }}>
-              <img
-                src={m.photo!}
-                alt={m.name}
-                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", transition: "transform 0.6s ease", display: "block" }}
-                onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.04)")}
-                onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
-              />
-              {/* Gradient overlay */}
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.2) 50%, transparent 100%)" }} />
-              {/* Text */}
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "2rem" }}>
-                <div style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "#FF2D20", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "0.5rem" }}>{m.role}</div>
-                <div className="font-display" style={{ fontSize: "clamp(1.3rem, 2.5vw, 2rem)", fontWeight: 900, color: "#F5F5F0", lineHeight: 1.05, letterSpacing: "-0.01em" }}>{m.name}</div>
-                <p style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.5)", marginTop: "0.6rem", lineHeight: 1.55 }}>{m.desc}</p>
-              </div>
-            </div>
-          </FadeUp>
-        ))}
-      </div>
-
-      {/* "And other great people" footer row */}
-      <FadeUp>
-        <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", padding: "3rem 0", display: "flex", alignItems: "center", gap: "2rem", flexWrap: "wrap" }}>
-          <div className="container" style={{ display: "flex", alignItems: "center", gap: "2rem", flexWrap: "wrap" }}>
-            {/* Dmitry as small pill */}
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "100px", padding: "0.6rem 1.2rem" }}>
-              <div style={{ width: "2.2rem", height: "2.2rem", borderRadius: "50%", background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span style={{ fontFamily: "Inter", fontSize: "0.85rem", color: "rgba(255,255,255,0.35)", fontWeight: 600 }}>Д</span>
-              </div>
-              <div>
-                <div style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "#F5F5F0", fontWeight: 500 }}>Дмитрий Лебедев</div>
-                <div style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Операционка</div>
-              </div>
-            </div>
-            <div className="font-display" style={{ fontSize: "clamp(1.2rem, 3vw, 2.2rem)", fontWeight: 900, color: "rgba(255,255,255,0.18)", letterSpacing: "-0.01em", fontStyle: "italic" }}>
-              ...и другие классные ребята
+          <div style={{ display: "flex", alignItems: "baseline", gap: "1.5rem", marginBottom: "5rem", flexWrap: "wrap" }}>
+            <h2 className="font-display" style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", lineHeight: 0.95, margin: 0 }}>
+              CORE<br />КОМАНДА.
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", paddingBottom: "0.3rem" }}>
+              <span style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Четыре роли.</span>
+              <span style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Одна система.</span>
+              <span style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em", textTransform: "uppercase" }}>Ваш результат.</span>
             </div>
           </div>
+        </FadeUp>
+
+        {/* Hero cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1px", background: "rgba(255,255,255,0.06)" }}>
+          {heroes.map((h, i) => (
+            <FadeUp key={i} delay={i * 0.12}>
+              <div
+                style={{ background: "#0A0A0A", overflow: "hidden", cursor: "default" }}
+                onMouseEnter={e => { const card = e.currentTarget; card.style.background = "#111"; }}
+                onMouseLeave={e => { const card = e.currentTarget; card.style.background = "#0A0A0A"; }}
+              >
+                {/* Photo block — clean, no text overlay */}
+                <div style={{ position: "relative", aspectRatio: "4/5", overflow: "hidden", background: "#111" }}>
+                  <img
+                    src={h.photo}
+                    alt={h.name}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block", transition: "transform 0.7s ease", filter: "grayscale(15%)" }}
+                    onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.03)")}
+                    onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+                  />
+                  {/* Codename badge — top left */}
+                  <div style={{ position: "absolute", top: "1.25rem", left: "1.25rem", background: "rgba(10,10,10,0.85)", backdropFilter: "blur(8px)", border: `1px solid ${h.accent}40`, padding: "0.3rem 0.8rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                    <span style={{ fontSize: "0.7rem", color: h.accent }}>{h.icon}</span>
+                    <span className="font-display" style={{ fontSize: "0.65rem", fontWeight: 900, color: h.accent, letterSpacing: "0.2em" }}>{h.codename}</span>
+                  </div>
+                  {/* Bottom fade — subtle, not covering face */}
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%", background: "linear-gradient(to top, #0A0A0A 0%, transparent 100%)" }} />
+                </div>
+
+                {/* Info block — fully below photo, no overlap */}
+                <div style={{ padding: "1.75rem 1.75rem 2rem" }}>
+                  {/* Name + role row */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem", gap: "0.5rem" }}>
+                    <div>
+                      <div className="font-display" style={{ fontSize: "1.35rem", fontWeight: 900, color: "#F5F5F0", lineHeight: 1.05, letterSpacing: "-0.01em" }}>{h.name}</div>
+                      <div style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.15em", textTransform: "uppercase", marginTop: "0.3rem" }}>{h.role}</div>
+                    </div>
+                  </div>
+
+                  {/* Superpower line */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem", padding: "0.5rem 0.75rem", background: `${h.accent}10`, borderLeft: `2px solid ${h.accent}` }}>
+                    <span style={{ fontFamily: "Inter", fontSize: "0.7rem", color: h.accent, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>Суперсила:</span>
+                    <span style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", fontWeight: 400 }}>{h.power}</span>
+                  </div>
+
+                  {/* Description */}
+                  <p style={{ fontFamily: "Inter", fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.65, margin: 0 }}>{h.desc}</p>
+                </div>
+              </div>
+            </FadeUp>
+          ))}
         </div>
-      </FadeUp>
+
+        {/* Bottom row: Dmitry + caption */}
+        <FadeUp delay={0.3}>
+          <div style={{ marginTop: "1px", background: "rgba(255,255,255,0.06)", padding: "1px" }}>
+            <div style={{ background: "#0A0A0A", padding: "2rem 2rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1.5rem" }}>
+              {/* Dmitry card */}
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                <div style={{ width: "3.5rem", height: "3.5rem", borderRadius: "50%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <span className="font-display" style={{ fontSize: "1.1rem", fontWeight: 900, color: "rgba(255,255,255,0.3)" }}>Д</span>
+                </div>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.2rem" }}>
+                    <div className="font-display" style={{ fontSize: "1rem", fontWeight: 900, color: "rgba(255,255,255,0.55)", letterSpacing: "-0.01em" }}>Дмитрий Лебедев</div>
+                    <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", padding: "0.15rem 0.5rem" }}>
+                      <span className="font-display" style={{ fontSize: "0.55rem", fontWeight: 900, color: "rgba(255,255,255,0.3)", letterSpacing: "0.15em" }}>ОПЕРАЦИОНКА</span>
+                    </div>
+                  </div>
+                  <div style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", lineHeight: 1.5 }}>Держит проекты в порядке, когда всё идёт не по плану.</div>
+                </div>
+              </div>
+
+              {/* Caption */}
+              <div className="font-display" style={{ fontSize: "clamp(1.4rem, 3.5vw, 2.8rem)", fontWeight: 900, color: "rgba(255,255,255,0.1)", letterSpacing: "-0.02em", fontStyle: "italic", lineHeight: 1 }}>
+                ...и другие<br />классные ребята
+              </div>
+            </div>
+          </div>
+        </FadeUp>
+
+      </div>
     </section>
   );
 }
