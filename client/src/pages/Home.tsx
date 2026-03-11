@@ -734,6 +734,113 @@ function Footer() {
   );
 }
 
+// ─── Visual Object Sections (MSCHF style) ───────────────────────────────────
+
+type VisualBlockProps = {
+  src: string;
+  side?: "left" | "right" | "center";
+  label?: string;
+  headline: React.ReactNode;
+  sub?: string;
+  border?: boolean;
+};
+
+function VisualBlock({ src, side = "right", label, headline, sub, border = true }: VisualBlockProps) {
+  const isCenter = side === "center";
+  const isLeft = side === "left";
+  return (
+    <section style={{ background: "#0A0A0A", overflow: "hidden", position: "relative", minHeight: "75vh", display: "flex", alignItems: "center", borderTop: border ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
+      {isCenter ? (
+        <img src={src} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", opacity: 0.55 }} />
+      ) : (
+        <img src={src} alt="" style={{ position: "absolute", [isLeft ? "left" : "right"]: "-2%", top: "50%", transform: "translateY(-50%)", width: "52%", height: "115%", objectFit: "cover", objectPosition: "center" }} />
+      )}
+      <div style={{ position: "absolute", inset: 0, background: isCenter ? "rgba(10,10,10,0.55)" : isLeft ? "linear-gradient(to left, #0A0A0A 42%, transparent 80%)" : "linear-gradient(to right, #0A0A0A 42%, transparent 80%)" }} />
+      <div className="container" style={{ position: "relative", zIndex: 2, paddingTop: "6rem", paddingBottom: "6rem", display: "flex", justifyContent: isLeft ? "flex-end" : "flex-start" }}>
+        <FadeUp>
+          <div style={{ maxWidth: "520px" }}>
+            {label && <p style={{ fontFamily: "Inter", fontSize: "0.7rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1.5rem" }}>— {label}</p>}
+            <div className="font-display" style={{ fontSize: "clamp(2.2rem, 5.5vw, 5rem)", fontWeight: 900, color: "#F5F5F0", lineHeight: 0.95, letterSpacing: "-0.02em" }}>
+              {headline}
+            </div>
+            {sub && <p style={{ fontFamily: "Inter", fontSize: "0.9rem", color: "rgba(255,255,255,0.4)", marginTop: "1.5rem", lineHeight: 1.6, maxWidth: "340px" }}>{sub}</p>}
+          </div>
+        </FadeUp>
+      </div>
+    </section>
+  );
+}
+
+function VisualBrainBag() {
+  return <VisualBlock
+    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/art-brain-bag_bf42f06f.png"
+    side="right"
+    label="Стратегия"
+    headline={<>СТРАТЕГИЯ<br /><span style={{ color: "#FF2D20" }}>ВЕБИНАРА.</span></>}
+    sub="Разбираем бизнес, аудиторию, оффер. Строим воронку, которая не сливает бюджет."
+  />;
+}
+
+function VisualCupLeads() {
+  return <VisualBlock
+    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/art-cup-leads_8965a777.png"
+    side="left"
+    label="Трафик"
+    headline={<>НАЛИВАЕМ<br /><span style={{ color: "#FF2D20" }}>ЛИДЫ.</span></>}
+    sub="Холодный трафик, который окупается. Ads → вебинар → продажа."
+  />;
+}
+
+function VisualMousetrap() {
+  return <VisualBlock
+    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/art-mousetrap_e326f999.png"
+    side="right"
+    label="Конверсия"
+    headline={<>ЛОВУШКА<br /><span style={{ color: "#FF2D20" }}>ДЛЯ ЛИДОВ.</span></>}
+    sub="Сценарий, который ведёт к покупке. Без ощущения, что тебя разводят."
+  />;
+}
+
+function VisualLabyrinth() {
+  return <VisualBlock
+    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/art-labyrinth_1761c7bc.png"
+    side="center"
+    label="Путь клиента"
+    headline={<>КАК ЛИД<br />ДОХОДИТ<br /><span style={{ color: "#FF2D20" }}>ДО ПОКУПКИ.</span></>}
+    sub="Боты, дожимы, автоворонка. Поднимаем доходимость на 20–30%."
+  />;
+}
+
+function VisualMagnet() {
+  return <VisualBlock
+    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/art-magnet_d47c6fe4.png"
+    side="right"
+    label="Онлайн-школа №1"
+    headline={<>+70%<br /><span style={{ color: "#FF2D20" }}>ROMI.</span><br /><span style={{ fontSize: "0.45em", color: "rgba(255,255,255,0.3)", letterSpacing: "0.05em" }}>НА ХОЛОДНОМ ТРАФИКЕ</span></>}
+    sub="Пересобрали воронку, переписали сценарий, подключили автоворонку."
+  />;
+}
+
+function VisualReceipt() {
+  return <VisualBlock
+    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/art-receipt_e3b8e90c.png"
+    side="left"
+    label="Primekraft"
+    headline={<>×4<br /><span style={{ color: "#FF2D20" }}>ВЫРУЧКА.</span></>}
+    sub="Первый вебинарный канал продаж для спортивного питания. D2C без маркетплейсов."
+  />;
+}
+
+function VisualBoxLeads() {
+  return <VisualBlock
+    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/art-box-leads_c63b6931.png"
+    side="right"
+    label="Результат"
+    headline={<>ЛИДЫ<br />НЕ<br /><span style={{ color: "#FF2D20" }}>КОНЧАЮТСЯ.</span></>}
+    sub="40+ запущенных воронок. Знаем, где теряются деньги — и чиним до следующего запуска."
+  />;
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Home() {
@@ -742,12 +849,19 @@ export default function Home() {
       <Nav />
       <Hero />
       <Marquee />
+      <VisualBrainBag />
       <RecognizeYourself />
+      <VisualCupLeads />
       <Services />
+      <VisualMousetrap />
       <Cases />
+      <VisualMagnet />
+      <VisualReceipt />
       <WhyUs />
+      <VisualLabyrinth />
       <PointB />
       <Barriers />
+      <VisualBoxLeads />
       <Competitors />
       <Team />
       <Contact />
