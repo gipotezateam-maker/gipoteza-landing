@@ -573,11 +573,8 @@ function Team() {
       role: "Основатель",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/denis_30d9c6b7.jpg",
       accent: "#FF2D20",
-      rows: [
-        { k: "Опыт", v: "5 лет — только вебинары" },
-        { k: "Запусков", v: "40+" },
-        { k: "Суперсила", v: "Видит воронку насквозь" },
-      ],
+      accentText: "#fff",
+      stickerShape: "burst",
     },
     {
       id: "АЗ-002",
@@ -586,39 +583,76 @@ function Team() {
       role: "Партнёр, контент",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alla_c7f64f85.jpg",
       accent: "#B5F23D",
-      rows: [
-        { k: "Опыт", v: "Skyeng, Skillbox" },
-        { k: "Специализация", v: "Сценарии и смыслы" },
-        { k: "Суперсила", v: "Знает голову покупателя" },
-      ],
+      accentText: "#0A0A0A",
+      stickerShape: "oval",
     },
     {
       id: "АП-003",
       codename: "ТРАФИК",
       name: "Алексей Пономарёв",
-      role: "Партнёр, автоматизация",
+      role: "Основатель",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alexey_68167dc3.jpg",
       accent: "#FF2D20",
-      rows: [
-        { k: "Специализация", v: "Холодный трафик" },
-        { k: "Инструменты", v: "Боты, автоворонки" },
-        { k: "Суперсила", v: "Маркетинг без угадайки" },
-      ],
+      accentText: "#fff",
+      stickerShape: "burst",
     },
     {
       id: "ДЛ-004",
-      codename: "ОПЕРАЦИОНКА",
+      codename: "МАРКЕТОЛОГ",
       name: "Дмитрий Лебедев",
-      role: "Операционный директор",
+      role: "Операционный маркетолог",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/dima-photo_0a8d9f28.jpg",
       accent: "#B5F23D",
-      rows: [
-        { k: "Роль", v: "Держит проекты в порядке" },
-        { k: "Специализация", v: "Процессы и дедлайны" },
-        { k: "Суперсила", v: "Когда всё идёт не по плану" },
-      ],
+      accentText: "#0A0A0A",
+      stickerShape: "oval",
     },
   ];
+
+  // SVG sticker shapes
+  const BurstSticker = ({ label, textColor }: { label: string; textColor: string }) => (
+    <svg viewBox="0 0 120 120" width="110" height="110" style={{ display: "block" }}>
+      <polygon
+        points="60,2 72,38 108,26 90,58 118,72 82,80 92,116 60,96 28,116 38,80 2,72 30,58 12,26 48,38"
+        fill="currentColor"
+      />
+      <text
+        x="60"
+        y="65"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        style={{
+          fontFamily: "var(--font-display, 'Bebas Neue', sans-serif)",
+          fontSize: "14px",
+          fontWeight: 900,
+          fill: textColor,
+          letterSpacing: "0.05em",
+        }}
+      >
+        {label}
+      </text>
+    </svg>
+  );
+
+  const OvalSticker = ({ label, textColor }: { label: string; textColor: string }) => (
+    <svg viewBox="0 0 160 80" width="140" height="70" style={{ display: "block" }}>
+      <ellipse cx="80" cy="40" rx="76" ry="36" fill="currentColor" />
+      <text
+        x="80"
+        y="44"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        style={{
+          fontFamily: "var(--font-display, 'Bebas Neue', sans-serif)",
+          fontSize: "18px",
+          fontWeight: 900,
+          fill: textColor,
+          letterSpacing: "0.08em",
+        }}
+      >
+        {label}
+      </text>
+    </svg>
+  );
 
   return (
     <section
@@ -630,41 +664,26 @@ function Team() {
       }}
     >
       <div className="container">
-
-        {/* ── Заголовок секции ── */}
+        {/* ── Заголовок ── */}
         <FadeUp>
-          <div style={{ marginBottom: "5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem" }}>
-              <span
-                style={{
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "0.65rem",
-                  fontWeight: 600,
-                  color: "rgba(255,255,255,0.25)",
-                  letterSpacing: "0.25em",
-                  textTransform: "uppercase",
-                }}
-              >
-                КОМАНДА
-              </span>
-              <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.08)" }} />
-              <span
-                style={{
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "0.65rem",
-                  fontWeight: 600,
-                  color: "rgba(255,255,255,0.15)",
-                  letterSpacing: "0.2em",
-                  textTransform: "uppercase",
-                }}
-              >
-                4 ЧЕЛОВЕКА
-              </span>
-            </div>
+          <div style={{ marginBottom: "4rem" }}>
+            <p
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "0.65rem",
+                fontWeight: 600,
+                color: "rgba(255,255,255,0.25)",
+                letterSpacing: "0.25em",
+                textTransform: "uppercase",
+                marginBottom: "1.5rem",
+              }}
+            >
+              КОМАНДА · 4 ЧЕЛОВЕКА
+            </p>
             <h2
               className="font-display"
               style={{
-                fontSize: "clamp(2.8rem, 6vw, 5.5rem)",
+                fontSize: "clamp(3rem, 7vw, 6rem)",
                 fontWeight: 900,
                 color: "#F5F5F0",
                 letterSpacing: "-0.04em",
@@ -678,36 +697,38 @@ function Team() {
           </div>
         </FadeUp>
 
-        {/* ── Карточки ── */}
+        {/* ── Сетка карточек ── */}
         <div
+          className="team-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(4, 1fr)",
             gap: "2px",
-            background: "rgba(255,255,255,0.05)",
+            background: "rgba(255,255,255,0.04)",
           }}
-          className="team-grid"
         >
           {members.map((m, i) => (
-            <FadeUp key={i} delay={i * 0.1}>
+            <FadeUp key={m.id} delay={i * 0.08}>
               <div
                 style={{
                   background: "#0A0A0A",
-                  padding: "0",
                   display: "flex",
                   flexDirection: "column",
-                  transition: "background 0.25s",
                   cursor: "default",
+                  transition: "transform 0.3s ease",
                 }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.background = "#111";
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLDivElement).style.background = "#0A0A0A";
-                }}
+                onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-4px)")}
+                onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}
               >
-                {/* Фото */}
-                <div style={{ position: "relative", overflow: "hidden", aspectRatio: "3/4" }}>
+                {/* Фото — полная высота */}
+                <div
+                  style={{
+                    position: "relative",
+                    aspectRatio: "3/4",
+                    overflow: "hidden",
+                    background: "#1a1a1a",
+                  }}
+                >
                   <img
                     src={m.photo}
                     alt={m.name}
@@ -717,76 +738,65 @@ function Team() {
                       objectFit: "cover",
                       objectPosition: "center top",
                       display: "block",
-                      transition: "transform 0.5s ease",
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.04)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; }}
                   />
-                  {/* ID badge — верхний левый */}
+                  {/* ID бейдж — верхний левый */}
                   <div
                     style={{
                       position: "absolute",
-                      top: "1rem",
-                      left: "1rem",
-                      background: "#0A0A0A",
-                      padding: "0.25rem 0.6rem",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.4rem",
+                      top: "0.75rem",
+                      left: "0.75rem",
+                      background: "rgba(10,10,10,0.85)",
+                      padding: "0.2rem 0.5rem",
+                      backdropFilter: "blur(4px)",
                     }}
                   >
-                    <div style={{ width: "6px", height: "6px", background: m.accent, borderRadius: "50%" }} />
                     <span
                       style={{
                         fontFamily: "Inter, monospace",
-                        fontSize: "0.6rem",
+                        fontSize: "0.55rem",
                         fontWeight: 700,
-                        color: "rgba(255,255,255,0.5)",
+                        color: "rgba(255,255,255,0.4)",
                         letterSpacing: "0.15em",
                       }}
                     >
                       {m.id}
                     </span>
                   </div>
-                  {/* Кодовое имя — нижний правый */}
+                  {/* Стикер — нижний правый */}
                   <div
                     style={{
                       position: "absolute",
-                      bottom: "1rem",
-                      right: "1rem",
-                      background: m.accent,
-                      padding: "0.3rem 0.7rem",
+                      bottom: "0.75rem",
+                      right: "0.75rem",
+                      color: m.accent,
+                      filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.5))",
+                      transform: m.stickerShape === "burst" ? "rotate(-8deg)" : "rotate(4deg)",
                     }}
                   >
-                    <span
-                      className="font-display"
-                      style={{
-                        fontSize: "0.6rem",
-                        fontWeight: 900,
-                        color: m.accent === "#B5F23D" ? "#0A0A0A" : "#fff",
-                        letterSpacing: "0.2em",
-                      }}
-                    >
-                      {m.codename}
-                    </span>
+                    {m.stickerShape === "burst" ? (
+                      <BurstSticker label={m.codename} textColor={m.accentText} />
+                    ) : (
+                      <OvalSticker label={m.codename} textColor={m.accentText} />
+                    )}
                   </div>
                 </div>
 
                 {/* Имя и роль */}
                 <div
                   style={{
-                    padding: "1.5rem 1.5rem 0",
-                    borderTop: `2px solid ${m.accent}`,
+                    padding: "1.25rem 1.25rem 1.5rem",
+                    borderTop: `3px solid ${m.accent}`,
                   }}
                 >
                   <div
                     className="font-display"
                     style={{
-                      fontSize: "clamp(1.4rem, 2vw, 1.8rem)",
+                      fontSize: "clamp(1.1rem, 1.6vw, 1.5rem)",
                       fontWeight: 900,
                       color: "#F5F5F0",
                       letterSpacing: "-0.02em",
-                      lineHeight: 1,
+                      lineHeight: 1.05,
                       marginBottom: "0.4rem",
                     }}
                   >
@@ -797,94 +807,25 @@ function Team() {
                       fontFamily: "Inter, sans-serif",
                       fontSize: "0.65rem",
                       color: "rgba(255,255,255,0.3)",
-                      letterSpacing: "0.15em",
+                      letterSpacing: "0.12em",
                       textTransform: "uppercase",
-                      marginBottom: "1.5rem",
                     }}
                   >
                     {m.role}
                   </div>
                 </div>
-
-                {/* Досье — строки */}
-                <div
-                  style={{
-                    padding: "0 1.5rem 1.5rem",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0",
-                    flex: 1,
-                  }}
-                >
-                  {m.rows.map((row, ri) => (
-                    <div
-                      key={ri}
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        gap: "0.5rem",
-                        padding: "0.7rem 0",
-                        borderBottom: ri < m.rows.length - 1
-                          ? "1px solid rgba(255,255,255,0.06)"
-                          : "none",
-                        alignItems: "baseline",
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontFamily: "Inter, sans-serif",
-                          fontSize: "0.6rem",
-                          color: "rgba(255,255,255,0.25)",
-                          letterSpacing: "0.12em",
-                          textTransform: "uppercase",
-                          fontWeight: 600,
-                        }}
-                      >
-                        {row.k}
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: "Inter, sans-serif",
-                          fontSize: "0.78rem",
-                          color: "#F5F5F0",
-                          fontWeight: 500,
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        {row.v}
-                      </span>
-                    </div>
-                  ))}
-                </div>
               </div>
             </FadeUp>
           ))}
         </div>
-
-        {/* ── Ghost footer ── */}
-        <FadeUp delay={0.4}>
-          <div style={{ marginTop: "2px", padding: "1.5rem 0", textAlign: "center" }}>
-            <div
-              className="font-display"
-              style={{
-                fontSize: "clamp(1rem, 2vw, 1.8rem)",
-                fontWeight: 900,
-                fontStyle: "italic",
-                color: "transparent",
-                WebkitTextStroke: "1px rgba(255,255,255,0.06)",
-                letterSpacing: "-0.02em",
-                lineHeight: 1,
-              }}
-            >
-              ...и другие классные ребята
-            </div>
-          </div>
-        </FadeUp>
-
       </div>
-
       <style>{`
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
+          .team-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+        @media (max-width: 500px) {
           .team-grid {
             grid-template-columns: 1fr !important;
           }
@@ -893,8 +834,6 @@ function Team() {
     </section>
   );
 }
-
-// ─── Contact / CTA ────────────────────────────────────────────────────────────
 
 function Contact() {
   const [form, setForm] = useState({ name: "", company: "", telegram: "" });
@@ -1031,7 +970,7 @@ function WebinarExamples() {
       client: "Онлайн-школа",
       tag: "Живой вебинар",
       rutube_id: "8ec01debb50c163baa6bc5c5b609bae9",
-      embed: "https://rutube.ru/play/embed/8ec01debb50c163baa6bc5c5b609bae9/",
+      embed: "https://rutube.ru/play/embed/8ec01debb50c163baa6bc5c5b609bae9/?p=453QWTDVPy3yIcnaIzP2bg",
     },
   ];
   return (
