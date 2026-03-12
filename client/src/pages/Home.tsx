@@ -121,96 +121,90 @@ function Nav() {
 
 function Hero() {
   return (
-    <section id="hero" style={{ background: "#0A0A0A", minHeight: "100vh", paddingTop: "7rem", paddingBottom: "4rem" }}>
+    <section id="hero" style={{ background: "#0A0A0A", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: "6rem", paddingBottom: "3rem" }}>
       <div className="container">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3rem" }}>
-
-          {/* Main layout: big title left, description right */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem" }} className="lg:grid-cols-[1fr_280px]">
-
-            {/* Big title */}
-            <motion.div initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}>
-              <div className="font-display" style={{ fontSize: "clamp(3.5rem, 10vw, 9rem)", lineHeight: 0.92, fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em" }}>
+        {/* Main layout: title left, stats+clients right */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2.5rem" }} className="lg:grid-cols-[1fr_300px] lg:gap-12">
+          {/* Left: title + description + CTA */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
+              <div className="font-display" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", lineHeight: 0.95, fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em" }}>
                 <div>ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА —</div>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.3em", flexWrap: "wrap" }}>
-                  <span style={{ display: "inline-block", background: "#FF2D20", borderRadius: "999px", padding: "0.05em 0.4em", fontSize: "0.85em", transform: "rotate(-2deg)", position: "relative", top: "-0.05em" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.25em", flexWrap: "wrap" }}>
+                  <span style={{ display: "inline-block", background: "#FF2D20", borderRadius: "999px", padding: "0.05em 0.35em", fontSize: "0.82em", transform: "rotate(-2deg)", position: "relative", top: "-0.05em" }}>
                     <span style={{ fontSize: "0.55em", fontFamily: "Inter", fontWeight: 700, letterSpacing: "0.05em" }}>это</span>
                   </span>
                   вебинары,
                 </div>
-                <div>которые</div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.2em", flexWrap: "wrap" }}>
-                  продают
+                  которые продают
                   <span style={{
                     display: "inline-block",
                     background: "#B5F23D",
                     clipPath: "polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)",
-                    width: "1.2em", height: "1.2em",
-                    fontSize: "0.45em",
+                    width: "0.9em", height: "0.9em",
+                    fontSize: "0.5em",
                     transform: "rotate(20deg)",
                     position: "relative",
-                    top: "-0.3em"
+                    top: "-0.2em"
                   }} />
                 </div>
               </div>
             </motion.div>
 
-            {/* Right column: description + pills */}
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: "1.5rem", paddingBottom: "0.5rem" }}>
-              <p style={{ fontFamily: "Inter", fontSize: "0.95rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.6, fontWeight: 300 }}>
-                Делаем вебинарные воронки под ключ для EdTech и крупных брендов. Окупаем холодный трафик.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                {["Онлайн-колледж №1", "Primekraft", "SkillFactory", "Skyeng", "Skillbox"].map(c => (
-                  <span key={c} className="pill" style={{ display: "block", width: "fit-content" }}>{c}</span>
-                ))}
-              </div>
+            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              style={{ fontFamily: "Inter", fontSize: "clamp(0.9rem, 1.5vw, 1.05rem)", color: "rgba(255,255,255,0.5)", lineHeight: 1.65, fontWeight: 300, maxWidth: "480px" }}>
+              Делаем вебинарные воронки под ключ для EdTech и крупных брендов. Окупаем холодный трафик.
+            </motion.p>
+
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}
+              style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
+              <button
+                onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+                className="font-display"
+                style={{ background: "#FF2D20", color: "#fff", border: "none", padding: "0.9rem 2.2rem", fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.08em", cursor: "pointer", transition: "opacity 0.2s" }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
+                onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
+                Оставить заявку
+              </button>
+              <button
+                onClick={() => document.getElementById("cases")?.scrollIntoView({ behavior: "smooth" })}
+                style={{ background: "transparent", color: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.15)", padding: "0.9rem 2rem", fontSize: "0.85rem", fontFamily: "Inter", cursor: "pointer", transition: "all 0.2s" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)"; e.currentTarget.style.color = "#fff"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "rgba(255,255,255,0.55)"; }}>
+                Смотреть кейсы
+              </button>
             </motion.div>
           </div>
 
-          {/* Stats row */}
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.5 }}
-            style={{ display: "flex", gap: "3rem", flexWrap: "wrap", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "2rem" }}>
-            {[
-              { n: "5 лет", l: "только вебинары" },
-              { n: "40+", l: "запущенных воронок" },
-              { n: "160%", l: "ROMI на холодном трафике" },
-            ].map(s => (
-              <div key={s.n}>
-                <div className="font-display" style={{ fontSize: "2rem", fontWeight: 900, color: "#F5F5F0" }}>{s.n}</div>
-                <div style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.4)", marginTop: "0.2rem" }}>{s.l}</div>
-              </div>
-            ))}
-          </motion.div>
-
-          {/* CTA buttons */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.7 }}
-            style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-            <button
-              onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-              className="font-display"
-              style={{ background: "#FF2D20", color: "#fff", border: "none", padding: "0.85rem 2rem", fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.08em", cursor: "pointer", transition: "opacity 0.2s" }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
-              onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
-              ХОЧУ ТАКУЮ ВОРОНКУ →
-            </button>
-            <button
-              onClick={() => document.getElementById("cases")?.scrollIntoView({ behavior: "smooth" })}
-              style={{ background: "transparent", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.15)", padding: "0.85rem 2rem", fontSize: "0.85rem", fontFamily: "Inter", cursor: "pointer", transition: "all 0.2s" }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)"; e.currentTarget.style.color = "#fff"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "rgba(255,255,255,0.6)"; }}>
-              Смотреть кейсы
-            </button>
+          {/* Right: stats + client pills */}
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "2rem" }}>
+            {/* Stats */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              {[
+                { n: "5 лет", l: "только вебинары" },
+                { n: "40+", l: "запущенных воронок" },
+                { n: "160%", l: "ROMI на холодном трафике" },
+              ].map(s => (
+                <div key={s.n} style={{ borderLeft: "2px solid #FF2D20", paddingLeft: "1rem" }}>
+                  <div className="font-display" style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)", fontWeight: 900, color: "#F5F5F0", lineHeight: 1 }}>{s.n}</div>
+                  <div style={{ fontFamily: "Inter", fontSize: "0.78rem", color: "rgba(255,255,255,0.4)", marginTop: "0.2rem" }}>{s.l}</div>
+                </div>
+              ))}
+            </div>
+            {/* Client pills */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+              {["Skillbox", "SkillFactory", "Primekraft", "Skyeng", "Онлайн-колледж №1"].map(c => (
+                <span key={c} className="pill">{c}</span>
+              ))}
+            </div>
           </motion.div>
         </div>
       </div>
     </section>
   );
 }
-
-// ─── Marquee ─────────────────────────────────────────────────────────────────
-
 function Marquee() {
   const items = ["Логомашина", "Онлайн-колледж №1", "Primekraft", "SkillFactory", "Skillbox", "Школа вокала Этери Бериашвили", "Онлайн-школа №1"];
   const doubled = [...items, ...items];
