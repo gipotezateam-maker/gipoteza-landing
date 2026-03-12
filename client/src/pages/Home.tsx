@@ -8,6 +8,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
+import { Link } from "wouter";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -79,6 +80,13 @@ function Nav() {
               {l.label}
             </button>
           ))}
+          <Link href="/blog">
+            <span
+              style={{ fontFamily: "Inter", fontSize: "0.875rem", color: "rgba(255,255,255,0.6)", fontWeight: 400, cursor: "pointer" }}
+              className="hover:text-white transition-colors duration-200">
+              Статьи
+            </span>
+          </Link>
           <button onClick={() => go("contact")}
             className="pill"
             style={{ borderColor: "rgba(255,255,255,0.3)", color: "#F5F5F0", fontSize: "0.8rem" }}>
