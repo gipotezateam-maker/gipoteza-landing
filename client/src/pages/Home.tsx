@@ -49,7 +49,6 @@ function Nav() {
     { label: "Услуги", id: "services" },
     { label: "Кейсы", id: "cases" },
     { label: "Команда", id: "team" },
-    { label: "Контакт", id: "contact" },
   ];
 
   return (

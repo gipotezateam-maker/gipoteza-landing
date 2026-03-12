@@ -15,6 +15,17 @@ const ARTICLES = [
       "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/article-hero-YqwjNYyRnGFgMQtKMm7E9b.webp",
     readTime: "7 мин",
   },
+  {
+    slug: "iz-chego-sostoit-zapusk-vebinara",
+    tag: "Практика",
+    date: "Март 2026",
+    title: "Из чего состоит запуск вебинара",
+    excerpt:
+      "Продающая структура, ключевые принципы живого эфира и полный чек-лист перед запуском. Разбираем по частям — от архитектуры до техосмотра.",
+    image:
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/webinar-hero-mEiBs8KLnurfSUCxVSPAin.webp",
+    readTime: "10 мин",
+  },
 ];
 
 export default function Blog() {
