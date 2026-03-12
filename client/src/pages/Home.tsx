@@ -6,7 +6,7 @@
  * Structure: AJTBD — Hero → Clients → "Узнаёшь себя?" → Услуги → Вебинары → Почему мы → Точка Б → Барьеры → Конкуренты → Команда → CTA
  */
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -567,267 +567,345 @@ function Competitors() {
 function Team() {
   const members = [
     {
-      id: "ДЗ-001",
+      id: "01",
       codename: "СТРАТЕГ",
       name: "Денис Зюлин",
       role: "Основатель",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/denis_30d9c6b7.jpg",
       accent: "#FF2D20",
-      accentText: "#fff",
-      stickerShape: "burst",
+      quote: "Вебинар — это не шоу. Это система, которая либо работает, либо нет. Мы строим те, которые работают.",
+      focus: "Стратегия воронок и продуктовый маркетинг",
+      background: ["5 лет в вебинарах", "40+ запусков", "EdTech и онлайн-школы"],
     },
     {
-      id: "АЗ-002",
+      id: "02",
       codename: "ПРОДЮСЕР",
       name: "Алла Захарова",
       role: "Партнёр, контент",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alla_c7f64f85.jpg",
       accent: "#B5F23D",
-      accentText: "#0A0A0A",
-      stickerShape: "oval",
+      quote: "Хороший сценарий — это когда зритель не замечает, что его ведут. Он просто хочет купить.",
+      focus: "Сценарии, смыслы и структура контента",
+      background: ["Skyeng", "Skillbox", "Нетология"],
     },
     {
-      id: "АП-003",
+      id: "03",
       codename: "ТРАФИК",
       name: "Алексей Пономарёв",
       role: "Основатель",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alexey_68167dc3.jpg",
       accent: "#FF2D20",
-      accentText: "#fff",
-      stickerShape: "burst",
+      quote: "Холодный трафик не прощает слабых офферов. Мы делаем воронки, которые окупаются с первого касания.",
+      focus: "Холодный трафик, боты и автоворонки",
+      background: ["Таргет и контекст", "Чат-боты", "Автоматизация"],
     },
     {
-      id: "ДЛ-004",
+      id: "04",
       codename: "МАРКЕТОЛОГ",
       name: "Дмитрий Лебедев",
       role: "Операционный маркетолог",
       photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/dima-photo_0a8d9f28.jpg",
       accent: "#B5F23D",
-      accentText: "#0A0A0A",
-      stickerShape: "oval",
+      quote: "Маркетинг без операционки — это идеи без результата. Я слежу за тем, чтобы всё работало как надо.",
+      focus: "Операционный маркетинг и процессы",
+      background: ["Аналитика", "CRM и воронки", "Управление проектами"],
     },
   ];
 
-  // SVG sticker shapes
-  const BurstSticker = ({ label, textColor }: { label: string; textColor: string }) => (
-    <svg viewBox="0 0 120 120" width="110" height="110" style={{ display: "block" }}>
-      <polygon
-        points="60,2 72,38 108,26 90,58 118,72 82,80 92,116 60,96 28,116 38,80 2,72 30,58 12,26 48,38"
-        fill="currentColor"
-      />
-      <text
-        x="60"
-        y="65"
-        textAnchor="middle"
-        dominantBaseline="middle"
-        style={{
-          fontFamily: "var(--font-display, 'Bebas Neue', sans-serif)",
-          fontSize: "14px",
-          fontWeight: 900,
-          fill: textColor,
-          letterSpacing: "0.05em",
-        }}
-      >
-        {label}
-      </text>
-    </svg>
-  );
-
-  const OvalSticker = ({ label, textColor }: { label: string; textColor: string }) => (
-    <svg viewBox="0 0 160 80" width="140" height="70" style={{ display: "block" }}>
-      <ellipse cx="80" cy="40" rx="76" ry="36" fill="currentColor" />
-      <text
-        x="80"
-        y="44"
-        textAnchor="middle"
-        dominantBaseline="middle"
-        style={{
-          fontFamily: "var(--font-display, 'Bebas Neue', sans-serif)",
-          fontSize: "18px",
-          fontWeight: 900,
-          fill: textColor,
-          letterSpacing: "0.08em",
-        }}
-      >
-        {label}
-      </text>
-    </svg>
-  );
+  const [active, setActive] = useState(0);
+  const m = members[active];
 
   return (
     <section
       id="team"
       style={{
         background: "#0A0A0A",
-        padding: "8rem 0 6rem",
         borderTop: "1px solid rgba(255,255,255,0.06)",
+        overflow: "hidden",
       }}
     >
-      <div className="container">
-        {/* ── Заголовок ── */}
+      {/* ── Заголовок ── */}
+      <div className="container" style={{ paddingTop: "6rem", paddingBottom: "3rem" }}>
         <FadeUp>
-          <div style={{ marginBottom: "4rem" }}>
-            <p
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "0.65rem",
-                fontWeight: 600,
-                color: "rgba(255,255,255,0.25)",
-                letterSpacing: "0.25em",
-                textTransform: "uppercase",
-                marginBottom: "1.5rem",
-              }}
-            >
-              КОМАНДА · 4 ЧЕЛОВЕКА
-            </p>
-            <h2
-              className="font-display"
-              style={{
-                fontSize: "clamp(3rem, 7vw, 6rem)",
-                fontWeight: 900,
-                color: "#F5F5F0",
-                letterSpacing: "-0.04em",
-                lineHeight: 0.9,
-                margin: 0,
-              }}
-            >
-              Лига вебинарных<br />
-              <span style={{ color: "#FF2D20" }}>воронок.</span>
-            </h2>
-          </div>
+          <p
+            style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: "0.65rem",
+              fontWeight: 600,
+              color: "rgba(255,255,255,0.25)",
+              letterSpacing: "0.25em",
+              textTransform: "uppercase",
+              marginBottom: "1.25rem",
+            }}
+          >
+            КОМАНДА · 4 ЧЕЛОВЕКА
+          </p>
+          <h2
+            className="font-display"
+            style={{
+              fontSize: "clamp(3rem, 7vw, 6rem)",
+              fontWeight: 900,
+              color: "#F5F5F0",
+              letterSpacing: "-0.04em",
+              lineHeight: 0.9,
+              margin: 0,
+            }}
+          >
+            Лига вебинарных<br />
+            <span style={{ color: "#FF2D20" }}>воронок.</span>
+          </h2>
         </FadeUp>
+      </div>
 
-        {/* ── Сетка карточек ── */}
+      {/* ── Слайдер ── */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          minHeight: "520px",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+        }}
+        className="team-slider"
+      >
+        {/* Левая часть — цитата и инфо */}
         <div
-          className="team-grid"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: "2px",
-            background: "rgba(255,255,255,0.04)",
+            padding: "clamp(2.5rem, 5vw, 5rem)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            borderRight: "1px solid rgba(255,255,255,0.06)",
+            position: "relative",
           }}
         >
-          {members.map((m, i) => (
-            <FadeUp key={m.id} delay={i * 0.08}>
+          {/* Кавычка */}
+          <div>
+            <div
+              className="font-display"
+              style={{
+                fontSize: "5rem",
+                lineHeight: 0.8,
+                color: m.accent,
+                marginBottom: "1.5rem",
+                fontWeight: 900,
+              }}
+            >
+              «
+            </div>
+            {/* Цитата */}
+            <p
+              className="font-display"
+              style={{
+                fontSize: "clamp(1.3rem, 2.5vw, 2rem)",
+                fontWeight: 700,
+                color: "#F5F5F0",
+                lineHeight: 1.25,
+                letterSpacing: "-0.02em",
+                margin: 0,
+                marginBottom: "2.5rem",
+                transition: "opacity 0.3s ease",
+              }}
+            >
+              {m.quote}
+            </p>
+          </div>
+
+          {/* Нижняя часть — имя, роль, теги */}
+          <div>
+            {/* Фокус */}
+            <div
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "0.7rem",
+                color: m.accent,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                fontWeight: 600,
+                marginBottom: "0.75rem",
+              }}
+            >
+              ФОКУС: {m.focus}
+            </div>
+            {/* Теги опыта */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "1.5rem" }}>
+              {m.background.map((tag, ti) => (
+                <span
+                  key={ti}
+                  style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "0.65rem",
+                    fontWeight: 600,
+                    color: "rgba(255,255,255,0.4)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    padding: "0.25rem 0.6rem",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+            {/* Имя и роль */}
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
               <div
                 style={{
-                  background: "#0A0A0A",
-                  display: "flex",
-                  flexDirection: "column",
-                  cursor: "default",
-                  transition: "transform 0.3s ease",
+                  width: "2px",
+                  height: "2.5rem",
+                  background: m.accent,
+                  flexShrink: 0,
                 }}
-                onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-4px)")}
-                onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}
-              >
-                {/* Фото — полная высота */}
+              />
+              <div>
                 <div
+                  className="font-display"
                   style={{
-                    position: "relative",
-                    aspectRatio: "3/4",
-                    overflow: "hidden",
-                    background: "#1a1a1a",
+                    fontSize: "1.3rem",
+                    fontWeight: 900,
+                    color: "#F5F5F0",
+                    letterSpacing: "-0.02em",
+                    lineHeight: 1,
                   }}
                 >
-                  <img
-                    src={m.photo}
-                    alt={m.name}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      objectPosition: "center top",
-                      display: "block",
-                    }}
-                  />
-                  {/* ID бейдж — верхний левый */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "0.75rem",
-                      left: "0.75rem",
-                      background: "rgba(10,10,10,0.85)",
-                      padding: "0.2rem 0.5rem",
-                      backdropFilter: "blur(4px)",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: "Inter, monospace",
-                        fontSize: "0.55rem",
-                        fontWeight: 700,
-                        color: "rgba(255,255,255,0.4)",
-                        letterSpacing: "0.15em",
-                      }}
-                    >
-                      {m.id}
-                    </span>
-                  </div>
-                  {/* Стикер — нижний правый */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "0.75rem",
-                      right: "0.75rem",
-                      color: m.accent,
-                      filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.5))",
-                      transform: m.stickerShape === "burst" ? "rotate(-8deg)" : "rotate(4deg)",
-                    }}
-                  >
-                    {m.stickerShape === "burst" ? (
-                      <BurstSticker label={m.codename} textColor={m.accentText} />
-                    ) : (
-                      <OvalSticker label={m.codename} textColor={m.accentText} />
-                    )}
-                  </div>
+                  {m.name}
                 </div>
-
-                {/* Имя и роль */}
                 <div
                   style={{
-                    padding: "1.25rem 1.25rem 1.5rem",
-                    borderTop: `3px solid ${m.accent}`,
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "0.65rem",
+                    color: "rgba(255,255,255,0.3)",
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    marginTop: "0.25rem",
                   }}
                 >
-                  <div
-                    className="font-display"
-                    style={{
-                      fontSize: "clamp(1.1rem, 1.6vw, 1.5rem)",
-                      fontWeight: 900,
-                      color: "#F5F5F0",
-                      letterSpacing: "-0.02em",
-                      lineHeight: 1.05,
-                      marginBottom: "0.4rem",
-                    }}
-                  >
-                    {m.name}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "0.65rem",
-                      color: "rgba(255,255,255,0.3)",
-                      letterSpacing: "0.12em",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    {m.role}
-                  </div>
+                  {m.role}
                 </div>
               </div>
-            </FadeUp>
-          ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Правая часть — фото */}
+        <div style={{ position: "relative", overflow: "hidden", background: "#111" }}>
+          <img
+            key={m.id}
+            src={m.photo}
+            alt={m.name}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center top",
+              display: "block",
+              transition: "opacity 0.4s ease",
+            }}
+          />
+          {/* ID бейдж */}
+          <div
+            style={{
+              position: "absolute",
+              top: "1.5rem",
+              left: "1.5rem",
+              background: m.accent,
+              padding: "0.3rem 0.75rem",
+            }}
+          >
+            <span
+              className="font-display"
+              style={{
+                fontSize: "0.7rem",
+                fontWeight: 900,
+                color: m.accent === "#B5F23D" ? "#0A0A0A" : "#fff",
+                letterSpacing: "0.2em",
+              }}
+            >
+              {m.codename}
+            </span>
+          </div>
+          {/* Номер */}
+          <div
+            className="font-display"
+            style={{
+              position: "absolute",
+              bottom: "1.5rem",
+              right: "1.5rem",
+              fontSize: "6rem",
+              fontWeight: 900,
+              color: "transparent",
+              WebkitTextStroke: "1px rgba(255,255,255,0.15)",
+              lineHeight: 1,
+              letterSpacing: "-0.04em",
+            }}
+          >
+            {m.id}
+          </div>
         </div>
       </div>
+
+      {/* ── Навигация ── */}
+      <div
+        style={{
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+        }}
+        className="team-nav"
+      >
+        {members.map((mem, i) => (
+          <button
+            key={mem.id}
+            onClick={() => setActive(i)}
+            style={{
+              background: i === active ? "rgba(255,255,255,0.04)" : "transparent",
+              border: "none",
+              borderRight: i < 3 ? "1px solid rgba(255,255,255,0.06)" : "none",
+              borderBottom: i === active ? `2px solid ${mem.accent}` : "2px solid transparent",
+              padding: "1.25rem 1.5rem",
+              cursor: "pointer",
+              textAlign: "left",
+              transition: "background 0.2s ease",
+            }}
+          >
+            <div
+              className="font-display"
+              style={{
+                fontSize: "0.9rem",
+                fontWeight: 900,
+                color: i === active ? "#F5F5F0" : "rgba(255,255,255,0.3)",
+                letterSpacing: "-0.01em",
+                lineHeight: 1.1,
+                transition: "color 0.2s ease",
+              }}
+            >
+              {mem.name.split(" ")[0]}
+            </div>
+            <div
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "0.55rem",
+                color: i === active ? mem.accent : "rgba(255,255,255,0.2)",
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                marginTop: "0.2rem",
+                transition: "color 0.2s ease",
+              }}
+            >
+              {mem.codename}
+            </div>
+          </button>
+        ))}
+      </div>
+
       <style>{`
-        @media (max-width: 900px) {
-          .team-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-        }
-        @media (max-width: 500px) {
-          .team-grid {
+        @media (max-width: 768px) {
+          .team-slider {
             grid-template-columns: 1fr !important;
+          }
+          .team-slider > div:last-child {
+            min-height: 320px;
+          }
+          .team-nav {
+            grid-template-columns: repeat(2, 1fr) !important;
           }
         }
       `}</style>
