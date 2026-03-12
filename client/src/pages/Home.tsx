@@ -922,10 +922,10 @@ function Contact() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "4rem" }} className="lg:grid-cols-2">
           <FadeUp>
             <h2 className="font-display" style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", lineHeight: 0.95 }}>
-              БЕСПЛАТНЫЙ<br />АУДИТ<br />ВОРОНКИ.
+              БЕСПЛАТНЫЙ<br />РАЗБОР<br />ВОРОНКИ.
             </h2>
             <p style={{ fontFamily: "Inter", fontSize: "0.95rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.7, marginTop: "2rem", maxWidth: "380px" }}>
-              За 48 часов покажем 3 точки, где теряются деньги. Конкретно, без «ну это зависит от задач».
+              Покажем, где у вас теряются деньги — и что с этим делать.
             </p>
             <div style={{ marginTop: "2rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               {["Разбор текущей воронки", "3 точки потери денег", "Рекомендации по исправлению", "Оценка потенциального ROMI"].map(item => (
@@ -948,9 +948,9 @@ function Contact() {
             ) : (
               <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {[
-                  { key: "name", label: "Имя", placeholder: "Как вас зовут?" },
-                  { key: "company", label: "Компания / проект", placeholder: "Название проекта" },
-                  { key: "telegram", label: "Telegram или телефон", placeholder: "@username или +7..." },
+                  { key: "name", label: "Ваше имя", placeholder: "Ваше имя" },
+                  { key: "company", label: "Что продаёте / ниша", placeholder: "Что продаёте / ниша" },
+                  { key: "telegram", label: "Telegram или телефон", placeholder: "Telegram или телефон" },
                 ].map(field => (
                   <div key={field.key} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", textTransform: "uppercase" }}>{field.label}</label>
@@ -982,10 +982,10 @@ function Contact() {
                   style={{ marginTop: "1rem", background: "#FF2D20", color: "#fff", border: "none", padding: "1rem 2rem", fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.08em", cursor: "pointer", transition: "opacity 0.2s", alignSelf: "flex-start" }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
                   onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
-                  ПОЛУЧИТЬ АУДИТ →
+                  Получить разбор бесплатно →
                 </button>
                 <p style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", marginTop: "0.5rem" }}>
-                  Отвечаем в течение 2 часов · Разобрали 40+ воронок
+                  Ответим в течение дня. Без спама и навязчивых продаж.
                 </p>
               </form>
             )}
@@ -1207,6 +1207,58 @@ function VisualBoxLeads() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+function TelegramFloat() {
+  return (
+    <a
+      href="https://t.me/+qTCI2A9QEOY3YzUy"
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        position: "fixed",
+        bottom: "2rem",
+        right: "2rem",
+        zIndex: 1000,
+        display: "flex",
+        alignItems: "center",
+        gap: "0.75rem",
+        textDecoration: "none",
+      }}
+    >
+      <span
+        style={{
+          fontFamily: "Inter",
+          fontSize: "0.8rem",
+          color: "rgba(255,255,255,0.7)",
+          fontWeight: 400,
+          letterSpacing: "0.01em",
+          whiteSpace: "nowrap",
+        }}
+      >
+        Подпишись на наш Telegram-канал
+      </span>
+      <div
+        style={{
+          width: "2.5rem",
+          height: "2.5rem",
+          borderRadius: "50%",
+          background: "#FF2D20",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+          transition: "transform 0.2s, opacity 0.2s",
+        }}
+        onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.1)")}
+        onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 12L12 2M12 2H4M12 2V10" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+    </a>
+  );
+}
+
 export default function Home() {
   return (
     <div style={{ background: "#0A0A0A", minHeight: "100vh" }}>
@@ -1224,6 +1276,7 @@ export default function Home() {
       <Team />
       <Contact />
       <Footer />
+      <TelegramFloat />
     </div>
   );
 }
