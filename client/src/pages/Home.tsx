@@ -128,7 +128,7 @@ function Hero() {
           {/* Left: title + description + CTA */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
             <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
-              <div className="font-display" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", lineHeight: 0.95, fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em" }}>
+              <h1 className="font-display" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", lineHeight: 0.95, fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", margin: 0 }}>
                 <div>ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА —</div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.25em", flexWrap: "wrap" }}>
                   <span style={{ display: "inline-block", background: "#FF2D20", borderRadius: "999px", padding: "0.05em 0.35em", fontSize: "0.82em", transform: "rotate(-2deg)", position: "relative", top: "-0.05em" }}>
@@ -149,12 +149,11 @@ function Hero() {
                     top: "-0.2em"
                   }} />
                 </div>
-              </div>
+              </h1>
             </motion.div>
-
-            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.255, ease: [0.16, 1, 0.3, 1] }}
               style={{ fontFamily: "Inter", fontSize: "clamp(0.9rem, 1.5vw, 1.05rem)", color: "rgba(255,255,255,0.5)", lineHeight: 1.65, fontWeight: 300, maxWidth: "480px" }}>
-              Делаем вебинарные воронки под ключ для EdTech и крупных брендов. Окупаем холодный трафик.
+              Продакшн вебинаров, автоворонки и запуски под ключ для EdTech и крупных брендов. Окупаем холодный трафик.
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}
@@ -1012,7 +1011,7 @@ function Footer() {
           </p>
         </div>
         <div style={{ display: "flex", gap: "2rem" }}>
-          <a href="https://t.me/" target="_blank" rel="noopener noreferrer"
+          <a href="https://t.me/+qTCI2A9QEOY3YzUy" target="_blank" rel="noopener noreferrer"
             style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.35)", textDecoration: "none" }}
             onMouseEnter={e => (e.currentTarget.style.color = "#F5F5F0")}
             onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.35)")}>
@@ -1026,7 +1025,7 @@ function Footer() {
           </a>
         </div>
         <p style={{ fontFamily: "Inter", fontSize: "0.7rem", color: "rgba(255,255,255,0.2)" }}>
-          © 2025 Гипотеза Agency
+          © 2026 Гипотеза — агентство вебинарных воронок
         </p>
       </div>
     </footer>
