@@ -605,6 +605,19 @@ function Team() {
         { k: "Суперсила", v: "Маркетинг без угадайки" },
       ],
     },
+    {
+      id: "ДЛ-004",
+      codename: "ОПЕРАЦИОНКА",
+      name: "Дмитрий Лебедев",
+      role: "Операционный директор",
+      photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/dima-photo_0a8d9f28.jpg",
+      accent: "#B5F23D",
+      rows: [
+        { k: "Роль", v: "Держит проекты в порядке" },
+        { k: "Специализация", v: "Процессы и дедлайны" },
+        { k: "Суперсила", v: "Когда всё идёт не по плану" },
+      ],
+    },
   ];
 
   return (
@@ -645,7 +658,7 @@ function Team() {
                   textTransform: "uppercase",
                 }}
               >
-                3 ЧЕЛОВЕКА
+                4 ЧЕЛОВЕКА
               </span>
             </div>
             <h2
@@ -669,7 +682,7 @@ function Team() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: "repeat(4, 1fr)",
             gap: "2px",
             background: "rgba(255,255,255,0.05)",
           }}
@@ -848,94 +861,22 @@ function Team() {
           ))}
         </div>
 
-        {/* ── Дмитрий + ghost ── */}
-        <FadeUp delay={0.3}>
-          <div
-            style={{
-              marginTop: "2px",
-              background: "rgba(255,255,255,0.02)",
-              padding: "2rem 2rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "2rem",
-              flexWrap: "wrap",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
-              <div
-                style={{
-                  width: "4rem",
-                  height: "4rem",
-                  background: "rgba(255,255,255,0.04)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }}
-              >
-                <span
-                  className="font-display"
-                  style={{ fontSize: "1.4rem", fontWeight: 900, color: "rgba(255,255,255,0.15)" }}
-                >
-                  Д
-                </span>
-              </div>
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
-                  <div style={{ width: "0.75rem", height: "1px", background: "rgba(255,255,255,0.2)" }} />
-                  <span
-                    style={{
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "0.55rem",
-                      fontWeight: 700,
-                      color: "rgba(255,255,255,0.2)",
-                      letterSpacing: "0.2em",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    ДЛ-004 · ОПЕРАЦИОНКА
-                  </span>
-                </div>
-                <div
-                  className="font-display"
-                  style={{
-                    fontSize: "1.1rem",
-                    fontWeight: 900,
-                    color: "rgba(255,255,255,0.4)",
-                    letterSpacing: "-0.01em",
-                  }}
-                >
-                  Дмитрий Лебедев
-                </div>
-                <div
-                  style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "0.68rem",
-                    color: "rgba(255,255,255,0.18)",
-                    marginTop: "0.2rem",
-                  }}
-                >
-                  Держит проекты в порядке, когда всё идёт не по плану.
-                </div>
-              </div>
-            </div>
-
+        {/* ── Ghost footer ── */}
+        <FadeUp delay={0.4}>
+          <div style={{ marginTop: "2px", padding: "1.5rem 0", textAlign: "center" }}>
             <div
               className="font-display"
               style={{
-                fontSize: "clamp(1.2rem, 2.5vw, 2.2rem)",
+                fontSize: "clamp(1rem, 2vw, 1.8rem)",
                 fontWeight: 900,
                 fontStyle: "italic",
                 color: "transparent",
-                WebkitTextStroke: "1px rgba(255,255,255,0.08)",
+                WebkitTextStroke: "1px rgba(255,255,255,0.06)",
                 letterSpacing: "-0.02em",
                 lineHeight: 1,
-                textAlign: "right",
               }}
             >
-              ...и другие<br />классные ребята
+              ...и другие классные ребята
             </div>
           </div>
         </FadeUp>
@@ -1081,6 +1022,71 @@ function Footer() {
   );
 }
 
+// ─── Webinar Examples ─────────────────────────────────────────────────────────
+function WebinarExamples() {
+  const videos = [
+    {
+      id: "v1",
+      title: "Пример продающего вебинара",
+      client: "Онлайн-школа",
+      tag: "Живой вебинар",
+      rutube_id: "8ec01debb50c163baa6bc5c5b609bae9",
+      embed: "https://rutube.ru/play/embed/8ec01debb50c163baa6bc5c5b609bae9/",
+    },
+  ];
+  return (
+    <section id="webinars" style={{ background: "#111", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="container">
+        <FadeUp>
+          <div style={{ marginBottom: "4rem" }}>
+            <p style={{ fontFamily: "Inter", fontSize: "0.65rem", fontWeight: 600, color: "rgba(255,255,255,0.25)", letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
+              ПРИМЕРЫ РАБОТ
+            </p>
+            <h2 className="font-display" style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.04em", lineHeight: 0.9, margin: 0 }}>
+              Смотрите,<br /><span style={{ color: "#FF2D20" }}>как это работает.</span>
+            </h2>
+            <p style={{ fontFamily: "Inter", fontSize: "0.9rem", color: "rgba(255,255,255,0.35)", marginTop: "1.5rem", maxWidth: "480px", lineHeight: 1.7 }}>
+              Реальные вебинары, которые мы сделали. Смотрите структуру, подачу, оффер — и представьте это для вашего продукта.
+            </p>
+          </div>
+        </FadeUp>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(560px, 1fr))", gap: "2px", background: "rgba(255,255,255,0.06)" }}>
+          {videos.map((v, i) => (
+            <FadeUp key={v.id} delay={i * 0.1}>
+              <div style={{ background: "#111", padding: "0" }}>
+                <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, overflow: "hidden" }}>
+                  <iframe
+                    src={v.embed}
+                    title={v.title}
+                    allow="clipboard-write; autoplay"
+                    allowFullScreen
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      border: "none",
+                    }}
+                  />
+                </div>
+                <div style={{ padding: "1.5rem 2rem", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                    <span style={{ fontFamily: "Inter", fontSize: "0.65rem", fontWeight: 600, color: "#FF2D20", letterSpacing: "0.15em", textTransform: "uppercase" }}>{v.tag}</span>
+                    <span style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "rgba(255,255,255,0.2)", letterSpacing: "0.1em" }}>0{i + 1}</span>
+                  </div>
+                  <div className="font-display" style={{ fontSize: "1.1rem", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.01em" }}>{v.title}</div>
+                  <div style={{ fontFamily: "Inter", fontSize: "0.78rem", color: "rgba(255,255,255,0.3)", marginTop: "0.3rem" }}>{v.client}</div>
+                </div>
+              </div>
+            </FadeUp>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ─── Visual Object Sections (MSCHF style) ───────────────────────────────────
 
 type VisualBlockProps = {
@@ -1196,19 +1202,13 @@ export default function Home() {
       <Nav />
       <Hero />
       <Marquee />
-      <VisualBrainBag />
       <RecognizeYourself />
-      <VisualCupLeads />
       <Services />
-      <VisualMousetrap />
       <Cases />
-      <VisualMagnet />
-      <VisualReceipt />
+      <WebinarExamples />
       <WhyUs />
-      <VisualLabyrinth />
       <PointB />
       <Barriers />
-      <VisualBoxLeads />
       <Competitors />
       <Team />
       <Contact />
