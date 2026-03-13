@@ -8,6 +8,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
+import Calculator from "../components/Calculator";
 import { Link } from "wouter";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -1272,6 +1273,7 @@ export default function Home() {
       <Hero />
       <Marquee />
       <RecognizeYourself />
+      <Calculator />
       <Services />
       <Cases />
       <WebinarExamples />
