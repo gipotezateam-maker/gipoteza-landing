@@ -166,7 +166,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export default function Calculator() {
   const [budget, setBudget] = useState(100_000);
-  const [cpa, setCpa] = useState(100);
+  const [cpr, setCpr] = useState(200);
+  const [c1, setC1] = useState(30);
   const [attendance, setAttendance] = useState(25);
   const [price, setPrice] = useState(50_000);
   const [conversion, setConversion] = useState(2);
@@ -174,16 +175,22 @@ export default function Calculator() {
   const [upsell, setUpsell] = useState(0);
 
   const calc = useMemo(() => {
-    const participants = Math.round((budget / cpa) * launches);
+    // C1: конверсия из клика в регистрацию (заявку)
+    const clicks = budget > 0 && cpr > 0 ? Math.round(budget / cpr) : 0;
+    const registrations = Math.round(clicks * (c1 / 100));
+    const participants = Math.round(registrations * launches);
     const watched = Math.round(participants * (attendance / 100));
     const bought = Math.round(watched * (conversion / 100));
     const revenue = bought * price + bought * upsell;
     const romi = budget > 0 ? (revenue / budget) * 100 : 0;
 
     // Potential with Gipoteza
+    const newC1 = Math.max(50, c1);
     const newAttendance = Math.max(50, attendance);
     const newConversion = Math.max(10, conversion);
-    const newWatched = Math.round(participants * (newAttendance / 100));
+    const newRegistrations = Math.round(clicks * (newC1 / 100));
+    const newParticipants = Math.round(newRegistrations * launches);
+    const newWatched = Math.round(newParticipants * (newAttendance / 100));
     const newBought = Math.round(newWatched * (newConversion / 100));
     const newRevenue = newBought * price + newBought * upsell;
     const newRomi = budget > 0 ? (newRevenue / budget) * 100 : 0;
@@ -205,12 +212,13 @@ export default function Calculator() {
     }
 
     return {
-      participants, watched, bought, revenue, romi,
-      newAttendance, newConversion, newWatched, newBought, newRevenue, newRomi,
+      clicks, registrations, participants, watched, bought, revenue, romi,
+      newC1, newAttendance, newConversion, newRegistrations, newParticipants,
+      newWatched, newBought, newRevenue, newRomi,
       delta, deltaRomi,
       recommendation, recColor,
     };
-  }, [budget, cpa, attendance, price, conversion, launches, upsell]);
+  }, [budget, cpr, c1, attendance, price, conversion, launches, upsell]);
 
   const chartData = [
     {
@@ -296,14 +304,24 @@ export default function Calculator() {
               onChange={setBudget}
             />
             <Slider
-              label="Стоимость привлечения (CPA)"
-              hint="Бюджет / количество участников = стоимость одного человека"
-              value={cpa}
+              label="Стоимость регистрации (CPR)"
+              hint="Во сколько обходится одна регистрация (заявка) на вебинар?"
+              value={cpr}
               min={50}
-              max={500}
-              step={10}
-              format={(v) => `${v} ₽`}
-              onChange={setCpa}
+              max={10_000}
+              step={50}
+              format={(v) => v >= 1000 ? `${(v/1000).toFixed(1).replace('.0','')} тыс ₽` : `${v} ₽`}
+              onChange={setCpr}
+            />
+            <Slider
+              label="C1 — конверсия в заявку"
+              hint="Какой % людей, увидевших лендинг, оставляют заявку на вебинар?"
+              value={c1}
+              min={1}
+              max={80}
+              step={1}
+              format={(v) => `${v}%`}
+              onChange={setC1}
             />
             <Slider
               label="Доходимость вебинара"
