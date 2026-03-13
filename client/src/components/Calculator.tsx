@@ -304,9 +304,9 @@ export default function Calculator() {
               hint="Сколько вы тратите в месяц на привлечение людей на вебинар?"
               value={budget}
               min={10_000}
-              max={1_000_000}
+              max={10_000_000}
               step={10_000}
-              format={(v) => `${(v / 1000).toFixed(0)} тыс ₽`}
+              format={(v) => v >= 1_000_000 ? `${(v / 1_000_000).toFixed(1).replace('.0', '')} млн ₽` : `${(v / 1000).toFixed(0)} тыс ₽`}
               onChange={setBudget}
             />
             <Slider
