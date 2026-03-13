@@ -96,11 +96,13 @@ function StatCard({
   value,
   delta,
   accent,
+  large,
 }: {
   label: string;
   value: string;
   delta?: string;
   accent?: string;
+  large?: boolean;
 }) {
   return (
     <div
@@ -108,7 +110,7 @@ function StatCard({
         background: "#111",
         border: "1px solid #1E1E1E",
         borderRadius: "8px",
-        padding: "16px",
+        padding: large ? "20px" : "16px",
         flex: "1 1 calc(50% - 8px)",
         minWidth: "120px",
       }}
@@ -119,7 +121,7 @@ function StatCard({
       <div
         style={{
           fontFamily: "'Bebas Neue', sans-serif",
-          fontSize: "1.6rem",
+          fontSize: large ? "2.4rem" : "1.6rem",
           letterSpacing: "0.04em",
           color: accent || "#E8E0D0",
           lineHeight: 1,
@@ -182,7 +184,8 @@ export default function Calculator() {
     const watched = Math.round(participants * (attendance / 100));
     const bought = Math.round(watched * (conversion / 100));
     const revenue = bought * price + bought * upsell;
-    const romi = budget > 0 ? (revenue / budget) * 100 : 0;
+    // ROMI = (выручка - бюджет) / бюджет * 100 — корректная формула с учётом убытка
+    const romi = budget > 0 ? ((revenue - budget) / budget) * 100 : 0;
 
     // Potential with Gipoteza
     const newC1 = Math.max(50, c1);
@@ -193,16 +196,19 @@ export default function Calculator() {
     const newWatched = Math.round(newParticipants * (newAttendance / 100));
     const newBought = Math.round(newWatched * (newConversion / 100));
     const newRevenue = newBought * price + newBought * upsell;
-    const newRomi = budget > 0 ? (newRevenue / budget) * 100 : 0;
+    const newRomi = budget > 0 ? ((newRevenue - budget) / budget) * 100 : 0;
 
     const delta = newRevenue - revenue;
     const deltaRomi = newRomi - romi;
 
     let recommendation = "";
     let recColor = "#E8E0D0";
-    if (romi < 100) {
-      recommendation = "⚠️ Ваш вебинар теряет деньги. Это критично. Каждый день без изменений — потерянные деньги.";
+    if (romi < 0) {
+      recommendation = "🔴 Убыток. Вебинар не окупает вложения. Каждый запуск — минус в бюджете. Нужна срочная перестройка воронки.";
       recColor = "#E63329";
+    } else if (romi < 100) {
+      recommendation = "⚠️ Вебинар окупается, но слабо. Вложения возвращаются, но прибыль минимальна. Есть серьёзный потенциал роста.";
+      recColor = "#F59E0B";
     } else if (romi < 300) {
       recommendation = "⚡ Вебинар работает, но есть серьёзный потенциал роста. Оптимизация воронки даст x3–x5 к выручке.";
       recColor = "#F59E0B";
@@ -395,7 +401,11 @@ export default function Calculator() {
                 <StatCard label="Досмотрели" value={fmtNum(calc.watched)} />
                 <StatCard label="Купили" value={fmtNum(calc.bought)} />
                 <StatCard label="Выручка" value={fmt(calc.revenue)} />
-                <StatCard label="ROMI" value={`${Math.round(calc.romi)}%`} accent={calc.romi < 100 ? "#E63329" : "#E8E0D0"} />
+                <StatCard
+                  label="ROMI"
+                  value={`${calc.romi >= 0 ? '+' : ''}${Math.round(calc.romi)}%`}
+                  accent={calc.romi < 0 ? "#E63329" : calc.romi < 100 ? "#F59E0B" : "#22C55E"}
+                />
               </div>
             </div>
 
@@ -409,27 +419,37 @@ export default function Calculator() {
                 marginBottom: "16px",
               }}
             >
-              <div style={{ color: "#22C55E", fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "16px", opacity: 0.7 }}>
+              <div style={{ color: "#22C55E", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "20px", fontWeight: 600 }}>
                 Потенциал с Гипотезой
               </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                <StatCard label="Участников" value={fmtNum(calc.participants)} />
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                <StatCard large label="Участников" value={fmtNum(calc.newParticipants)} />
                 <StatCard
+                  large
                   label="Досмотрели"
                   value={fmtNum(calc.newWatched)}
                   delta={calc.newWatched > calc.watched ? `+${fmtNum(calc.newWatched - calc.watched)} чел` : undefined}
                 />
                 <StatCard
+                  large
                   label="Купили"
                   value={fmtNum(calc.newBought)}
                   delta={calc.newBought > calc.bought ? `+${fmtNum(calc.newBought - calc.bought)} чел` : undefined}
                 />
                 <StatCard
+                  large
                   label="Выручка"
                   value={fmt(calc.newRevenue)}
                   delta={calc.newRevenue > calc.revenue ? `+${fmt(calc.newRevenue - calc.revenue)}` : undefined}
+                  accent="#22C55E"
                 />
-                <StatCard label="ROMI" value={`${Math.round(calc.newRomi)}%`} accent="#22C55E" />
+                <StatCard
+                  large
+                  label="ROMI"
+                  value={`${calc.newRomi >= 0 ? '+' : ''}${Math.round(calc.newRomi)}%`}
+                  accent="#22C55E"
+                  delta={calc.deltaRomi > 0 ? `+${Math.round(calc.deltaRomi)} п.п.` : undefined}
+                />
               </div>
             </div>
 
