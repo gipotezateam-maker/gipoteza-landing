@@ -271,18 +271,19 @@ export default function Calculator() {
           </div>
           <h2
             style={{
-              fontFamily: "'Bebas Neue', sans-serif",
-              fontSize: "clamp(2.5rem, 5vw, 4rem)",
-              letterSpacing: "0.04em",
-              color: "#E8E0D0",
-              lineHeight: 1,
-              margin: "0 0 16px",
+              fontFamily: "'Neue Machina', 'Bebas Neue', sans-serif",
+              fontSize: "clamp(2.2rem, 5vw, 5rem)",
+              letterSpacing: "-0.02em",
+              color: "#F5F5F0",
+              lineHeight: 1.05,
+              fontWeight: 900,
+              margin: "0 0 20px",
             }}
           >
             Рассчитайте потенциал<br />
             <span style={{ color: "#E63329" }}>вашего вебинара</span>
           </h2>
-          <p style={{ color: "#6B6050", fontSize: "1rem", maxWidth: "520px", margin: 0 }}>
+          <p style={{ color: "#6B6050", fontSize: "1.05rem", maxWidth: "560px", margin: 0, lineHeight: 1.6 }}>
             Введите ваши текущие цифры и узнайте, сколько денег вы теряете каждый месяц из-за неоптимизированной воронки
           </p>
         </div>
@@ -419,8 +420,13 @@ export default function Calculator() {
                 marginBottom: "16px",
               }}
             >
-              <div style={{ color: "#22C55E", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "20px", fontWeight: 600 }}>
-                Потенциал с Гипотезой
+              <div style={{ marginBottom: "20px" }}>
+                <div style={{ color: "#22C55E", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: "6px" }}>
+                  Ваш вебинар с агентством Гипотеза
+                </div>
+                <div style={{ color: "#4A5040", fontSize: "0.78rem", lineHeight: 1.5 }}>
+                  Мы оптимизируем C1, доходимость и конверсию — вот что получается у наших клиентов
+                </div>
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
                 <StatCard large label="Участников" value={fmtNum(calc.newParticipants)} />
