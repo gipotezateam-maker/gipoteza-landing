@@ -271,8 +271,8 @@ export default function Calculator() {
           </div>
           <h2
             style={{
-              fontFamily: "'Neue Machina', 'Bebas Neue', sans-serif",
-              fontSize: "clamp(2.2rem, 5vw, 5rem)",
+              fontFamily: "'Unbounded', sans-serif",
+              fontSize: "clamp(2rem, 4.5vw, 4.5rem)",
               letterSpacing: "-0.02em",
               color: "#F5F5F0",
               lineHeight: 1.05,
