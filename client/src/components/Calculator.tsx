@@ -517,41 +517,46 @@ export default function Calculator() {
             marginTop: "48px",
           }}
         >
-          <div style={{ color: "#5A5040", fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "24px" }}>
+          <div style={{ color: "#5A5040", fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "28px" }}>
             Сравнение показателей: До / После
           </div>
-          <div style={{ display: "flex", gap: "24px", marginBottom: "16px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <div style={{ width: "12px", height: "12px", background: "#2A2A2A", borderRadius: "2px" }} />
-              <span style={{ color: "#5A5040", fontSize: "0.75rem" }}>Сейчас</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <div style={{ width: "12px", height: "12px", background: "#22C55E", borderRadius: "2px" }} />
-              <span style={{ color: "#5A5040", fontSize: "0.75rem" }}>С Гипотезой</span>
-            </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            {[
+              { label: "Доходимость", before: attendance, after: calc.newAttendance, max: 100, unit: "%", hint: "досмотрели вебинар" },
+              { label: "C1 — конверсия", before: c1, after: calc.newC1, max: 100, unit: "%", hint: "заявок на вебинар" },
+              { label: "Продажи с вебинара", before: conversion, after: calc.newConversion, max: 30, unit: "%", hint: "купили после эфира" },
+              { label: "Купили (чел)", before: calc.bought, after: calc.newBought, max: Math.max(calc.newBought * 1.2, 1), unit: "", hint: "человек" },
+              { label: "Выручка", before: calc.revenue, after: calc.newRevenue, max: Math.max(calc.newRevenue * 1.2, 1), unit: "₽", hint: "за запуск" },
+            ].map(({ label, before, after, max, unit, hint }) => {
+              const beforePct = Math.min((before / max) * 100, 100);
+              const afterPct = Math.min((after / max) * 100, 100);
+              const fmtVal = (v: number) => unit === "₽" ? fmt(v) : `${Math.round(v)}${unit}`;
+              const improved = after > before;
+              return (
+                <div key={label}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "8px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ color: "#E8E0D0", fontSize: "0.85rem", fontWeight: 600 }}>{label}</span>
+                      <span style={{ color: "#3A3020", fontSize: "0.72rem" }}>{hint}</span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <span style={{ color: "#5A5040", fontSize: "0.85rem", textDecoration: "line-through" }}>{fmtVal(before)}</span>
+                      <span style={{ color: improved ? "#22C55E" : "#E8E0D0", fontSize: "1rem", fontWeight: 700, fontFamily: "'Unbounded', sans-serif" }}>{fmtVal(after)}</span>
+                      {improved && (
+                        <span style={{ color: "#22C55E", fontSize: "0.72rem", background: "rgba(34,197,94,0.12)", padding: "2px 6px", borderRadius: "4px" }}>
+                          +{unit === "₽" ? fmt(after - before) : `${Math.round(after - before)}${unit}`}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ position: "relative", height: "8px", background: "#1A1A1A", borderRadius: "4px", overflow: "hidden" }}>
+                    <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${beforePct}%`, background: "#2E2E2E", borderRadius: "4px", transition: "width 0.5s ease" }} />
+                    <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${afterPct}%`, background: "linear-gradient(90deg, #16A34A, #22C55E)", borderRadius: "4px", transition: "width 0.5s ease", opacity: 0.85 }} />
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={chartData} barGap={4} barCategoryGap="30%">
-              <XAxis
-                dataKey="name"
-                tick={{ fill: "#5A5040", fontSize: 12 }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis hide />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: "#ffffff08" }} />
-              <Bar dataKey="Сейчас" radius={[4, 4, 0, 0]} maxBarSize={60}>
-                {chartData.map((_, i) => (
-                  <Cell key={i} fill="#2A2A2A" />
-                ))}
-              </Bar>
-              <Bar dataKey="С Гипотезой" radius={[4, 4, 0, 0]} maxBarSize={60}>
-                {chartData.map((_, i) => (
-                  <Cell key={i} fill="#22C55E" />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
         </div>
 
         {/* CTA */}
