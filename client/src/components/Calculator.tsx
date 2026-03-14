@@ -508,50 +508,55 @@ export default function Calculator() {
         </div>
 
         {/* Chart */}
-        <div
-          style={{
-            background: "#111",
-            border: "1px solid #1E1E1E",
-            borderRadius: "12px",
-            padding: "32px",
-            marginTop: "48px",
-          }}
-        >
-          <div style={{ color: "#5A5040", fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "28px" }}>
-            Сравнение показателей: До / После
+        <div style={{ marginTop: "48px" }}>
+          {/* Header row */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 48px 1fr", gap: "0", marginBottom: "12px", padding: "0 4px" }}>
+            <div style={{ color: "#5A5040", fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>БЫЛО</div>
+            <div />
+            <div style={{ color: "#22C55E", fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.1em", textAlign: "right" }}>СТАЛО</div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {[
-              { label: "Доходимость", before: attendance, after: calc.newAttendance, max: 100, unit: "%", hint: "досмотрели вебинар" },
-              { label: "C1 — конверсия", before: c1, after: calc.newC1, max: 100, unit: "%", hint: "заявок на вебинар" },
-              { label: "Продажи с вебинара", before: conversion, after: calc.newConversion, max: 30, unit: "%", hint: "купили после эфира" },
-              { label: "Купили (чел)", before: calc.bought, after: calc.newBought, max: Math.max(calc.newBought * 1.2, 1), unit: "", hint: "человек" },
-              { label: "Выручка", before: calc.revenue, after: calc.newRevenue, max: Math.max(calc.newRevenue * 1.2, 1), unit: "₽", hint: "за запуск" },
-            ].map(({ label, before, after, max, unit, hint }) => {
-              const beforePct = Math.min((before / max) * 100, 100);
-              const afterPct = Math.min((after / max) * 100, 100);
+              { label: "Доходимость", before: attendance, after: calc.newAttendance, unit: "%" },
+              { label: "C1 — конверсия", before: c1, after: calc.newC1, unit: "%" },
+              { label: "Продажи с вебинара", before: conversion, after: calc.newConversion, unit: "%" },
+              { label: "Купили", before: calc.bought, after: calc.newBought, unit: " чел" },
+              { label: "Выручка за запуск", before: calc.revenue, after: calc.newRevenue, unit: "₽" },
+            ].map(({ label, before, after, unit }) => {
               const fmtVal = (v: number) => unit === "₽" ? fmt(v) : `${Math.round(v)}${unit}`;
               const improved = after > before;
+              const delta = after - before;
+              const deltaPct = before > 0 ? Math.round((delta / before) * 100) : 0;
               return (
-                <div key={label}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "8px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ color: "#E8E0D0", fontSize: "0.85rem", fontWeight: 600 }}>{label}</span>
-                      <span style={{ color: "#3A3020", fontSize: "0.72rem" }}>{hint}</span>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                      <span style={{ color: "#5A5040", fontSize: "0.85rem", textDecoration: "line-through" }}>{fmtVal(before)}</span>
-                      <span style={{ color: improved ? "#22C55E" : "#E8E0D0", fontSize: "1rem", fontWeight: 700, fontFamily: "'Unbounded', sans-serif" }}>{fmtVal(after)}</span>
-                      {improved && (
-                        <span style={{ color: "#22C55E", fontSize: "0.72rem", background: "rgba(34,197,94,0.12)", padding: "2px 6px", borderRadius: "4px" }}>
-                          +{unit === "₽" ? fmt(after - before) : `${Math.round(after - before)}${unit}`}
-                        </span>
+                <div key={label} style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 48px 1fr",
+                  alignItems: "stretch",
+                  background: "#111",
+                  border: "1px solid #1E1E1E",
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                }}>
+                  {/* БЫЛО */}
+                  <div style={{ padding: "16px 20px" }}>
+                    <div style={{ color: "#3A3530", fontSize: "0.68rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>{label}</div>
+                    <div style={{ color: "#5A5040", fontSize: "1.4rem", fontWeight: 700, fontFamily: "'Unbounded', sans-serif", lineHeight: 1 }}>{fmtVal(before)}</div>
+                  </div>
+                  {/* Arrow divider */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#0D0D0D", borderLeft: "1px solid #1E1E1E", borderRight: "1px solid #1E1E1E" }}>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M3 8h10M9 4l4 4-4 4" stroke={improved ? "#22C55E" : "#3A3530"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  {/* СТАЛО */}
+                  <div style={{ padding: "16px 20px", background: improved ? "rgba(34,197,94,0.05)" : "transparent" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px" }}>
+                      <div style={{ color: improved ? "#22C55E" : "#3A3530", fontSize: "0.68rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</div>
+                      {improved && deltaPct > 0 && (
+                        <span style={{ color: "#22C55E", fontSize: "0.62rem", background: "rgba(34,197,94,0.15)", padding: "1px 5px", borderRadius: "3px", fontWeight: 700 }}>+{deltaPct}%</span>
                       )}
                     </div>
-                  </div>
-                  <div style={{ position: "relative", height: "8px", background: "#1A1A1A", borderRadius: "4px", overflow: "hidden" }}>
-                    <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${beforePct}%`, background: "#2E2E2E", borderRadius: "4px", transition: "width 0.5s ease" }} />
-                    <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${afterPct}%`, background: "linear-gradient(90deg, #16A34A, #22C55E)", borderRadius: "4px", transition: "width 0.5s ease", opacity: 0.85 }} />
+                    <div style={{ color: improved ? "#22C55E" : "#E8E0D0", fontSize: "1.4rem", fontWeight: 700, fontFamily: "'Unbounded', sans-serif", lineHeight: 1 }}>{fmtVal(after)}</div>
                   </div>
                 </div>
               );
