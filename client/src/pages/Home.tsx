@@ -200,10 +200,25 @@ function Hero() {
                 </div>
               ))}
             </div>
-            {/* Client pills */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-              {["Skillbox", "SkillFactory", "Primekraft", "Skyeng", "Онлайн-колледж №1"].map(c => (
-                <span key={c} className="pill">{c}</span>
+            {/* Client logos */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "center" }}>
+              {[
+                { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-school1_8d526554.jpg", alt: "Онлайн Школа №1", bg: "#fff" },
+                { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-primekraft_2e4b9ec1.png", alt: "Primekraft", bg: "#FFD700" },
+                { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-eteri_a4bf4619.png", alt: "Школа Этери Бериашвили", bg: "#3B5BA5" },
+                { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-college1_d49dad57.png", alt: "Онлайн Колледж №1", bg: "#fff" },
+              ].map(logo => (
+                <div key={logo.alt} style={{
+                  background: logo.bg,
+                  borderRadius: "8px",
+                  padding: "6px 10px",
+                  height: "44px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                  <img src={logo.src} alt={logo.alt} style={{ height: "32px", width: "auto", objectFit: "contain", display: "block" }} />
+                </div>
               ))}
             </div>
           </motion.div>
@@ -212,22 +227,7 @@ function Hero() {
     </section>
   );
 }
-function Marquee() {
-  const items = ["Логомашина", "Онлайн-колледж №1", "Primekraft", "SkillFactory", "Skillbox", "Школа вокала Этери Бериашвили", "Онлайн-школа №1"];
-  const doubled = [...items, ...items];
-  return (
-    <div style={{ background: "#0A0A0A", borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", overflow: "hidden", padding: "1rem 0" }}>
-      <div className="marquee-track">
-        {doubled.map((item, i) => (
-          <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: "2rem", paddingRight: "2rem" }}>
-            <span style={{ fontFamily: "Inter", fontSize: "0.85rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.05em" }}>{item}</span>
-            <span style={{ color: "#FF2D20", fontSize: "0.5rem" }}>●</span>
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
+
 
 // ─── "Узнаёшь себя?" ─────────────────────────────────────────────────────────
 
@@ -1395,7 +1395,7 @@ export default function Home() {
     <div style={{ background: "#0A0A0A", minHeight: "100vh" }}>
       <Nav />
       <Hero />
-      <Marquee />
+
       <RecognizeYourself />
       <Calculator />
       <Services />
