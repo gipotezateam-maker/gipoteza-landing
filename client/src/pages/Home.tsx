@@ -1051,6 +1051,38 @@ function WebinarExamples() {
       rutube_id: "8ec01debb50c163baa6bc5c5b609bae9",
       embed: "https://rutube.ru/play/embed/8ec01debb50c163baa6bc5c5b609bae9/?p=453QWTDVPy3yIcnaIzP2bg",
     },
+    {
+      id: "v2",
+      title: "Продающий вебинар — кейс 2",
+      client: "EdTech проект",
+      tag: "Автовебинар",
+      rutube_id: "ab6d8b0b50f8d33fd3eadc6b70faf7bb",
+      embed: "https://rutube.ru/play/embed/ab6d8b0b50f8d33fd3eadc6b70faf7bb/?p=7YhvH5tTfMKP7yBJjyvH0Q",
+    },
+    {
+      id: "v3",
+      title: "Вебинарная воронка под ключ",
+      client: "Онлайн-курс",
+      tag: "Живой вебинар",
+      rutube_id: "e53552d8fa63f40530091a5145db7a9d",
+      embed: "https://rutube.ru/play/embed/e53552d8fa63f40530091a5145db7a9d/?p=xbJfFXvw6z21LvNGlgMDHw",
+    },
+    {
+      id: "v4",
+      title: "Запуск с автоворонкой",
+      client: "EdTech бренд",
+      tag: "Запуск",
+      rutube_id: "901e20ed311e244fe1325f881055742f",
+      embed: "https://rutube.ru/play/embed/901e20ed311e244fe1325f881055742f/?p=Akw1rFs7nDN3jefEUVDQ0g",
+    },
+    {
+      id: "v5",
+      title: "Автоворонка с высокой конверсией",
+      client: "Онлайн-школа",
+      tag: "Автовебинар",
+      rutube_id: "e57b9226a748bf55abac10e485a465b8",
+      embed: "https://rutube.ru/play/embed/e57b9226a748bf55abac10e485a465b8/?p=tAaQLI8_w05wyktUyLlfOQ",
+    },
   ];
   return (
     <section id="webinars" style={{ background: "#111", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
