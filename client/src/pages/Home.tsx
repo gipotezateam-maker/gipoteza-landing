@@ -1157,14 +1157,7 @@ function WebinarExamples() {
                       </svg>
                     </div>
                   </div>
-                  {/* Tag */}
-                  <div style={{
-                    position: "absolute", top: "12px", left: "12px",
-                    background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)",
-                    padding: "3px 8px", borderRadius: "4px",
-                    fontFamily: "Inter", fontSize: "0.62rem", fontWeight: 600,
-                    color: "#FF2D20", letterSpacing: "0.12em", textTransform: "uppercase",
-                  }}>{v.tag}</div>
+
                   {/* Number */}
                   <div style={{
                     position: "absolute", top: "12px", right: "12px",

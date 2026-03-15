@@ -569,8 +569,11 @@ export default function Calculator() {
           <p style={{ color: "#6B6050", fontSize: "0.9rem", marginBottom: "24px" }}>
             Это не обещание — это результат, который мы видим в 90% кейсов
           </p>
-          <a
-            href="#contact"
+          <button
+            onClick={() => {
+              const el = document.getElementById("contact");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
             style={{
               display: "inline-block",
               background: "#E63329",
@@ -580,14 +583,15 @@ export default function Calculator() {
               letterSpacing: "0.12em",
               padding: "16px 40px",
               borderRadius: "4px",
-              textDecoration: "none",
+              border: "none",
+              cursor: "pointer",
               transition: "opacity 0.2s",
             }}
             onMouseEnter={(e) => ((e.target as HTMLElement).style.opacity = "0.85")}
             onMouseLeave={(e) => ((e.target as HTMLElement).style.opacity = "1")}
           >
-            Обсудить результаты с экспертом →
-          </a>
+            Получить бесплатный разбор воронки →
+          </button>
         </div>
       </div>
 
