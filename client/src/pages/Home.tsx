@@ -1042,48 +1042,60 @@ function Footer() {
 
 // ─── Webinar Examples ─────────────────────────────────────────────────────────
 function WebinarExamples() {
+  const [activeVideo, setActiveVideo] = React.useState<string | null>(null);
+
   const videos = [
     {
       id: "v1",
       title: "Пример продающего вебинара",
       client: "Онлайн-школа",
       tag: "Живой вебинар",
-      rutube_id: "8ec01debb50c163baa6bc5c5b609bae9",
       embed: "https://rutube.ru/play/embed/8ec01debb50c163baa6bc5c5b609bae9/?p=453QWTDVPy3yIcnaIzP2bg",
+      thumb: `https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&q=80`,
     },
     {
       id: "v2",
       title: "Продающий вебинар — кейс 2",
       client: "EdTech проект",
       tag: "Автовебинар",
-      rutube_id: "ab6d8b0b50f8d33fd3eadc6b70faf7bb",
       embed: "https://rutube.ru/play/embed/ab6d8b0b50f8d33fd3eadc6b70faf7bb/?p=7YhvH5tTfMKP7yBJjyvH0Q",
+      thumb: `https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=600&q=80`,
     },
     {
       id: "v3",
       title: "Вебинарная воронка под ключ",
       client: "Онлайн-курс",
       tag: "Живой вебинар",
-      rutube_id: "e53552d8fa63f40530091a5145db7a9d",
       embed: "https://rutube.ru/play/embed/e53552d8fa63f40530091a5145db7a9d/?p=xbJfFXvw6z21LvNGlgMDHw",
+      thumb: `https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=600&q=80`,
     },
     {
       id: "v4",
       title: "Запуск с автоворонкой",
       client: "EdTech бренд",
       tag: "Запуск",
-      rutube_id: "901e20ed311e244fe1325f881055742f",
       embed: "https://rutube.ru/play/embed/901e20ed311e244fe1325f881055742f/?p=Akw1rFs7nDN3jefEUVDQ0g",
+      thumb: `https://images.unsplash.com/photo-1556761175-4b46a572b786?w=600&q=80`,
     },
     {
       id: "v5",
       title: "Автоворонка с высокой конверсией",
       client: "Онлайн-школа",
       tag: "Автовебинар",
-      rutube_id: "e57b9226a748bf55abac10e485a465b8",
       embed: "https://rutube.ru/play/embed/e57b9226a748bf55abac10e485a465b8/?p=tAaQLI8_w05wyktUyLlfOQ",
+      thumb: `https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&q=80`,
     },
   ];
+
+  const activeEmbed = videos.find(v => v.id === activeVideo)?.embed ?? null;
+
+  // Close modal on Escape
+  React.useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setActiveVideo(null); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
   return (
     <section id="webinars" style={{ background: "#111", padding: "8rem 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="container">
@@ -1096,43 +1108,130 @@ function WebinarExamples() {
               Смотрите,<br /><span style={{ color: "#FF2D20" }}>как это работает.</span>
             </h2>
             <p style={{ fontFamily: "Inter", fontSize: "0.9rem", color: "rgba(255,255,255,0.35)", marginTop: "1.5rem", maxWidth: "480px", lineHeight: 1.7 }}>
-              Реальные вебинары, которые мы сделали. Смотрите структуру, подачу, оффер — и представьте это для вашего продукта.
+              Реальные вебинары, которые мы сделали. Нажмите на карточку — откроется видео.
             </p>
           </div>
         </FadeUp>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(560px, 1fr))", gap: "2px", background: "rgba(255,255,255,0.06)" }}>
+
+        {/* Gallery grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
           {videos.map((v, i) => (
-            <FadeUp key={v.id} delay={i * 0.1}>
-              <div style={{ background: "#111", padding: "0" }}>
-                <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, overflow: "hidden" }}>
-                  <iframe
-                    src={v.embed}
-                    title={v.title}
-                    allow="clipboard-write; autoplay"
-                    allowFullScreen
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      border: "none",
-                    }}
+            <FadeUp key={v.id} delay={i * 0.08}>
+              <div
+                onClick={() => setActiveVideo(v.id)}
+                style={{
+                  cursor: "pointer",
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  background: "#0D0D0D",
+                  transition: "transform 0.2s ease, border-color 0.2s ease",
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,45,32,0.4)";
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.07)";
+                }}
+              >
+                {/* Thumbnail with play button */}
+                <div style={{ position: "relative", paddingBottom: "56.25%", background: "#1A1A1A", overflow: "hidden" }}>
+                  <img
+                    src={v.thumb}
+                    alt={v.title}
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
                   />
-                </div>
-                <div style={{ padding: "1.5rem 2rem", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                    <span style={{ fontFamily: "Inter", fontSize: "0.65rem", fontWeight: 600, color: "#FF2D20", letterSpacing: "0.15em", textTransform: "uppercase" }}>{v.tag}</span>
-                    <span style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "rgba(255,255,255,0.2)", letterSpacing: "0.1em" }}>0{i + 1}</span>
+                  {/* Play button */}
+                  <div style={{
+                    position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <div style={{
+                      width: "52px", height: "52px", borderRadius: "50%",
+                      background: "#FF2D20", display: "flex", alignItems: "center", justifyContent: "center",
+                      boxShadow: "0 0 0 8px rgba(255,45,32,0.15)",
+                    }}>
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M7 4l10 6-10 6V4z" fill="white"/>
+                      </svg>
+                    </div>
                   </div>
-                  <div className="font-display" style={{ fontSize: "1.1rem", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.01em" }}>{v.title}</div>
-                  <div style={{ fontFamily: "Inter", fontSize: "0.78rem", color: "rgba(255,255,255,0.3)", marginTop: "0.3rem" }}>{v.client}</div>
+                  {/* Tag */}
+                  <div style={{
+                    position: "absolute", top: "12px", left: "12px",
+                    background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)",
+                    padding: "3px 8px", borderRadius: "4px",
+                    fontFamily: "Inter", fontSize: "0.62rem", fontWeight: 600,
+                    color: "#FF2D20", letterSpacing: "0.12em", textTransform: "uppercase",
+                  }}>{v.tag}</div>
+                  {/* Number */}
+                  <div style={{
+                    position: "absolute", top: "12px", right: "12px",
+                    fontFamily: "Inter", fontSize: "0.62rem", color: "rgba(255,255,255,0.3)",
+                  }}>0{i + 1}</div>
+                </div>
+                {/* Info */}
+                <div style={{ padding: "14px 16px" }}>
+                  <div className="font-display" style={{ fontSize: "0.95rem", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.01em", lineHeight: 1.2 }}>{v.title}</div>
+                  <div style={{ fontFamily: "Inter", fontSize: "0.72rem", color: "rgba(255,255,255,0.3)", marginTop: "4px" }}>{v.client}</div>
                 </div>
               </div>
             </FadeUp>
           ))}
         </div>
       </div>
+
+      {/* Modal */}
+      {activeVideo && (
+        <div
+          onClick={() => setActiveVideo(null)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 1000,
+            background: "rgba(0,0,0,0.92)", backdropFilter: "blur(12px)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "24px",
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              width: "100%", maxWidth: "900px",
+              borderRadius: "12px", overflow: "hidden",
+              position: "relative",
+              boxShadow: "0 32px 80px rgba(0,0,0,0.8)",
+            }}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setActiveVideo(null)}
+              style={{
+                position: "absolute", top: "-44px", right: "0",
+                background: "transparent", border: "none", cursor: "pointer",
+                color: "rgba(255,255,255,0.5)", fontFamily: "Inter", fontSize: "0.8rem",
+                display: "flex", alignItems: "center", gap: "6px",
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              Закрыть (Esc)
+            </button>
+            {/* Video */}
+            <div style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
+              {activeEmbed && (
+                <iframe
+                  src={activeEmbed + "&autoplay=1"}
+                  title="Вебинар"
+                  allow="clipboard-write; autoplay"
+                  allowFullScreen
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
