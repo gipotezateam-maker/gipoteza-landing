@@ -200,26 +200,12 @@ function Hero() {
                 </div>
               ))}
             </div>
-            {/* Client logos */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "center" }}>
-              {[
-                { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-school1_8d526554.jpg", alt: "Онлайн Школа №1", bg: "#fff" },
-                { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-primekraft_2e4b9ec1.png", alt: "Primekraft", bg: "#FFD700" },
-                { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-eteri_a4bf4619.png", alt: "Школа Этери Бериашвили", bg: "#3B5BA5" },
-                { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-college1_d49dad57.png", alt: "Онлайн Колледж №1", bg: "#fff" },
-              ].map(logo => (
-                <div key={logo.alt} style={{
-                  background: logo.bg,
-                  borderRadius: "8px",
-                  padding: "6px 10px",
-                  height: "44px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}>
-                  <img src={logo.src} alt={logo.alt} style={{ height: "32px", width: "auto", objectFit: "contain", display: "block" }} />
-                </div>
-              ))}
+            {/* Client logos — прозрачные PNG без подложек */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", alignItems: "center", marginTop: "0.5rem" }}>
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-school1-white_c28fad25.png" alt="Онлайн Школа №1" style={{ height: "52px", width: "auto", objectFit: "contain", display: "block", opacity: 0.9 }} />
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-primekraft-nobg_80c75a9b.png" alt="Primekraft" style={{ height: "52px", width: "auto", objectFit: "contain", display: "block", opacity: 0.9 }} />
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-eteri-nobg_a2f379bc.png" alt="Школа Этери Бериашвили" style={{ height: "52px", width: "auto", objectFit: "contain", display: "block", opacity: 0.9 }} />
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-college1-white_e8dca065.png" alt="Онлайн Колледж №1" style={{ height: "52px", width: "auto", objectFit: "contain", display: "block", opacity: 0.9 }} />
             </div>
           </motion.div>
         </div>
