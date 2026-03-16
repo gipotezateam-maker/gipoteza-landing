@@ -1121,11 +1121,11 @@ function WebinarExamples() {
     },
     {
       id: "v6",
-      title: "Вебинар от агентства Гипотеза",
-      client: "Гипотеза",
-      tag: "Вебинар",
+      title: "Энергия и восстановление: что влияет на самочувствие",
+      client: "Primekraft",
+      tag: "Живой вебинар",
       embed: "https://rutube.ru/play/embed/13d67233a6c98c3d86ca0d5e6cf265a1/?p=lBzPTZlVT9a8ecw54WzQ-A",
-      thumb: "https://rutube.ru/api/video/13d67233a6c98c3d86ca0d5e6cf265a1/thumbnail/",
+      thumb: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/video-primekraft-thumb_4dbcfcd1.png",
     },
   ];
 
