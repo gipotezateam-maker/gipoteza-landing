@@ -201,6 +201,24 @@ function Hero() {
               ))}
             </div>
 
+            {/* Логотипы клиентов */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "2.5rem", alignItems: "center", marginTop: "1.5rem" }}>
+              {[
+                { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-school1-white_c28fad25.png", alt: "Онлайн Школа №1" },
+                { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-primekraft-new_903f422f.png", alt: "Primekraft" },
+                { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-eteri-nobg_a2f379bc.png", alt: "Школа Этери Бериашвили" },
+                { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-college1-white_e8dca065.png", alt: "Онлайн Колледж №1" },
+              ].map(logo => (
+                <div key={logo.alt} style={{ width: "140px", height: "56px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <img
+                    src={logo.src}
+                    alt={logo.alt}
+                    style={{ maxWidth: "140px", maxHeight: "56px", width: "auto", height: "auto", objectFit: "contain", opacity: 0.85 }}
+                  />
+                </div>
+              ))}
+            </div>
+
           </motion.div>
         </div>
       </div>
