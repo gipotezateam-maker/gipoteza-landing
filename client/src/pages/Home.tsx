@@ -1232,37 +1232,43 @@ function WebinarExamples() {
             onClick={e => e.stopPropagation()}
             style={{
               width: "100%", maxWidth: "900px",
-              borderRadius: "12px", overflow: "hidden",
               position: "relative",
-              boxShadow: "0 32px 80px rgba(0,0,0,0.8)",
             }}
           >
-            {/* Close button */}
+            {/* Close button — big and obvious */}
             <button
               onClick={() => setActiveVideo(null)}
               style={{
-                position: "absolute", top: "-44px", right: "0",
-                background: "transparent", border: "none", cursor: "pointer",
-                color: "rgba(255,255,255,0.5)", fontFamily: "Inter", fontSize: "0.8rem",
-                display: "flex", alignItems: "center", gap: "6px",
+                display: "flex", alignItems: "center", gap: "10px",
+                width: "100%",
+                background: "#FF2D20", border: "none", cursor: "pointer",
+                color: "#fff", fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: "1.1rem", letterSpacing: "0.1em",
+                padding: "14px 24px",
+                marginBottom: "4px",
               }}
+              onMouseEnter={e => (e.currentTarget.style.background = "#cc2218")}
+              onMouseLeave={e => (e.currentTarget.style.background = "#FF2D20")}
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M12 4L6 10L12 16" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              Закрыть (Esc)
+              НАЗАД — ЗАКРЫТЬ ВИДЕО
             </button>
             {/* Video */}
-            <div style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
-              {activeEmbed && (
-                <iframe
-                  src={activeEmbed + "&autoplay=1"}
-                  title="Вебинар"
-                  allow="clipboard-write; autoplay"
-                  allowFullScreen
-                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
-                />
-              )}
+            <div style={{ borderRadius: "0 0 12px 12px", overflow: "hidden", boxShadow: "0 32px 80px rgba(0,0,0,0.8)" }}>
+              {/* Video */}
+              <div style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
+                {activeEmbed && (
+                  <iframe
+                    src={activeEmbed + "&autoplay=1"}
+                    title="Вебинар"
+                    allow="clipboard-write; autoplay"
+                    allowFullScreen
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
