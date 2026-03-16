@@ -344,7 +344,7 @@ function Cases() {
       result: "Средний чек +12%",
       results: ["Средний чек вырос на 12%"],
       desc: "Запустили AI-бота на GPT-логике, который сам проводит мини-кастдев и собирает десятки микросегментов. На основе сегментации формирует персональные офферы → ведёт до корзины и допродаж.",
-      caseUrl: "https://docs.google.com/document/d/1g9jt_eg_iOI9-ECDVXlu_1fq2E6IFX-5Hib2V50RAYQ/edit?tab=t.0#heading=h.3mqjkudq7bzt",
+      caseUrl: "/cases/primekraft",
     },
     {
       id: "school1-webinar",
@@ -353,7 +353,7 @@ function Cases() {
       result: "CAC −44%",
       results: ["Снизили CAC на 44%"],
       desc: "Создали формат живого мероприятия с нуля для школы 1–11 классов. Разработали структуру эфира: боли, интерактивы, реальные кейсы учеников. Настроили сегментацию и сценарии в боте. Протестировали связки → финализировали стабильный поток заявок.",
-      caseUrl: "https://docs.google.com/document/d/1oiSmA5Y7RyD24cqWqb-vPfZSsnhSV0HsFM3G6We5SQQ/edit?tab=t.0#heading=h.zhlco5lnexj",
+      caseUrl: "/cases/school1-webinar",
     },
     {
       id: "school1-traffic",
@@ -362,7 +362,7 @@ function Cases() {
       result: "Квал-лид −45%",
       results: ["Стоимость квал-лида −45%", "Стоимость оплаты −44% от плана"],
       desc: "Перезапустили трафик ВК для школы 1–11 классов. Провели анализ целевых лидов, протестировали 20+ креативов и выделили TOP-5. Выстроили систему масштабирования: дубли кампаний + плавное увеличение бюджета.",
-      caseUrl: "https://docs.google.com/document/d/1b0LM1gZOIF8IaXHuIbnhQmbprHM62Cvgz312VGJy_j8/edit?tab=t.0",
+      caseUrl: "/cases/school1-traffic",
     },
     {
       id: "eteri",
@@ -371,7 +371,7 @@ function Cases() {
       result: "Конверсия в Tripwire +22%",
       results: ["Стоимость регистрации −20%", "Конверсия в заявку +5%", "Конверсия в Tripwire +22%"],
       desc: "Пересобрали автоворонку под холодный трафик для онлайн-курса по вокалу. Переписали коммуникацию под актуальные мотивы аудитории, усилили эмоциональные триггеры. Обновили визуал: чистые экраны, единая стилистика, видео с живой подачей.",
-      caseUrl: "https://docs.google.com/document/d/1dhHDIf9G0LuGSh-JndzJz67RrpXG_3Vnx6r8m7x5kQE/edit?tab=t.0",
+      caseUrl: "/cases/eteri",
     },
   ];
 
@@ -415,17 +415,15 @@ function Cases() {
                     </div>
                   ))}
                 </div>
-                <a
+                <Link
                   href={c.caseUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.5)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.15)", paddingBottom: "2px", transition: "color 0.2s" }}
-                  onClick={e => e.stopPropagation()}
-                  onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
-                  onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.5)")}
+                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                  onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = "#fff")}
+                  onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = "rgba(255,255,255,0.5)")}
                 >
-                  📋 Полная версия кейса →
-                </a>
+                  Читать кейс →
+                </Link>
               </div>
             </FadeUp>
           ))}
