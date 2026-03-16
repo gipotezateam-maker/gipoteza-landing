@@ -202,7 +202,9 @@ function Hero() {
             </div>
 
             {/* Логотипы клиентов */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", alignItems: "center", marginTop: "1.5rem" }}>
+            <div style={{ marginTop: "2rem" }}>
+              <div style={{ fontFamily: "Inter", fontSize: "0.72rem", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "1rem" }}>&#x041d;&#x0430;&#x0448;&#x0438; &#x043a;&#x043b;&#x0438;&#x0435;&#x043d;&#x0442;&#x044b;</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", alignItems: "center" }}>
               {[
                 { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-school1-crop_3fe381b2.png", alt: "Онлайн Школа №1" },
                 { src: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/logo-primekraft-crop_757d06ce.png", alt: "Primekraft" },
@@ -216,6 +218,7 @@ function Hero() {
                   style={{ height: "80px", width: "auto", objectFit: "contain", opacity: 0.9, display: "block" }}
                 />
               ))}
+            </div>
             </div>
 
           </motion.div>
@@ -1115,6 +1118,14 @@ function WebinarExamples() {
       tag: "Автовебинар",
       embed: "https://rutube.ru/play/embed/e57b9226a748bf55abac10e485a465b8/?p=tAaQLI8_w05wyktUyLlfOQ",
       thumb: "https://pic.rtbcdn.ru/video/2025-10-09/ff/60/ff60e9097aebd58d23bdf9d5b1e5b594.jpg",
+    },
+    {
+      id: "v6",
+      title: "Вебинар от агентства Гипотеза",
+      client: "Гипотеза",
+      tag: "Вебинар",
+      embed: "https://rutube.ru/play/embed/13d67233a6c98c3d86ca0d5e6cf265a1/?p=lBzPTZlVT9a8ecw54WzQ-A",
+      thumb: "https://rutube.ru/api/video/13d67233a6c98c3d86ca0d5e6cf265a1/thumbnail/",
     },
   ];
 
