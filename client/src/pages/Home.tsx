@@ -411,7 +411,7 @@ function Cases() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "1.5rem" }}>
                   {c.results.map((r, ri) => (
                     <div key={ri} className="font-display" style={{ fontSize: ri === 0 ? "1.8rem" : "1.1rem", fontWeight: 900, color: ri === 0 ? "#FF2D20" : "rgba(255,77,60,0.7)", lineHeight: 1.1 }}>
-                      🔥 {r}
+                      {r}
                     </div>
                   ))}
                 </div>
