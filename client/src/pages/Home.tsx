@@ -13,7 +13,7 @@ import { Link } from "wouter";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-function FadeUp({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
+function FadeUp({ children, delay = 0, className = "", style = {} }: { children: React.ReactNode; delay?: number; className?: string; style?: React.CSSProperties }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   return (
@@ -23,6 +23,7 @@ function FadeUp({ children, delay = 0, className = "" }: { children: React.React
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
       className={className}
+      style={style}
     >
       {children}
     </motion.div>
@@ -391,9 +392,9 @@ function Cases() {
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1px", background: "rgba(255,255,255,0.06)" }}>
           {cases.map((c, i) => (
-            <FadeUp key={c.id} delay={i * 0.08}>
+            <FadeUp key={c.id} delay={i * 0.08} style={{ height: "100%" }}>
               <div
-                style={{ background: "#0A0A0A", padding: "2.5rem 2rem", cursor: "pointer", transition: "background 0.2s" }}
+                style={{ background: "#0A0A0A", padding: "2.5rem 2rem", cursor: "pointer", transition: "background 0.2s", height: "100%", boxSizing: "border-box" }}
                 onMouseEnter={e => (e.currentTarget.style.background = "#111")}
                 onMouseLeave={e => (e.currentTarget.style.background = "#0A0A0A")}
                 onClick={() => _setActive(_active === c.id ? null : c.id)}
