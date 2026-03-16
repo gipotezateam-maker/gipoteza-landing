@@ -1209,7 +1209,7 @@ function WebinarExamples() {
                 {/* Info */}
                 <div style={{ padding: "14px 16px" }}>
                   <div className="font-display" style={{ fontSize: "0.95rem", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.01em", lineHeight: 1.2 }}>{v.title}</div>
-                  <div style={{ fontFamily: "Inter", fontSize: "0.72rem", color: "rgba(255,255,255,0.3)", marginTop: "4px" }}>{v.client}</div>
+
                 </div>
               </div>
             </FadeUp>
