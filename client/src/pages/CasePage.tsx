@@ -1,6 +1,7 @@
 // Design: Dark editorial — same style as Home.tsx
 // Bebas Neue display, Inter body, #FF2D20 accent, #0A0A0A bg
 
+import { useState } from "react";
 import { Link, useRoute } from "wouter";
 
 // ─── Case Data ────────────────────────────────────────────────────────────────
@@ -11,35 +12,17 @@ const casesData: Record<string, CaseData> = {
     client: "Primekraft",
     tag: "D2C / FMCG",
     title: "AI-бот вместо CRM-специалиста",
-    subtitle: "Как GPT-логика собрала микросегменты и подняла средний чек на 12%",
+    subtitle: "GPT-логика собрала микросегменты и подняла средний чек на 12%",
+    heroImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/case-primekraft-hero-6MQGReBzzYchEsvsKAcFAA.webp",
     results: [
       { value: "+12%", label: "Средний чек" },
     ],
-    sections: [
-      {
-        heading: "Клиент",
-        text: "Primekraft — бренд спортивного питания. Продажи через маркетплейсы и собственный сайт. Задача: увеличить средний чек и выстроить персонализированную коммуникацию без раздутого штата.",
-      },
-      {
-        heading: "Задача",
-        text: "Запустить AI-бота на GPT-логике, который сам проводит мини-кастдев и собирает десятки микросегментов вместо CRM-специалиста. На основе сегментации — формировать персональные офферы и рекомендации, вести пользователя до корзины и допродаж.",
-      },
-      {
-        heading: "Что сделали",
-        items: [
-          "Разработали архитектуру AI-бота: диалоговые сценарии, ветки под разные цели (набор массы, похудение, восстановление, энергия).",
-          "Бот проводит мини-кастдев: 3–5 вопросов → формирует профиль пользователя → присваивает микросегмент.",
-          "На основе сегмента — персональный оффер с конкретными продуктами и скидкой под запрос.",
-          "Встроили допродажи: бот предлагает сопутствующие продукты после добавления в корзину.",
-          "Настроили аналитику: какие сегменты конвертируют лучше, какие офферы работают.",
-        ],
-      },
-      {
-        heading: "Результаты",
-        results: [
-          { value: "+12%", label: "Средний чек вырос на 12%" },
-        ],
-      },
+    challenge: "Бренд спортивного питания Primekraft хотел увеличить средний чек и выстроить персонализированную коммуникацию — без раздутого штата CRM-специалистов.",
+    solution: [
+      "Разработали AI-бота с GPT-логикой: 3–5 вопросов → профиль пользователя → микросегмент",
+      "Персональный оффер под каждый сегмент: набор массы, похудение, восстановление, энергия",
+      "Встроили допродажи: бот предлагает сопутствующие продукты после добавления в корзину",
+      "Настроили аналитику сегментов: какие офферы конвертируют лучше",
     ],
   },
 
@@ -47,36 +30,18 @@ const casesData: Record<string, CaseData> = {
     id: "school1-webinar",
     client: "Онлайн-школа №1",
     tag: "EdTech / Живой вебинар",
-    title: "Живой вебинар с нуля — стабильный поток заявок",
-    subtitle: "Как мы создали формат живого мероприятия и снизили CAC на 44%",
+    title: "Живой вебинар с нуля — CAC −44%",
+    subtitle: "Создали формат живого мероприятия и снизили стоимость привлечения клиента вдвое",
+    heroImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/case-school1-webinar-hero-Q8KbBKxPLh2x4K2eFkY39d.webp",
     results: [
       { value: "−44%", label: "CAC (стоимость привлечения клиента)" },
     ],
-    sections: [
-      {
-        heading: "Клиент",
-        text: "Онлайн-школа №1 — школа для учеников 1–11 классов. Дистанционное обучение, аттестации, подготовка к ЕГЭ и ОГЭ.",
-      },
-      {
-        heading: "Задача",
-        text: "Создать формат живого мероприятия с нуля, чтобы греть холодную аудиторию и получать стабильные заявки. До этого школа работала только с контентными воронками — живого формата не было.",
-      },
-      {
-        heading: "Что сделали",
-        items: [
-          "Разработали структуру эфира: боли родителей и учеников, интерактивы, реальные кейсы учеников школы.",
-          "Написали сценарий под разные сегменты аудитории: родители младшеклассников, старшеклассники перед ЕГЭ, семьи на семейном обучении.",
-          "Настроили сегментацию и сценарии в боте под разные запросы — каждый получал релевантный оффер.",
-          "Протестировали несколько связок «тема эфира → аудитория → оффер».",
-          "Финализировали формат, который приносит стабильный поток заявок каждую неделю.",
-        ],
-      },
-      {
-        heading: "Результаты",
-        results: [
-          { value: "−44%", label: "Снизили CAC на 44%" },
-        ],
-      },
+    challenge: "Онлайн-школа №1 работала только с контентными воронками — живого формата не было. Нужно было создать мероприятие с нуля, которое греет холодную аудиторию и даёт стабильный поток заявок.",
+    solution: [
+      "Разработали структуру эфира под боли родителей и учеников: интерактивы, реальные кейсы",
+      "Написали сценарий под 3 сегмента: родители младшеклассников, старшеклассники перед ЕГЭ, семейное обучение",
+      "Настроили бот-сегментацию: каждый участник получал релевантный оффер после эфира",
+      "Протестировали несколько связок «тема → аудитория → оффер», оставили лучшую",
     ],
   },
 
@@ -85,37 +50,18 @@ const casesData: Record<string, CaseData> = {
     client: "Онлайн-школа №1",
     tag: "EdTech / Трафик ВК",
     title: "Перезапуск трафика ВКонтакте",
-    subtitle: "20+ протестированных креативов, TOP-5 связок и стоимость лида −45%",
+    subtitle: "20+ протестированных креативов, TOP-5 связок, стоимость лида −45%",
+    heroImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/case-school1-traffic-hero-JeMNfYWRNhUapS8u3PZsVg.webp",
     results: [
       { value: "−45%", label: "Стоимость квал-лида" },
       { value: "−44%", label: "Стоимость оплаты от плана" },
     ],
-    sections: [
-      {
-        heading: "Клиент",
-        text: "Онлайн-школа №1 — школа для учеников 1–11 классов. Дистанционное обучение, аттестации, подготовка к ЕГЭ и ОГЭ.",
-      },
-      {
-        heading: "Задача",
-        text: "Перезапустить трафик ВКонтакте, найти рабочие связки «креатив → аудитория → заявка» и снизить стоимость целевого лида и продажи. Предыдущие кампании давали дорогие лиды с низкой конверсией в оплату.",
-      },
-      {
-        heading: "Что сделали",
-        items: [
-          "Провели анализ целевых лидов: разобрали, какие заявки реально конвертируются в оплату, нашли паттерны.",
-          "Выделили рабочие связки «аудитория + оффер + посадочная страница», которые дают продажи.",
-          "Протестировали 20+ креативов: разные форматы (видео, карусель, статика), разные боли и триггеры.",
-          "Выделили TOP-5 креативов с самой высокой конверсией в квалифицированный лид.",
-          "Выстроили систему масштабирования: дубли кампаний + плавное увеличение бюджета без просадки CPL.",
-        ],
-      },
-      {
-        heading: "Результаты",
-        results: [
-          { value: "−45%", label: "Стоимость квал-лида снижена на 45%" },
-          { value: "−44%", label: "Стоимость оплаты — −44% от плана" },
-        ],
-      },
+    challenge: "Предыдущие кампании ВКонтакте давали дорогие лиды с низкой конверсией в оплату. Нужно было найти рабочие связки и снизить стоимость целевого лида.",
+    solution: [
+      "Провели анализ целевых лидов: нашли паттерны заявок, которые реально конвертируются в оплату",
+      "Протестировали 20+ креативов: видео, карусель, статика — разные боли и триггеры",
+      "Выделили TOP-5 связок с самой высокой конверсией в квалифицированный лид",
+      "Выстроили систему масштабирования: дубли кампаний + плавный рост бюджета без просадки CPL",
     ],
   },
 
@@ -123,40 +69,20 @@ const casesData: Record<string, CaseData> = {
     id: "eteri",
     client: "Этери Бериашвили",
     tag: "Онлайн-курс / Вокал",
-    title: "Оптимизация автоворонки под холодный трафик",
-    subtitle: "Пересобрали механику, переписали коммуникацию — конверсия в Tripwire выросла на 22%",
+    title: "Автоворонка под холодный трафик",
+    subtitle: "Пересобрали механику, переписали коммуникацию — Tripwire +22%",
+    heroImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/case-eteri-hero-YcXvwfT3VMvr6jpBpG83Pb.webp",
     results: [
       { value: "−20%", label: "Стоимость регистрации" },
       { value: "+5%", label: "Конверсия в заявку" },
       { value: "+22%", label: "Конверсия в Tripwire" },
     ],
-    sections: [
-      {
-        heading: "Клиент",
-        text: "Этери Бериашвили — известная певица и педагог по вокалу. Онлайн-курс по вокалу для взрослых: от новичков до продвинутых.",
-      },
-      {
-        heading: "Задача",
-        text: "Пересобрать автоворонку под холодный трафик и повысить конверсии на ключевых этапах. Существующая воронка работала на тёплую аудиторию — при запуске холодного трафика показатели падали.",
-      },
-      {
-        heading: "Что сделали",
-        items: [
-          "Полностью пересобрали механику и логику автоворонки: бот, письма, страницы, триггеры — всё с нуля под холодную аудиторию.",
-          "Провели кастдев: выявили актуальные мотивы аудитории (не «петь красиво», а «уверенность», «выступать без страха», «петь для себя»).",
-          "Переписали коммуникацию под эти мотивы, усилили эмоциональные триггеры и персонализацию.",
-          "Обновили визуал: чистые экраны, единая стилистика, видео с живой подачей Этери.",
-          "Настроили A/B-тесты на ключевых этапах воронки — регистрация, прогрев, Tripwire.",
-        ],
-      },
-      {
-        heading: "Результаты",
-        results: [
-          { value: "−20%", label: "Стоимость регистрации снизилась на 20%" },
-          { value: "+5%", label: "Конверсия в заявку выросла на 5%" },
-          { value: "+22%", label: "Конверсия в Tripwire выросла на 22%" },
-        ],
-      },
+    challenge: "Автоворонка Этери Бериашвили работала на тёплую аудиторию. При запуске холодного трафика показатели падали — нужно было пересобрать воронку с нуля под новую аудиторию.",
+    solution: [
+      "Провели кастдев: выявили реальные мотивы (не «петь красиво», а «уверенность», «выступать без страха»)",
+      "Переписали коммуникацию под эти мотивы: бот, письма, страницы, триггеры",
+      "Обновили визуал: чистые экраны, единая стилистика, видео с живой подачей Этери",
+      "Настроили A/B-тесты на ключевых этапах: регистрация, прогрев, Tripwire",
     ],
   },
 };
@@ -164,21 +90,156 @@ const casesData: Record<string, CaseData> = {
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type ResultItem = { value: string; label: string };
-type Section = {
-  heading: string;
-  text?: string;
-  items?: string[];
-  results?: ResultItem[];
-};
 type CaseData = {
   id: string;
   client: string;
   tag: string;
   title: string;
   subtitle: string;
+  heroImage: string;
   results: ResultItem[];
-  sections: Section[];
+  challenge: string;
+  solution: string[];
 };
+
+// ─── Modal Form ───────────────────────────────────────────────────────────────
+
+const TELEGRAM_BOT_TOKEN = "8672812865:AAGt98zHZj_Q2r5DnSNXxMl_fNe_Ti9DPxw";
+const TELEGRAM_CHAT_ID = "1342421992";
+
+function LeadModal({ caseTitle, onClose }: { caseTitle: string; onClose: () => void }) {
+  const [name, setName] = useState("");
+  const [niche, setNiche] = useState("");
+  const [contact, setContact] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("loading");
+    const text = `🎯 Заявка с кейса: ${caseTitle}\n\n👤 Имя: ${name}\n🏢 Ниша: ${niche}\n📱 Контакт: ${contact}`;
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text, parse_mode: "HTML" }),
+      });
+      if (!res.ok) throw new Error("Telegram error");
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 1000,
+        background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "1rem",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "#111", border: "1px solid rgba(255,255,255,0.1)",
+          padding: "2.5rem", maxWidth: "480px", width: "100%",
+          position: "relative",
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position: "absolute", top: "1rem", right: "1rem",
+            background: "none", border: "none", color: "rgba(255,255,255,0.4)",
+            cursor: "pointer", fontSize: "1.5rem", lineHeight: 1,
+          }}
+        >
+          ×
+        </button>
+
+        {status === "success" ? (
+          <div style={{ textAlign: "center", padding: "2rem 0" }}>
+            <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>✓</div>
+            <h3 className="font-display" style={{ fontSize: "2rem", color: "#F5F5F0", marginBottom: "0.75rem" }}>
+              ОТЛИЧНО!
+            </h3>
+            <p style={{ fontFamily: "Inter", color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>
+              Заявка принята. Свяжемся с вами в течение рабочего дня.
+            </p>
+          </div>
+        ) : (
+          <>
+            <h3 className="font-display" style={{ fontSize: "1.8rem", fontWeight: 900, color: "#F5F5F0", marginBottom: "0.5rem" }}>
+              БЕСПЛАТНЫЙ РАЗБОР
+            </h3>
+            <p style={{ fontFamily: "Inter", fontSize: "0.9rem", color: "rgba(255,255,255,0.4)", marginBottom: "2rem" }}>
+              Разберём вашу воронку и покажем, где теряются деньги
+            </p>
+
+            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <input
+                required
+                placeholder="Ваше имя"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                style={{
+                  background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                  color: "#F5F5F0", padding: "0.875rem 1rem", fontFamily: "Inter", fontSize: "0.95rem",
+                  outline: "none",
+                }}
+              />
+              <input
+                required
+                placeholder="Ваша ниша / проект"
+                value={niche}
+                onChange={(e) => setNiche(e.target.value)}
+                style={{
+                  background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                  color: "#F5F5F0", padding: "0.875rem 1rem", fontFamily: "Inter", fontSize: "0.95rem",
+                  outline: "none",
+                }}
+              />
+              <input
+                required
+                placeholder="Telegram или телефон"
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
+                style={{
+                  background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                  color: "#F5F5F0", padding: "0.875rem 1rem", fontFamily: "Inter", fontSize: "0.95rem",
+                  outline: "none",
+                }}
+              />
+
+              {status === "error" && (
+                <p style={{ fontFamily: "Inter", fontSize: "0.85rem", color: "#FF2D20" }}>
+                  Ошибка отправки. Напишите нам напрямую: @gipoteza_agency
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                style={{
+                  background: "#FF2D20", color: "#fff", border: "none",
+                  padding: "1rem", cursor: status === "loading" ? "not-allowed" : "pointer",
+                  fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.1rem", letterSpacing: "0.1em",
+                  opacity: status === "loading" ? 0.7 : 1,
+                  transition: "background 0.2s",
+                  marginTop: "0.5rem",
+                }}
+              >
+                {status === "loading" ? "ОТПРАВЛЯЕМ..." : "ОТПРАВИТЬ ЗАЯВКУ →"}
+              </button>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
 
 // ─── CasePage ─────────────────────────────────────────────────────────────────
 
@@ -186,6 +247,7 @@ export default function CasePage() {
   const [, params] = useRoute("/cases/:id");
   const caseId = params?.id ?? "";
   const data = casesData[caseId];
+  const [modalOpen, setModalOpen] = useState(false);
 
   if (!data) {
     return (
@@ -201,6 +263,8 @@ export default function CasePage() {
 
   return (
     <div style={{ background: "#0A0A0A", minHeight: "100vh", color: "#F5F5F0" }}>
+      {modalOpen && <LeadModal caseTitle={data.title} onClose={() => setModalOpen(false)} />}
+
       {/* Header nav */}
       <nav style={{
         position: "sticky", top: 0, zIndex: 100,
@@ -230,9 +294,22 @@ export default function CasePage() {
         </div>
       </nav>
 
-      {/* Hero */}
-      <header style={{ padding: "6rem 0 4rem", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-        <div className="container">
+      {/* Hero with image */}
+      <header style={{ position: "relative", overflow: "hidden" }}>
+        {/* Background image */}
+        <div style={{
+          position: "absolute", inset: 0,
+          backgroundImage: `url(${data.heroImage})`,
+          backgroundSize: "cover", backgroundPosition: "center",
+          opacity: 0.25,
+        }} />
+        {/* Gradient overlay */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(to right, rgba(10,10,10,0.95) 50%, rgba(10,10,10,0.4) 100%)",
+        }} />
+
+        <div className="container" style={{ position: "relative", padding: "6rem 0 4rem" }}>
           <div style={{ marginBottom: "1.5rem" }}>
             <span style={{
               display: "inline-block",
@@ -246,26 +323,26 @@ export default function CasePage() {
           <h1 className="font-display" style={{
             fontSize: "clamp(2.5rem, 7vw, 6rem)", fontWeight: 900,
             lineHeight: 0.95, letterSpacing: "-0.02em",
-            color: "#F5F5F0", marginBottom: "1.5rem", maxWidth: "900px",
+            color: "#F5F5F0", marginBottom: "1.5rem", maxWidth: "800px",
           }}>
             {data.title}
           </h1>
           <p style={{
-            fontFamily: "Inter", fontSize: "clamp(1rem, 2vw, 1.25rem)",
-            color: "rgba(255,255,255,0.5)", lineHeight: 1.6, maxWidth: "600px",
+            fontFamily: "Inter", fontSize: "clamp(1rem, 2vw, 1.2rem)",
+            color: "rgba(255,255,255,0.55)", lineHeight: 1.6, maxWidth: "560px",
             marginBottom: "3rem",
           }}>
             {data.subtitle}
           </p>
 
           {/* Key results strip */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "1px", background: "rgba(255,255,255,0.06)" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "1px", background: "rgba(255,255,255,0.06)", maxWidth: "600px" }}>
             {data.results.map((r, i) => (
               <div key={i} style={{
-                background: "#0A0A0A", padding: "1.5rem 2.5rem",
+                background: "rgba(10,10,10,0.9)", padding: "1.5rem 2.5rem",
                 flex: "1 1 160px",
               }}>
-                <div className="font-display" style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: 900, color: "#FF2D20", lineHeight: 1 }}>
+                <div className="font-display" style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 900, color: "#FF2D20", lineHeight: 1 }}>
                   {r.value}
                 </div>
                 <div style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.4)", marginTop: "0.4rem" }}>
@@ -277,58 +354,83 @@ export default function CasePage() {
         </div>
       </header>
 
-      {/* Content */}
+      {/* Content — two columns on desktop */}
       <main style={{ padding: "5rem 0" }}>
         <div className="container">
-          <div style={{ maxWidth: "720px" }}>
-            {data.sections.map((section, si) => (
-              <div key={si} style={{ marginBottom: "4rem" }}>
-                <h2 className="font-display" style={{
-                  fontSize: "1.8rem", fontWeight: 900, color: "#F5F5F0",
-                  letterSpacing: "-0.01em", marginBottom: "1.25rem",
-                  paddingBottom: "0.75rem",
-                  borderBottom: "1px solid rgba(255,255,255,0.08)",
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "4rem",
+            maxWidth: "960px",
+          }}
+            className="case-grid"
+          >
+            {/* Challenge */}
+            <div>
+              <h2 className="font-display" style={{
+                fontSize: "1.5rem", fontWeight: 900, color: "#F5F5F0",
+                letterSpacing: "-0.01em", marginBottom: "1.25rem",
+                paddingBottom: "0.75rem",
+                borderBottom: "1px solid rgba(255,255,255,0.08)",
+              }}>
+                Задача
+              </h2>
+              <p style={{ fontFamily: "Inter", fontSize: "1rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.8 }}>
+                {data.challenge}
+              </p>
+            </div>
+
+            {/* Solution */}
+            <div>
+              <h2 className="font-display" style={{
+                fontSize: "1.5rem", fontWeight: 900, color: "#F5F5F0",
+                letterSpacing: "-0.01em", marginBottom: "1.25rem",
+                paddingBottom: "0.75rem",
+                borderBottom: "1px solid rgba(255,255,255,0.08)",
+              }}>
+                Что сделали
+              </h2>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "1rem" }}>
+                {data.solution.map((item, ii) => (
+                  <li key={ii} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
+                    <span style={{ color: "#FF2D20", fontFamily: "Inter", fontSize: "0.75rem", fontWeight: 700, paddingTop: "0.3rem", flexShrink: 0 }}>
+                      0{ii + 1}
+                    </span>
+                    <span style={{ fontFamily: "Inter", fontSize: "0.95rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.7 }}>
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Results bar */}
+          <div style={{ marginTop: "4rem", maxWidth: "960px" }}>
+            <h2 className="font-display" style={{
+              fontSize: "1.5rem", fontWeight: 900, color: "#F5F5F0",
+              letterSpacing: "-0.01em", marginBottom: "1.5rem",
+              paddingBottom: "0.75rem",
+              borderBottom: "1px solid rgba(255,255,255,0.08)",
+            }}>
+              Результаты
+            </h2>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "1px", background: "rgba(255,255,255,0.06)" }}>
+              {data.results.map((r, ri) => (
+                <div key={ri} style={{
+                  background: "#111", padding: "2rem 2.5rem",
+                  flex: "1 1 200px",
+                  borderLeft: ri === 0 ? "3px solid #FF2D20" : "none",
                 }}>
-                  {section.heading}
-                </h2>
-
-                {section.text && (
-                  <p style={{ fontFamily: "Inter", fontSize: "1rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.8 }}>
-                    {section.text}
-                  </p>
-                )}
-
-                {section.items && (
-                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    {section.items.map((item, ii) => (
-                      <li key={ii} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
-                        <span style={{ color: "#FF2D20", fontFamily: "Inter", fontSize: "0.75rem", fontWeight: 700, paddingTop: "0.3rem", flexShrink: 0 }}>
-                          0{ii + 1}
-                        </span>
-                        <span style={{ fontFamily: "Inter", fontSize: "1rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.7 }}>
-                          {item}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                {section.results && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    {section.results.map((r, ri) => (
-                      <div key={ri} style={{ display: "flex", alignItems: "baseline", gap: "1.5rem", padding: "1.25rem 1.5rem", background: "#111", borderLeft: "3px solid #FF2D20" }}>
-                        <span className="font-display" style={{ fontSize: "2.5rem", fontWeight: 900, color: "#FF2D20", lineHeight: 1, flexShrink: 0 }}>
-                          {r.value}
-                        </span>
-                        <span style={{ fontFamily: "Inter", fontSize: "0.95rem", color: "rgba(255,255,255,0.6)" }}>
-                          {r.label}
-                        </span>
-                      </div>
-                    ))}
+                  <div className="font-display" style={{ fontSize: "clamp(2.5rem, 5vw, 3.5rem)", fontWeight: 900, color: "#FF2D20", lineHeight: 1 }}>
+                    {r.value}
                   </div>
-                )}
-              </div>
-            ))}
+                  <div style={{ fontFamily: "Inter", fontSize: "0.85rem", color: "rgba(255,255,255,0.5)", marginTop: "0.5rem" }}>
+                    {r.label}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </main>
@@ -343,19 +445,19 @@ export default function CasePage() {
             <p style={{ fontFamily: "Inter", fontSize: "1rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.7, marginBottom: "2.5rem" }}>
               Разберём вашу воронку бесплатно и покажем, где теряются деньги.
             </p>
-            <Link href="/#contact">
-              <button style={{
+            <button
+              onClick={() => setModalOpen(true)}
+              style={{
                 background: "#FF2D20", color: "#fff", border: "none",
                 padding: "1rem 2.5rem", cursor: "pointer",
                 fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.1rem", letterSpacing: "0.1em",
                 transition: "background 0.2s",
               }}
-                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = "#cc2218")}
-                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = "#FF2D20")}
-              >
-                ПОЛУЧИТЬ БЕСПЛАТНЫЙ РАЗБОР →
-              </button>
-            </Link>
+              onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = "#cc2218")}
+              onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = "#FF2D20")}
+            >
+              ПОЛУЧИТЬ БЕСПЛАТНЫЙ РАЗБОР →
+            </button>
           </div>
         </div>
       </section>
@@ -371,6 +473,16 @@ export default function CasePage() {
           </Link>
         </div>
       </footer>
+
+      {/* Responsive grid fix */}
+      <style>{`
+        @media (max-width: 768px) {
+          .case-grid {
+            grid-template-columns: 1fr !important;
+            gap: 2.5rem !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
