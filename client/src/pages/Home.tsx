@@ -903,10 +903,40 @@ function Team() {
 function Contact() {
   const [form, setForm] = useState({ name: "", company: "", telegram: "" });
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const TG_BOT_TOKEN = "8672812865:AAGt98zHZj_Q2r5DnSNXxMl_fNe_Ti9DPxw";
+  const TG_CHAT_ID = "1342421992";
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    setSending(true);
+    setError("");
+    const text = [
+      "\uD83D\uDCE9 *Новая заявка с gipoteza.agency*",
+      "",
+      `\uD83D\uDC64 *Имя:* ${form.name}`,
+      `\uD83C\uDFAF *Ниша / продукт:* ${form.company}`,
+      `\uD83D\uDCAC *Telegram / телефон:* ${form.telegram}`,
+    ].join("\n");
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: TG_CHAT_ID, text, parse_mode: "Markdown" }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setSent(true);
+      } else {
+        setError("Ошибка отправки. Попробуйте ещё раз.");
+      }
+    } catch {
+      setError("Нет соединения. Попробуйте ещё раз.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -971,12 +1001,16 @@ function Contact() {
                 ))}
                 <button
                   type="submit"
+                  disabled={sending}
                   className="font-display"
-                  style={{ marginTop: "1rem", background: "#FF2D20", color: "#fff", border: "none", padding: "1rem 2rem", fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.08em", cursor: "pointer", transition: "opacity 0.2s", alignSelf: "flex-start" }}
-                  onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
+                  style={{ marginTop: "1rem", background: sending ? "#7a1510" : "#FF2D20", color: "#fff", border: "none", padding: "1rem 2rem", fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.08em", cursor: sending ? "not-allowed" : "pointer", transition: "opacity 0.2s", alignSelf: "flex-start" }}
+                  onMouseEnter={e => { if (!sending) e.currentTarget.style.opacity = "0.85"; }}
                   onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
-                  Получить разбор бесплатно →
+                  {sending ? "Отправляем..." : "Получить разбор бесплатно →"}
                 </button>
+                {error && (
+                  <p style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "#FF2D20", marginTop: "0.5rem" }}>{error}</p>
+                )}
                 <p style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", marginTop: "0.5rem" }}>
                   Ответим в течение дня. Без спама и навязчивых продаж.
                 </p>
