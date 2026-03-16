@@ -1432,14 +1432,144 @@ function TelegramFloat() {
   );
 }
 
+function ContactModal({ onClose }: { onClose: () => void }) {
+  const [form, setForm] = React.useState({ name: "", company: "", telegram: "" });
+  const [sent, setSent] = React.useState(false);
+  const [sending, setSending] = React.useState(false);
+  const [error, setError] = React.useState("");
+
+  const TG_BOT_TOKEN = "8672812865:AAGt98zHZj_Q2r5DnSNXxMl_fNe_Ti9DPxw";
+  const TG_CHAT_ID = "1342421992";
+
+  React.useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    document.body.style.overflow = "hidden";
+    return () => { window.removeEventListener("keydown", handler); document.body.style.overflow = ""; };
+  }, [onClose]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSending(true);
+    setError("");
+    const text = [
+      "\uD83D\uDCE9 *Новая заявка с gipoteza.agency*",
+      "",
+      `\uD83D\uDC64 *Имя:* ${form.name}`,
+      `\uD83C\uDFAF *Ниша / продукт:* ${form.company}`,
+      `\uD83D\uDCAC *Telegram / телефон:* ${form.telegram}`,
+    ].join("\n");
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: TG_CHAT_ID, text, parse_mode: "Markdown" }),
+      });
+      const data = await res.json();
+      if (data.ok) { setSent(true); }
+      else { setError("Ошибка отправки. Попробуйте ещё раз."); }
+    } catch {
+      setError("Нет соединения. Попробуйте ещё раз.");
+    } finally { setSending(false); }
+  };
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 9999,
+        background: "rgba(0,0,0,0.85)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "1rem",
+        backdropFilter: "blur(6px)",
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: "#111", border: "1px solid rgba(255,255,255,0.08)",
+          padding: "2.5rem", maxWidth: "480px", width: "100%",
+          position: "relative",
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position: "absolute", top: "1rem", right: "1rem",
+            background: "none", border: "none", color: "rgba(255,255,255,0.4)",
+            fontSize: "1.4rem", cursor: "pointer", lineHeight: 1,
+          }}
+        >×</button>
+
+        {sent ? (
+          <div style={{ textAlign: "center", padding: "2rem 0" }}>
+            <div className="font-display" style={{ fontSize: "2.5rem", fontWeight: 900, color: "#FF2D20" }}>Отлично!</div>
+            <p style={{ fontFamily: "Inter", fontSize: "1rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.6, marginTop: "1rem" }}>
+              Мы получили вашу заявку и ответим в течение 2 часов.
+            </p>
+            <button onClick={onClose} style={{ marginTop: "1.5rem", background: "#FF2D20", color: "#fff", border: "none", padding: "0.75rem 2rem", fontFamily: "Inter", fontSize: "0.85rem", cursor: "pointer" }}>Закрыть</button>
+          </div>
+        ) : (
+          <>
+            <h3 className="font-display" style={{ fontSize: "clamp(1.5rem, 4vw, 2.2rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", marginBottom: "0.5rem" }}>
+              БЕСПЛАТНЫЙ РАЗБОР ВОРОНКИ
+            </h3>
+            <p style={{ fontFamily: "Inter", fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginBottom: "1.5rem" }}>
+              Покажем, где у вас теряются деньги — и что с этим делать.
+            </p>
+            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {[
+                { key: "name", label: "Ваше имя", placeholder: "Ваше имя" },
+                { key: "company", label: "Что продаёте / ниша", placeholder: "Что продаёте / ниша" },
+                { key: "telegram", label: "Telegram или телефон", placeholder: "Telegram или телефон" },
+              ].map(field => (
+                <div key={field.key} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <label style={{ fontFamily: "Inter", fontSize: "0.7rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", textTransform: "uppercase" }}>{field.label}</label>
+                  <input
+                    type="text"
+                    placeholder={field.placeholder}
+                    value={form[field.key as keyof typeof form]}
+                    onChange={e => setForm({ ...form, [field.key]: e.target.value })}
+                    required
+                    style={{
+                      background: "transparent", border: "none",
+                      borderBottom: "1px solid rgba(255,255,255,0.15)",
+                      color: "#F5F5F0", fontFamily: "Inter", fontSize: "1rem",
+                      padding: "0.75rem 0", outline: "none", transition: "border-color 0.2s",
+                    }}
+                    onFocus={e => (e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.5)")}
+                    onBlur={e => (e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.15)")}
+                  />
+                </div>
+              ))}
+              <button
+                type="submit"
+                disabled={sending}
+                className="font-display"
+                style={{ marginTop: "0.5rem", background: sending ? "#7a1510" : "#FF2D20", color: "#fff", border: "none", padding: "1rem 2rem", fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.08em", cursor: sending ? "not-allowed" : "pointer", transition: "opacity 0.2s" }}
+                onMouseEnter={e => { if (!sending) e.currentTarget.style.opacity = "0.85"; }}
+                onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
+                {sending ? "Отправляем..." : "Получить разбор бесплатно →"}
+              </button>
+              {error && <p style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "#FF2D20" }}>{error}</p>}
+              <p style={{ fontFamily: "Inter", fontSize: "0.7rem", color: "rgba(255,255,255,0.2)" }}>Ответим в течение дня. Без спама.</p>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
+  const [contactOpen, setContactOpen] = React.useState(false);
   return (
     <div style={{ background: "#0A0A0A", minHeight: "100vh" }}>
       <Nav />
       <Hero />
 
       <RecognizeYourself />
-      <Calculator />
+      <Calculator onOpenContact={() => setContactOpen(true)} />
       <Services />
       <Cases />
       <WebinarExamples />
@@ -1451,6 +1581,7 @@ export default function Home() {
       <Contact />
       <Footer />
       <TelegramFloat />
+      {contactOpen && <ContactModal onClose={() => setContactOpen(false)} />}
     </div>
   );
 }

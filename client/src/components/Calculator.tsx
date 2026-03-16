@@ -166,7 +166,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export default function Calculator() {
+export default function Calculator({ onOpenContact }: { onOpenContact?: () => void }) {
   const [budget, setBudget] = useState(100_000);
   const [cpr, setCpr] = useState(200);
   const [c1, setC1] = useState(30);
@@ -571,8 +571,12 @@ export default function Calculator() {
           </p>
           <button
             onClick={() => {
-              const el = document.getElementById("contact");
-              if (el) el.scrollIntoView({ behavior: "smooth" });
+              if (onOpenContact) {
+                onOpenContact();
+              } else {
+                const el = document.getElementById("contact");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+              }
             }}
             style={{
               display: "inline-block",
