@@ -130,15 +130,15 @@ function Nav() {
 
 function Hero() {
   return (
-    <section id="hero" style={{ background: "#0A0A0A", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: "6rem", paddingBottom: "3rem" }}>
+    <section id="hero" style={{ background: "#0A0A0A", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: "6rem", paddingBottom: "3rem", overflow: "hidden" }}>
       <div className="container">
         {/* Main layout: title left, stats+clients right */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2.5rem" }} className="lg:grid-cols-[1fr_300px] lg:gap-12">
           {/* Left: title + description + CTA */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
             <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
-              <h1 className="font-display" style={{ fontSize: "clamp(2.8rem, 7vw, 6.5rem)", lineHeight: 0.95, fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", margin: 0 }}>
-                <div>ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА —</div>
+              <h1 className="font-display" style={{ fontSize: "clamp(1.9rem, 9.5vw, 6.5rem)", lineHeight: 0.95, fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", margin: 0, width: "100%", maxWidth: "100%", overflowWrap: "break-word" }}>
+                <div>ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА<span style={{ display: "inline-block", marginLeft: "0.2em" }}>—</span></div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.25em", flexWrap: "wrap" }}>
                   <span style={{ display: "inline-block", background: "#FF2D20", borderRadius: "999px", padding: "0.05em 0.35em", fontSize: "0.82em", transform: "rotate(-2deg)", position: "relative", top: "-0.05em" }}>
                     <span style={{ fontSize: "0.55em", fontFamily: "Inter", fontWeight: 700, letterSpacing: "0.05em" }}>это</span>
@@ -361,7 +361,7 @@ function Cases() {
       client: "Онлайн-школа №1",
       tag: "EdTech / Трафик ВК",
       result: "Квал-лид −45%",
-      results: ["Стоимость квал-лида −45%", "Стоимость оплаты −44% от плана"],
+      results: ["Стоимость квал-лида −45%"],
       desc: "Перезапустили трафик ВК для школы 1–11 классов. Провели анализ целевых лидов, протестировали 20+ креативов и выделили TOP-5. Выстроили систему масштабирования: дубли кампаний + плавное увеличение бюджета.",
       caseUrl: "/cases/school1-traffic",
     },
@@ -370,7 +370,7 @@ function Cases() {
       client: "Этери Бериашвили",
       tag: "Онлайн-курс / Вокал",
       result: "Конверсия в Tripwire +22%",
-      results: ["Стоимость регистрации −20%", "Конверсия в заявку +5%", "Конверсия в Tripwire +22%"],
+      results: ["Конверсия в Tripwire +22%"],
       desc: "Пересобрали автоворонку под холодный трафик для онлайн-курса по вокалу. Переписали коммуникацию под актуальные мотивы аудитории, усилили эмоциональные триггеры. Обновили визуал: чистые экраны, единая стилистика, видео с живой подачей.",
       caseUrl: "/cases/eteri",
     },
@@ -390,11 +390,16 @@ function Cases() {
           </div>
         </FadeUp>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1px", background: "rgba(255,255,255,0.06)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0" }} className="cases-grid">
           {cases.map((c, i) => (
             <FadeUp key={c.id} delay={i * 0.08} style={{ height: "100%" }}>
               <div
-                style={{ background: "#0A0A0A", padding: "2.5rem 2rem", cursor: "pointer", transition: "background 0.2s", height: "100%", boxSizing: "border-box" }}
+                style={{
+                  background: "#0A0A0A", padding: "2.5rem 2rem", cursor: "pointer", transition: "background 0.2s",
+                  height: "100%", boxSizing: "border-box",
+                  borderRight: i % 2 === 0 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                  borderBottom: i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                }}
                 onMouseEnter={e => (e.currentTarget.style.background = "#111")}
                 onMouseLeave={e => (e.currentTarget.style.background = "#0A0A0A")}
                 onClick={() => _setActive(_active === c.id ? null : c.id)}
@@ -554,10 +559,10 @@ function Competitors() {
             ПОЧЕМУ<br />НЕ ОНИ.
           </h2>
         </FadeUp>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "1px", background: "rgba(255,255,255,0.06)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 0, border: "1px solid rgba(255,255,255,0.06)" }}>
           {items.map((item, i) => (
-            <FadeUp key={i} delay={i * 0.1}>
-              <div style={{ background: "#0A0A0A", padding: "2.5rem 2rem" }}>
+            <FadeUp key={i} delay={i * 0.1} style={{ height: "100%" }}>
+              <div style={{ background: "#0A0A0A", padding: "2.5rem 2rem", borderRight: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", height: "100%", boxSizing: "border-box" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
                   <span style={{ width: "1.5rem", height: "1.5rem", borderRadius: "50%", border: "1px solid rgba(255,45,32,0.4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <span style={{ color: "#FF2D20", fontSize: "0.7rem" }}>✕</span>
@@ -598,7 +603,7 @@ function Team() {
       accent: "#B5F23D",
       quote: "Хороший сценарий — это когда зритель не замечает, что его ведут. Он просто хочет купить.",
       focus: "Сценарии, смыслы и структура контента",
-      background: ["Skyeng", "Skillbox", "Нетология"],
+      background: ["Skyeng", "Skillbox", "SkillFactory"],
     },
     {
       id: "03",
@@ -650,7 +655,7 @@ function Team() {
               marginBottom: "1.25rem",
             }}
           >
-            КОМАНДА · 4 ЧЕЛОВЕКА
+            КОМАНДА
           </p>
           <h2
             className="font-display"
@@ -909,6 +914,11 @@ function Team() {
       </div>
 
       <style>{`
+        @media (max-width: 640px) {
+          .cases-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
         @media (max-width: 768px) {
           .team-slider {
             grid-template-columns: 1fr !important;
