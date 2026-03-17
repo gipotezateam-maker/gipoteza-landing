@@ -6,8 +6,8 @@ import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
 const MARKETOS_LOGO = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/marketos-logo_49b1e73a.jpg";
-const TG_BOT_TOKEN = import.meta.env.VITE_TG_BOT_TOKEN;
-const TG_CHAT_ID = import.meta.env.VITE_TG_CHAT_ID;
+const TG_BOT_TOKEN = "8672812865:AAGt98zHZj_Q2r5DnSNXxMl_fNe_Ti9DPxw";
+const TG_CHAT_ID = "1342421992";
 
 function FadeUp({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
   const ref = useRef(null);
