@@ -167,14 +167,9 @@ export default function OfferPage() {
             </div>
             {/* Разделитель */}
             <span style={{ color: "rgba(255,255,255,0.2)", fontSize: "1.2rem", fontWeight: 100 }}>×</span>
-            {/* Логотип MarketOS */}
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <img src={MARKETOS_LOGO} alt="MarketOS"
-                style={{ width: "28px", height: "28px", objectFit: "cover", borderRadius: "6px" }} />
-              <span className="font-display" style={{ fontSize: "1rem", fontWeight: 900, letterSpacing: "0.04em" }}>
-                MARKET<span style={{ color: "#B5F23D" }}>OS</span>
-              </span>
-            </div>
+            {/* Логотип MarketOS — только иконка */}
+            <img src={MARKETOS_LOGO} alt="MarketOS"
+              style={{ width: "36px", height: "36px", objectFit: "cover", borderRadius: "8px" }} />
           </div>
           <span style={{ fontFamily: "Inter", fontSize: "0.68rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.15em", textTransform: "uppercase" }}>
             Спецпредложение для участников эфира
