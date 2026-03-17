@@ -153,15 +153,28 @@ export default function OfferPage() {
       {/* ── Шапка ── */}
       <header style={{ padding: "1.25rem 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <svg width="26" height="18" viewBox="0 0 28 20" fill="none">
-              <ellipse cx="14" cy="10" rx="13" ry="9" stroke="#FF2D20" strokeWidth="1.5"/>
-              <ellipse cx="14" cy="10" rx="5" ry="9" stroke="#FF2D20" strokeWidth="1.5"/>
-              <line x1="1" y1="10" x2="27" y2="10" stroke="#FF2D20" strokeWidth="1.5"/>
-            </svg>
-            <span className="font-display" style={{ fontSize: "1rem", fontWeight: 900, letterSpacing: "0.04em" }}>
-              ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА
-            </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+            {/* Логотип Гипотезы */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <svg width="26" height="18" viewBox="0 0 28 20" fill="none">
+                <ellipse cx="14" cy="10" rx="13" ry="9" stroke="#FF2D20" strokeWidth="1.5"/>
+                <ellipse cx="14" cy="10" rx="5" ry="9" stroke="#FF2D20" strokeWidth="1.5"/>
+                <line x1="1" y1="10" x2="27" y2="10" stroke="#FF2D20" strokeWidth="1.5"/>
+              </svg>
+              <span className="font-display" style={{ fontSize: "1rem", fontWeight: 900, letterSpacing: "0.04em" }}>
+                ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА
+              </span>
+            </div>
+            {/* Разделитель */}
+            <span style={{ color: "rgba(255,255,255,0.2)", fontSize: "1.2rem", fontWeight: 100 }}>×</span>
+            {/* Логотип MarketOS */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <img src={MARKETOS_LOGO} alt="MarketOS"
+                style={{ width: "28px", height: "28px", objectFit: "cover", borderRadius: "6px" }} />
+              <span className="font-display" style={{ fontSize: "1rem", fontWeight: 900, letterSpacing: "0.04em" }}>
+                MARKET<span style={{ color: "#B5F23D" }}>OS</span>
+              </span>
+            </div>
           </div>
           <span style={{ fontFamily: "Inter", fontSize: "0.68rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.15em", textTransform: "uppercase" }}>
             Спецпредложение для участников эфира
