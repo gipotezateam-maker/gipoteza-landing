@@ -333,18 +333,12 @@ export default function MarketosPage() {
       );
 
       try {
-        const apiKey = import.meta.env.VITE_FRONTEND_FORGE_API_KEY;
-        const apiBase = import.meta.env.VITE_FRONTEND_FORGE_API_URL || "https://forge.butterfly-effect.dev";
-        const apiUrl = `${apiBase}/v1/chat/completions`;
-
-        const response = await fetch(apiUrl, {
+        const response = await fetch("/api/marketos/chat", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
           },
           body: JSON.stringify({
-            model: "claude-3-7-sonnet-20250219",
             messages: [
               {
                 role: "system",
@@ -356,8 +350,6 @@ export default function MarketosPage() {
                 content: prompt,
               },
             ],
-            max_tokens: 4000,
-            temperature: 0.7,
           }),
         });
 
@@ -367,8 +359,7 @@ export default function MarketosPage() {
 
         const result = await response.json();
         const answer =
-          result.choices?.[0]?.message?.content ||
-          result.content ||
+          result.text ||
           "Получил результат, но не смог его обработать. Попробуй ещё раз.";
 
         removeTyping();

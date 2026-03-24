@@ -11,8 +11,8 @@ import ArticleWebinar from "./pages/ArticleWebinar";
 import CasePage from "./pages/CasePage";
 import OfferPage from "./pages/OfferPage";
 import MarketosPage from "./pages/MarketosPage";
-
 function Router() {
+  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path={"/"} component={Home} />
