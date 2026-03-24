@@ -439,13 +439,14 @@ export default function MarketosPage() {
       {/* Header */}
       <header className="marketos-header">
         <div className="marketos-avatar">🤖</div>
-        <div>
-          <div className="marketos-name">Маркетос</div>
+        <div className="marketos-header-text">
+          <div className="marketos-name">Маркет<span className="accent">ОС</span></div>
           <div className="marketos-status">
             <span className="marketos-dot" />
-            онлайн
+            онлайн • маркетинговый помощник
           </div>
         </div>
+        <div className="marketos-header-badge">✨ AI-помощник</div>
       </header>
 
       {/* Messages */}
@@ -585,15 +586,19 @@ function MessageText({ text }: { text: string }) {
 // ─── Стили ────────────────────────────────────────────────────────────────────
 
 const STYLES = `
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@700;800;900&display=swap');
+
+  * { box-sizing: border-box; }
+
   .marketos-root {
     display: flex;
     flex-direction: column;
     height: 100dvh;
-    max-width: 720px;
+    max-width: 800px;
     margin: 0 auto;
-    background: #0a0a0a;
-    font-family: 'Inter', sans-serif;
-    color: #f5f5f5;
+    background: #f5f5f5;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1a1a1a;
     position: relative;
   }
 
@@ -601,40 +606,45 @@ const STYLES = `
   .marketos-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 20px;
-    background: #111;
-    border-bottom: 1px solid #222;
+    gap: 14px;
+    padding: 14px 24px;
+    background: #ffffff;
+    border-bottom: 1px solid #ebebeb;
     position: sticky;
     top: 0;
     z-index: 10;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
   }
   .marketos-avatar {
-    font-size: 28px;
-    width: 44px;
-    height: 44px;
-    background: #1a1a1a;
-    border: 2px solid #ef4444;
-    border-radius: 50%;
+    width: 46px;
+    height: 46px;
+    background: linear-gradient(135deg, #fa876b 0%, #ff6b4a 100%);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    font-size: 24px;
+    box-shadow: 0 3px 10px rgba(250,135,107,0.4);
   }
   .marketos-name {
     font-family: 'Unbounded', sans-serif;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 15px;
-    color: #fff;
-    letter-spacing: 0.02em;
+    color: #1a1a1a;
+    letter-spacing: -0.01em;
+  }
+  .marketos-name .accent {
+    color: #fa876b;
   }
   .marketos-status {
     display: flex;
     align-items: center;
     gap: 5px;
     font-size: 12px;
-    color: #888;
+    color: #999;
     margin-top: 2px;
+    font-weight: 500;
   }
   .marketos-dot {
     width: 7px;
@@ -642,92 +652,95 @@ const STYLES = `
     background: #22c55e;
     border-radius: 50%;
     display: inline-block;
+    box-shadow: 0 0 0 2px rgba(34,197,94,0.2);
+  }
+  .marketos-header-badge {
+    margin-left: auto;
+    background: #fff5f2;
+    border: 1px solid #fdd5c8;
+    color: #fa876b;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
   }
 
   /* Messages */
   .marketos-messages {
     flex: 1;
     overflow-y: auto;
-    padding: 20px 16px;
+    padding: 20px 20px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
     scroll-behavior: smooth;
   }
-  .marketos-messages::-webkit-scrollbar {
-    width: 4px;
-  }
-  .marketos-messages::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .marketos-messages::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 2px;
-  }
+  .marketos-messages::-webkit-scrollbar { width: 4px; }
+  .marketos-messages::-webkit-scrollbar-track { background: transparent; }
+  .marketos-messages::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
 
   /* Bubble rows */
   .marketos-bubble-row {
     display: flex;
     align-items: flex-end;
-    gap: 8px;
+    gap: 10px;
   }
-  .marketos-bubble-row.user {
-    flex-direction: row-reverse;
-  }
+  .marketos-bubble-row.user { flex-direction: row-reverse; }
   .marketos-bubble-avatar {
-    font-size: 20px;
-    width: 32px;
-    height: 32px;
-    background: #1a1a1a;
-    border: 1.5px solid #ef4444;
-    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    background: linear-gradient(135deg, #fa876b 0%, #ff6b4a 100%);
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     margin-bottom: 2px;
+    font-size: 18px;
+    box-shadow: 0 2px 6px rgba(250,135,107,0.3);
   }
   .marketos-bubble-content {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-width: 82%;
+    max-width: 80%;
   }
-  .marketos-bubble-row.user .marketos-bubble-content {
-    align-items: flex-end;
-  }
+  .marketos-bubble-row.user .marketos-bubble-content { align-items: flex-end; }
 
   /* Bubbles */
   .marketos-bubble {
-    padding: 12px 16px;
-    border-radius: 16px;
+    padding: 13px 17px;
+    border-radius: 18px;
     font-size: 14px;
-    line-height: 1.6;
+    line-height: 1.65;
     word-break: break-word;
   }
   .marketos-bubble.bot {
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    border-bottom-left-radius: 4px;
-    color: #f0f0f0;
+    background: #ffffff;
+    border: 1px solid #ebebeb;
+    border-bottom-left-radius: 5px;
+    color: #1a1a1a;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
   .marketos-bubble.user {
-    background: #ef4444;
-    border-bottom-right-radius: 4px;
+    background: linear-gradient(135deg, #fa876b 0%, #ff6b4a 100%);
+    border-bottom-right-radius: 5px;
     color: #fff;
+    box-shadow: 0 3px 10px rgba(250,135,107,0.35);
   }
 
-  /* Typing indicator */
+  /* Typing */
   .marketos-bubble.typing {
     display: flex;
     align-items: center;
     gap: 5px;
-    padding: 14px 18px;
+    padding: 16px 20px;
   }
   .marketos-bubble.typing .dot {
     width: 7px;
     height: 7px;
-    background: #555;
+    background: #ccc;
     border-radius: 50%;
     animation: typing-bounce 1.2s infinite;
   }
@@ -738,92 +751,83 @@ const STYLES = `
     30% { transform: translateY(-6px); opacity: 1; }
   }
 
-  /* Text */
-  .marketos-text {
-    white-space: pre-wrap;
-  }
+  .marketos-text { white-space: pre-wrap; }
 
   /* Scenario buttons */
   .marketos-buttons {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 4px;
+    margin-top: 6px;
   }
   .marketos-scenario-btn {
-    background: #1a1a1a;
-    border: 1.5px solid #333;
-    color: #f0f0f0;
-    padding: 8px 14px;
-    border-radius: 20px;
+    background: #ffffff;
+    border: 1.5px solid #e8e8e8;
+    color: #333;
+    padding: 9px 16px;
+    border-radius: 24px;
     font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.18s ease;
     font-family: 'Inter', sans-serif;
     white-space: nowrap;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
   .marketos-scenario-btn:hover {
-    border-color: #ef4444;
-    color: #ef4444;
-    background: rgba(239, 68, 68, 0.08);
-    transform: translateY(-1px);
+    border-color: #fa876b;
+    color: #fa876b;
+    background: #fff8f5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(250,135,107,0.2);
   }
-  .marketos-scenario-btn:active {
-    transform: translateY(0);
-  }
+  .marketos-scenario-btn:active { transform: translateY(0); }
 
   /* Footer */
   .marketos-footer {
-    padding: 12px 16px 20px;
-    background: #0f0f0f;
-    border-top: 1px solid #1e1e1e;
+    padding: 14px 20px 22px;
+    background: #ffffff;
+    border-top: 1px solid #ebebeb;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.05);
   }
   .marketos-footer-idle {
     text-align: center;
-    color: #555;
+    color: #bbb;
     font-size: 13px;
     padding: 8px 0;
+    font-weight: 500;
   }
-  .marketos-input-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+  .marketos-input-wrap { display: flex; flex-direction: column; gap: 8px; }
   .marketos-field-hint {
     font-size: 12px;
-    color: #888;
+    color: #999;
     padding-left: 4px;
+    font-weight: 500;
   }
-  .marketos-optional {
-    color: #555;
-  }
-  .marketos-input-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
+  .marketos-optional { color: #ccc; }
+  .marketos-input-row { display: flex; gap: 8px; align-items: center; }
   .marketos-input {
     flex: 1;
-    background: #1a1a1a;
-    border: 1.5px solid #333;
-    color: #f0f0f0;
-    padding: 12px 16px;
-    border-radius: 24px;
+    background: #f7f7f7;
+    border: 1.5px solid #e8e8e8;
+    color: #1a1a1a;
+    padding: 13px 18px;
+    border-radius: 28px;
     font-size: 14px;
     font-family: 'Inter', sans-serif;
     outline: none;
-    transition: border-color 0.18s;
+    transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
   }
   .marketos-input:focus {
-    border-color: #ef4444;
+    border-color: #fa876b;
+    box-shadow: 0 0 0 3px rgba(250,135,107,0.12);
+    background: #fff;
   }
-  .marketos-input::placeholder {
-    color: #444;
-  }
+  .marketos-input::placeholder { color: #bbb; }
   .marketos-send-btn {
-    width: 44px;
-    height: 44px;
-    background: #ef4444;
+    width: 46px;
+    height: 46px;
+    background: linear-gradient(135deg, #fa876b 0%, #ff6b4a 100%);
     border: none;
     border-radius: 50%;
     color: #fff;
@@ -833,40 +837,41 @@ const STYLES = `
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: background 0.18s, transform 0.1s;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 3px 10px rgba(250,135,107,0.4);
   }
   .marketos-send-btn:hover:not(:disabled) {
-    background: #dc2626;
-    transform: scale(1.05);
+    transform: scale(1.08);
+    box-shadow: 0 5px 16px rgba(250,135,107,0.5);
   }
   .marketos-send-btn:disabled {
-    background: #333;
+    background: #e8e8e8;
     cursor: not-allowed;
-    color: #555;
+    color: #bbb;
+    box-shadow: none;
   }
   .marketos-skip-btn {
     background: none;
     border: none;
-    color: #555;
+    color: #bbb;
     font-size: 12px;
     cursor: pointer;
     text-align: left;
     padding: 0 4px;
     transition: color 0.15s;
     font-family: 'Inter', sans-serif;
+    font-weight: 500;
   }
-  .marketos-skip-btn:hover {
-    color: #888;
-  }
+  .marketos-skip-btn:hover { color: #fa876b; }
 
   /* Responsive */
   @media (max-width: 480px) {
-    .marketos-bubble-content {
-      max-width: 90%;
-    }
-    .marketos-scenario-btn {
-      font-size: 12px;
-      padding: 7px 12px;
-    }
+    .marketos-root { max-width: 100%; }
+    .marketos-bubble-content { max-width: 88%; }
+    .marketos-scenario-btn { font-size: 12px; padding: 8px 12px; }
+    .marketos-header { padding: 12px 16px; }
+    .marketos-messages { padding: 16px 14px; }
+    .marketos-footer { padding: 12px 14px 18px; }
+    .marketos-header-badge { display: none; }
   }
 `;
