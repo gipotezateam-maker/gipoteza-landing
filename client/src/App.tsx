@@ -10,6 +10,7 @@ import ArticleEdtech2026 from "./pages/ArticleEdtech2026";
 import ArticleWebinar from "./pages/ArticleWebinar";
 import CasePage from "./pages/CasePage";
 import OfferPage from "./pages/OfferPage";
+import MarketosPage from "./pages/MarketosPage";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
       <Route path={"/blog/iz-chego-sostoit-zapusk-vebinara"} component={ArticleWebinar} />
       <Route path={"/cases/:id"} component={CasePage} />
       <Route path={"/offer"} component={OfferPage} />
+      <Route path={"/marketos"} component={MarketosPage} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
