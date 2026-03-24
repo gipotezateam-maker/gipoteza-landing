@@ -323,53 +323,78 @@ export default function MarketosPage() {
   // ── Вызов Manus API ──────────────────────────────────────────────────────────
   const runManus = useCallback(
     async (scenario: Scenario, data: Record<string, string>) => {
-      const prompt = scenario.buildPrompt(data);
+      const isPresentation = scenario.id === "presentation";
 
       addTyping();
       addMessage(
         botMsg(
-          `⏳ Работаю над этим...\n\nМаркетос анализирует данные и готовит результат для тебя.\nОбычно это занимает 1-2 минуты.\n\nПодожди немного... 🤖`
+          isPresentation
+            ? `⏳ Генерирую презентацию...\n\nМаркетос создаёт структуру и оформляет слайды.\nОбычно это занимает 1-2 минуты.\n\nПодожди немного... 🎨`
+            : `⏳ Работаю над этим...\n\nМаркетос анализирует данные и готовит результат для тебя.\nОбычно это занимает 1-2 минуты.\n\nПодожди немного... 🤖`
         )
       );
 
       try {
-        const response = await fetch("/api/marketos/chat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            messages: [
-              {
-                role: "system",
-                content:
-                  "Ты — Маркетос, профессиональный маркетинговый помощник. Ты помогаешь маркетологам и предпринимателям решать задачи: анализировать конкурентов, создавать контент, строить стратегии. Отвечай структурированно, конкретно и по делу. Используй эмодзи для структурирования. Пиши на русском языке.",
-              },
-              {
-                role: "user",
-                content: prompt,
-              },
-            ],
-          }),
-        });
+        if (isPresentation) {
+          // ── PDF презентация ──────────────────────────────────────────────────
+          const response = await fetch("/api/marketos/presentation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              topic: data.topic || data.keypoints || "Маркетинговая презентация",
+              details: `Аудитория: ${data.audience || ""}, Ключевые моменты: ${data.keypoints || ""}, Слайдов: ${data.slides || "10"}`,
+            }),
+          });
 
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
+          if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+          // Скачиваем PDF
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `marketos-${(data.topic || "presentation").replace(/\s+/g, "-").toLowerCase()}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          removeTyping();
+          addMessage(
+            botMsg(
+              `✅ Презентация готова! PDF-файл скачивается на твой компьютер.\n\n📄 Файл содержит титульный слайд, ${data.slides || "8"} слайдов с контентом и финальный слайд.\n\nХочешь что-то изменить или создать ещё одну?`,
+              SCENARIO_BUTTONS
+            )
+          );
+        } else {
+          // ── Текстовый ответ ──────────────────────────────────────────────────
+          const prompt = scenario.buildPrompt(data);
+          const response = await fetch("/api/marketos/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              messages: [
+                {
+                  role: "system",
+                  content: "Ты — Маркетос, профессиональный маркетинговый помощник. Ты помогаешь маркетологам и предпринимателям решать задачи: анализировать конкурентов, создавать контент, строить стратегии. Отвечай структурированно, конкретно и по делу. Используй эмодзи для структурирования. Пиши на русском языке.",
+                },
+                { role: "user", content: prompt },
+              ],
+            }),
+          });
+
+          if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+          const result = await response.json();
+          const answer = result.text || "Получил результат, но не смог его обработать. Попробуй ещё раз.";
+
+          removeTyping();
+          addMessage(botMsg(`✅ Готово! Вот результат:\n\n${answer}`));
+          addMessage(
+            botMsg(`Нужны ещё какие-то изменения? Напиши мне! 📝\n\nИли выбери новый сценарий:`, SCENARIO_BUTTONS)
+          );
         }
 
-        const result = await response.json();
-        const answer =
-          result.text ||
-          "Получил результат, но не смог его обработать. Попробуй ещё раз.";
-
-        removeTyping();
-        addMessage(botMsg(`✅ Готово! Вот результат:\n\n${answer}`));
-        addMessage(
-          botMsg(
-            `Нужны ещё какие-то изменения? Напиши мне! 📝\n\nИли выбери новый сценарий:`,
-            SCENARIO_BUTTONS
-          )
-        );
         setStage({ type: "done" });
       } catch (err) {
         console.error("Manus API error:", err);

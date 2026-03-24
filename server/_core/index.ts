@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { invokeLLM } from "./llm";
+import { parsePresentationFromText, generatePresentationPDF } from "../marketos-pdf";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -36,6 +37,52 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+
+  // MarketOS Presentation PDF endpoint
+  app.post("/api/marketos/presentation", async (req, res) => {
+    try {
+      const { topic, details } = req.body;
+      if (!topic) return res.status(400).json({ error: "topic required" });
+
+      const systemPrompt = `Ты — Маркетос, профессиональный маркетинговый помощник.
+Создай структурированную презентацию на тему: "${topic}".
+Дополнительные детали: ${details || "нет"}
+
+Формат ответа — СТРОГО следующий (6-8 слайдов):
+Заголовок слайда:
+- Пункт 1 (не более 80 символов)
+- Пункт 2
+- Пункт 3
+
+Каждый слайд начинается с заголовка с двоеточием на конце.
+После — 3-5 пунктов начиная с "- ".
+Пиши на русском языке. Пункты — конкретные, ёмкие.`;
+
+      const result = await invokeLLM({
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Создай презентацию: ${topic}. ${details || ""}` },
+        ],
+        max_tokens: 3000,
+      });
+
+      const content = result.choices?.[0]?.message?.content;
+      const text = typeof content === "string" ? content
+        : Array.isArray(content) ? content.map((c: { type: string; text?: string }) => c.type === "text" ? c.text : "").join("")
+        : "";
+
+      const presentationData = parsePresentationFromText(text, topic);
+      const pdfBuffer = await generatePresentationPDF(presentationData);
+
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename="marketos-presentation.pdf"`);
+      res.setHeader("Content-Length", pdfBuffer.length);
+      return res.send(pdfBuffer);
+    } catch (err) {
+      console.error("MarketOS PDF error:", err);
+      return res.status(500).json({ error: String(err) });
+    }
+  });
 
   // MarketOS AI chat endpoint
   app.post("/api/marketos/chat", async (req, res) => {
