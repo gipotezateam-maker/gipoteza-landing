@@ -225,6 +225,7 @@ type Stage =
   | { type: "idle" }
   | { type: "collecting"; scenario: Scenario; fieldIndex: number; collected: Record<string, string> }
   | { type: "processing" }
+  | { type: "chat" }  // свободный диалог после ответа
   | { type: "done" };
 
 export default function MarketosPage() {
@@ -391,11 +392,10 @@ export default function MarketosPage() {
           removeTyping();
           addMessage(botMsg(`✅ Готово! Вот результат:\n\n${answer}`));
           addMessage(
-            botMsg(`Нужны ещё какие-то изменения? Напиши мне! 📝\n\nИли выбери новый сценарий:`, SCENARIO_BUTTONS)
+            botMsg(`Нужны уточнения или изменения? Напиши мне прямо сейчас — или выбери новый сценарий:`, SCENARIO_BUTTONS)
           );
+          setStage({ type: "chat" });
         }
-
-        setStage({ type: "done" });
       } catch (err) {
         console.error("Manus API error:", err);
         removeTyping();
@@ -411,12 +411,56 @@ export default function MarketosPage() {
     [addMessage, addTyping, removeTyping]
   );
 
-  // ── Обработка ввода ──────────────────────────────────────────────────────────
+  // ── Свободный чат после ответа ────────────────────────────────────────────
+  const handleChatSend = useCallback(
+    async (text: string) => {
+      if (!text.trim()) return;
+      addMessage(userMsg(text.trim()));
+      setInputValue("");
+      setStage({ type: "processing" });
+      addTyping();
+
+      try {
+        const response = await fetch("/api/marketos/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: [
+              {
+                role: "system",
+                content: "Ты — Маркетос, профессиональный маркетинговый помощник. Отвечай конкретно, структурированно и по делу. Пиши на русском языке.",
+              },
+              { role: "user", content: text.trim() },
+            ],
+          }),
+        });
+
+        if (!response.ok) throw new Error(`API error: ${response.status}`);
+        const result = await response.json();
+        const answer = result.text || "Не смог обработать ответ. Попробуй ещё раз.";
+
+        removeTyping();
+        addMessage(botMsg(answer));
+        addMessage(botMsg("Ещё вопросы? Напиши мне — или выбери новый сценарий:", SCENARIO_BUTTONS));
+        setStage({ type: "chat" });
+      } catch (err) {
+        console.error("Chat error:", err);
+        removeTyping();
+        addMessage(botMsg("Что-то пошло не так. Попробуй ещё раз:", SCENARIO_BUTTONS));
+        setStage({ type: "chat" });
+      }
+    },
+    [addMessage, addTyping, removeTyping]
+  );
+
+  // ── Обработка ввода ──────────────────────────────────────────
   const handleSend = useCallback(() => {
     if (stage.type === "collecting") {
       handleFieldSubmit(inputValue);
+    } else if (stage.type === "chat") {
+      handleChatSend(inputValue);
     }
-  }, [stage, inputValue, handleFieldSubmit]);
+  }, [stage, inputValue, handleFieldSubmit, handleChatSend]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -428,7 +472,8 @@ export default function MarketosPage() {
     [handleSend]
   );
 
-  const isInputActive = stage.type === "collecting";
+  const isInputActive = stage.type === "collecting" || stage.type === "chat";
+  const isChatMode = stage.type === "chat";
   const currentField =
     stage.type === "collecting" ? stage.scenario.fields[stage.fieldIndex] : null;
 
@@ -463,7 +508,30 @@ export default function MarketosPage() {
 
       {/* Input */}
       <footer className="marketos-footer">
-        {isInputActive && currentField ? (
+        {isChatMode ? (
+          <div className="marketos-input-wrap">
+            <div className="marketos-field-hint">Уточни или задай новый вопрос:</div>
+            <div className="marketos-input-row">
+              <input
+                ref={inputRef as React.RefObject<HTMLInputElement>}
+                className="marketos-input"
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Например: сделай короче, добавь примеры..."
+                autoFocus
+              />
+              <button
+                className="marketos-send-btn"
+                onClick={handleSend}
+                disabled={!inputValue.trim()}
+              >
+                ➤
+              </button>
+            </div>
+          </div>
+        ) : isInputActive && currentField ? (
           <div className="marketos-input-wrap">
             <div className="marketos-field-hint">
               {currentField.label}
