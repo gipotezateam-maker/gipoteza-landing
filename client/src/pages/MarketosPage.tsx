@@ -190,7 +190,9 @@ ${d.budget ? `- Бюджет: ${d.budget}` : ""}
 // ─── Утилиты ──────────────────────────────────────────────────────────────────
 
 const FREE_LIMIT = 100;
-const STORAGE_KEY = "marketos_requests_used";
+// v2 — сбрасывает старые накопленные данные
+const STORAGE_KEY = "marketos_requests_v2";
+const STORAGE_DATE_KEY = "marketos_requests_date";
 const SESSION_KEY = "marketos_session_id";
 
 function getOrCreateSessionId(): string {
@@ -383,7 +385,17 @@ export default function MarketosPage() {
   const [inputValue, setInputValue] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [requestsUsed, setRequestsUsed] = useState<number>(() => {
-    try { return parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10); } catch { return 0; }
+    try {
+      // Сбрасываем счётчик ежедневно
+      const today = new Date().toISOString().slice(0, 10);
+      const savedDate = localStorage.getItem(STORAGE_DATE_KEY);
+      if (savedDate !== today) {
+        localStorage.setItem(STORAGE_DATE_KEY, today);
+        localStorage.setItem(STORAGE_KEY, "0");
+        return 0;
+      }
+      return parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
+    } catch { return 0; }
   });
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
