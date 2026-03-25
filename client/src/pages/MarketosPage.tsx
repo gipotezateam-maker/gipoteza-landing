@@ -190,9 +190,9 @@ ${d.budget ? `- Бюджет: ${d.budget}` : ""}
 // ─── Утилиты ──────────────────────────────────────────────────────────────────
 
 const FREE_LIMIT = 100;
-// v2 — сбрасывает старые накопленные данные
-const STORAGE_KEY = "marketos_requests_v2";
-const STORAGE_DATE_KEY = "marketos_requests_date";
+// v3 — принудительный сброс всех старых данных
+const STORAGE_KEY = "marketos_requests_v3";
+const STORAGE_DATE_KEY = "marketos_requests_date_v3";
 const SESSION_KEY = "marketos_session_id";
 
 function getOrCreateSessionId(): string {
