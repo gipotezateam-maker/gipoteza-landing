@@ -3,6 +3,7 @@
 // Route: /offer — standalone page for event attendees, not in main nav
 
 import { useState, useRef } from "react";
+import { useLocation } from "wouter";
 import { motion, useInView } from "framer-motion";
 
 const MARKETOS_LOGO = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/marketos-logo_49b1e73a.jpg";
@@ -133,6 +134,7 @@ function MarketOSForm() {
   const [fields, setFields] = useState({ name: "", phone: "" });
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [, navigate] = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,6 +147,7 @@ function MarketOSForm() {
     }, "marketos");
     setLoading(false);
     setSent(true);
+    setTimeout(() => navigate("/marketos"), 1500);
   };
 
   const inputStyle: React.CSSProperties = {
@@ -162,7 +165,7 @@ function MarketOSForm() {
           ДОСТУП ОФОРМЛЕН
         </div>
         <p style={{ fontFamily: "Inter", fontSize: "0.875rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.7 }}>
-          Свяжемся и пришлём данные для входа в MarketOS.
+          Переходим в MarketOS…
         </p>
       </motion.div>
     );
