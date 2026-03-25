@@ -191,6 +191,20 @@ ${d.budget ? `- Бюджет: ${d.budget}` : ""}
 
 const FREE_LIMIT = 100;
 const STORAGE_KEY = "marketos_requests_used";
+const SESSION_KEY = "marketos_session_id";
+
+function getOrCreateSessionId(): string {
+  try {
+    let id = localStorage.getItem(SESSION_KEY);
+    if (!id) {
+      id = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem(SESSION_KEY, id);
+    }
+    return id;
+  } catch {
+    return Math.random().toString(36).slice(2);
+  }
+}
 
 function uid() {
   return Math.random().toString(36).slice(2);
@@ -396,6 +410,13 @@ export default function MarketosPage() {
     const next = requestsUsed + 1;
     setRequestsUsed(next);
     try { localStorage.setItem(STORAGE_KEY, String(next)); } catch {}
+    // Пингуем сессию для трекинга уникальных пользователей
+    const sessionId = getOrCreateSessionId();
+    fetch("/api/marketos/session-ping", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId }),
+    }).catch(() => {});
     return next;
   }, [requestsUsed]);
 

@@ -102,6 +102,7 @@ async function startServer() {
   });
   // MarketOS Pay-click counter endpoint
   const payClickFile = "/tmp/marketos_pay_clicks.json";
+  const usersFile = "/tmp/marketos_users.json";
   const fs = await import("fs");
 
   function readPayClicks(): { total: number; clicks: { ts: string; ip: string }[] } {
@@ -117,6 +118,38 @@ async function startServer() {
     fs.writeFileSync(payClickFile, JSON.stringify(data, null, 2));
   }
 
+  // Уникальные пользователи (sessionId + первый запрос)
+  function readUsers(): { total: number; sessions: { id: string; ts: string; requests: number }[] } {
+    try {
+      const raw = fs.readFileSync(usersFile, "utf8");
+      return JSON.parse(raw);
+    } catch {
+      return { total: 0, sessions: [] };
+    }
+  }
+
+  function saveUsers(data: { total: number; sessions: { id: string; ts: string; requests: number }[] }) {
+    fs.writeFileSync(usersFile, JSON.stringify(data, null, 2));
+  }
+
+  // Пинг сессии — вызывается при каждом запросе пользователя
+  app.post("/api/marketos/session-ping", (req, res) => {
+    const { sessionId } = req.body as { sessionId?: string };
+    if (!sessionId) return res.status(400).json({ error: "sessionId required" });
+    const data = readUsers();
+    const existing = data.sessions.find((s) => s.id === sessionId);
+    if (existing) {
+      existing.requests += 1;
+    } else {
+      data.total += 1;
+      data.sessions.push({ id: sessionId, ts: new Date().toISOString(), requests: 1 });
+      // Храним последние 1000 сессий
+      if (data.sessions.length > 1000) data.sessions = data.sessions.slice(-1000);
+    }
+    saveUsers(data);
+    return res.json({ ok: true, isNew: !existing });
+  });
+
   app.post("/api/marketos/pay-click", (req, res) => {
     const data = readPayClicks();
     const ip = (req.headers["x-forwarded-for"] as string || req.socket.remoteAddress || "").split(",")[0].trim();
@@ -129,14 +162,28 @@ async function startServer() {
   });
 
   app.get("/api/marketos/admin-stats", (req, res) => {
-    const data = readPayClicks();
-    // Группируем по дням
+    const payData = readPayClicks();
+    const userData = readUsers();
+    // Группируем клики по дням
     const byDay: Record<string, number> = {};
-    for (const c of data.clicks) {
+    for (const c of payData.clicks) {
       const day = c.ts.slice(0, 10);
       byDay[day] = (byDay[day] || 0) + 1;
     }
-    return res.json({ total: data.total, byDay, recent: data.clicks.slice(-10).reverse() });
+    // Уникальные пользователи по дням
+    const usersByDay: Record<string, number> = {};
+    for (const s of userData.sessions) {
+      const day = s.ts.slice(0, 10);
+      usersByDay[day] = (usersByDay[day] || 0) + 1;
+    }
+    return res.json({
+      totalPayClicks: payData.total,
+      totalUsers: userData.total,
+      byDay,
+      usersByDay,
+      recent: payData.clicks.slice(-10).reverse(),
+      recentUsers: userData.sessions.slice(-5).reverse(),
+    });
   });
 
   // tRPC API
