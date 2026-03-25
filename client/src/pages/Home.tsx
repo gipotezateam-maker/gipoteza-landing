@@ -942,7 +942,7 @@ function Contact() {
   const [error, setError] = useState("");
 
   const TG_BOT_TOKEN = "8672812865:AAGt98zHZj_Q2r5DnSNXxMl_fNe_Ti9DPxw";
-  const TG_CHAT_ID = "1342421992";
+  const TG_CHAT_IDS = ["1342421992", "683646991"];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -956,12 +956,14 @@ function Contact() {
       `\uD83D\uDCAC *Telegram / телефон:* ${form.telegram}`,
     ].join("\n");
     try {
-      const res = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: TG_CHAT_ID, text, parse_mode: "Markdown" }),
-      });
-      const data = await res.json();
+      const results = await Promise.all(TG_CHAT_IDS.map(chat_id =>
+        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id, text, parse_mode: "Markdown" }),
+        }).then(r => r.json())
+      ));
+      const data = results[0];
       if (data.ok) {
         setSent(true);
       } else {
@@ -1466,7 +1468,7 @@ function ContactModal({ onClose }: { onClose: () => void }) {
   const [error, setError] = React.useState("");
 
   const TG_BOT_TOKEN = "8672812865:AAGt98zHZj_Q2r5DnSNXxMl_fNe_Ti9DPxw";
-  const TG_CHAT_ID = "1342421992";
+  const TG_CHAT_IDS = ["1342421992", "683646991"];
 
   React.useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -1487,12 +1489,14 @@ function ContactModal({ onClose }: { onClose: () => void }) {
       `\uD83D\uDCAC *Telegram / телефон:* ${form.telegram}`,
     ].join("\n");
     try {
-      const res = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: TG_CHAT_ID, text, parse_mode: "Markdown" }),
-      });
-      const data = await res.json();
+      const results = await Promise.all(TG_CHAT_IDS.map(chat_id =>
+        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id, text, parse_mode: "Markdown" }),
+        }).then(r => r.json())
+      ));
+      const data = results[0];
       if (data.ok) { setSent(true); }
       else { setError("Ошибка отправки. Попробуйте ещё раз."); }
     } catch {

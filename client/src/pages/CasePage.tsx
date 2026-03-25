@@ -105,7 +105,7 @@ type CaseData = {
 // ─── Modal Form ───────────────────────────────────────────────────────────────
 
 const TELEGRAM_BOT_TOKEN = "8672812865:AAGt98zHZj_Q2r5DnSNXxMl_fNe_Ti9DPxw";
-const TELEGRAM_CHAT_ID = "1342421992";
+const TELEGRAM_CHAT_IDS = ["1342421992", "683646991"];
 
 function LeadModal({ caseTitle, onClose }: { caseTitle: string; onClose: () => void }) {
   const [name, setName] = useState("");
@@ -118,12 +118,13 @@ function LeadModal({ caseTitle, onClose }: { caseTitle: string; onClose: () => v
     setStatus("loading");
     const text = `🎯 Заявка с кейса: ${caseTitle}\n\n👤 Имя: ${name}\n🏢 Ниша: ${niche}\n📱 Контакт: ${contact}`;
     try {
-      const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text, parse_mode: "HTML" }),
-      });
-      if (!res.ok) throw new Error("Telegram error");
+      await Promise.all(TELEGRAM_CHAT_IDS.map(chat_id =>
+        fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id, text, parse_mode: "HTML" }),
+        })
+      ));
       setStatus("success");
     } catch {
       setStatus("error");
