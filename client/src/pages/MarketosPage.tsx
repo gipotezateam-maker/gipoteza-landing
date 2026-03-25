@@ -189,7 +189,7 @@ ${d.budget ? `- Бюджет: ${d.budget}` : ""}
 
 // ─── Утилиты ──────────────────────────────────────────────────────────────────
 
-const FREE_LIMIT = 3;
+const FREE_LIMIT = 100;
 const STORAGE_KEY = "marketos_requests_used";
 
 function uid() {
@@ -235,42 +235,16 @@ type Stage =
   | { type: "limit_reached" }
   | { type: "done" };
 
-// ─── Форма подключения тарифа ─────────────────────────────────────────────────
+// ─── Модальное окно оплаты ────────────────────────────────────────────────────
 
-function TariffModal({ onClose }: { onClose: () => void }) {
-  const [form, setForm] = useState({ name: "", niche: "", contact: "" });
-  const [sent, setSent] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSending(true);
-    setError("");
-    const text = [
-      "🚀 *Заявка на тариф MarketOS*",
-      "",
-      `👤 *Имя:* ${form.name}`,
-      `🎯 *Ниша / чем занимается:* ${form.niche}`,
-      `📱 *Telegram / телефон:* ${form.contact}`,
-    ].join("\n");
+function PaymentModal({ onClose }: { onClose: () => void }) {
+  const handlePay = async () => {
+    // Фиксируем клик в базе
     try {
-      const res = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: TG_CHAT_ID, text, parse_mode: "Markdown" }),
-      });
-      const data = await res.json();
-      if (data.ok) {
-        setSent(true);
-      } else {
-        setError("Ошибка отправки. Попробуйте ещё раз.");
-      }
-    } catch {
-      setError("Нет соединения. Попробуйте ещё раз.");
-    } finally {
-      setSending(false);
-    }
+      await fetch("/api/marketos/pay-click", { method: "POST" });
+    } catch {}
+    // Показываем заглушку
+    alert("Функционал оплаты в разработке. Скоро здесь появится оплата тарифа MarketOS!");
   };
 
   return (
@@ -285,9 +259,10 @@ function TariffModal({ onClose }: { onClose: () => void }) {
       <div style={{
         background: "#111",
         border: "1px solid rgba(255,255,255,0.08)",
-        maxWidth: 480, width: "100%",
+        maxWidth: 440, width: "100%",
         padding: "2.5rem",
         position: "relative",
+        textAlign: "center",
       }}>
         <button
           onClick={onClose}
@@ -298,96 +273,40 @@ function TariffModal({ onClose }: { onClose: () => void }) {
           }}
         >✕</button>
 
-        {sent ? (
-          <div>
-            <div style={{ fontFamily: "'Unbounded', sans-serif", fontSize: "2rem", fontWeight: 900, color: "#FF2D20", marginBottom: "1rem" }}>
-              Заявка принята!
-            </div>
-            <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.95rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.7 }}>
-              Мы свяжемся с вами в течение 2 часов и расскажем о тарифах MarketOS.
-            </p>
-          </div>
-        ) : (
-          <>
-            <div style={{ marginBottom: "0.5rem", fontFamily: "Inter, sans-serif", fontSize: "0.7rem", color: "#FF2D20", letterSpacing: "0.15em", textTransform: "uppercase" }}>
-              — Подключить тариф
-            </div>
-            <h2 style={{ fontFamily: "'Unbounded', sans-serif", fontSize: "clamp(1.4rem, 4vw, 2rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", lineHeight: 1.1, marginBottom: "0.75rem" }}>
-              БЕЗЛИМИТНЫЙ<br />ДОСТУП.
-            </h2>
-            <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.875rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.7, marginBottom: "2rem" }}>
-              Оставьте заявку — мы свяжемся и подберём подходящий тариф.
-            </p>
+        <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.7rem", color: "#FF2D20", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "1rem" }}>
+          — Безлимитный доступ
+        </div>
+        <h2 style={{ fontFamily: "'Unbounded', sans-serif", fontSize: "clamp(1.4rem, 4vw, 2rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.02em", lineHeight: 1.1, marginBottom: "1rem" }}>
+          МАРКЕТОС<br /><span style={{ color: "#FF2D20" }}>PRO</span>
+        </h2>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.875rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.7, marginBottom: "2rem" }}>
+          Безлимитные запросы, приоритетная обработка,<br />все сценарии без ограничений.
+        </p>
 
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-              {[
-                { key: "name", label: "Ваше имя", placeholder: "Ваше имя" },
-                { key: "niche", label: "Чем занимаетесь / ниша", placeholder: "Продукт, услуга, сфера бизнеса" },
-                { key: "contact", label: "Telegram или телефон", placeholder: "@username или +7..." },
-              ].map((field) => (
-                <div key={field.key} style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                  <label style={{
-                    fontFamily: "Inter, sans-serif", fontSize: "0.7rem",
-                    color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", textTransform: "uppercase",
-                  }}>
-                    {field.label}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder={field.placeholder}
-                    value={form[field.key as keyof typeof form]}
-                    onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                    required
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      borderBottom: "1px solid rgba(255,255,255,0.15)",
-                      color: "#F5F5F0",
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "1rem",
-                      padding: "0.6rem 0",
-                      outline: "none",
-                      transition: "border-color 0.2s",
-                    }}
-                    onFocus={(e) => (e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.5)")}
-                    onBlur={(e) => (e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.15)")}
-                  />
-                </div>
-              ))}
-
-              <button
-                type="submit"
-                disabled={sending}
-                style={{
-                  marginTop: "0.5rem",
-                  background: sending ? "#7a1510" : "#FF2D20",
-                  color: "#fff",
-                  border: "none",
-                  padding: "1rem 2rem",
-                  fontFamily: "'Unbounded', sans-serif",
-                  fontSize: "0.75rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                  cursor: sending ? "not-allowed" : "pointer",
-                  transition: "opacity 0.2s",
-                  alignSelf: "flex-start",
-                }}
-                onMouseEnter={(e) => { if (!sending) e.currentTarget.style.opacity = "0.85"; }}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-              >
-                {sending ? "Отправляем..." : "Подключить тариф →"}
-              </button>
-
-              {error && (
-                <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "#FF2D20" }}>{error}</p>
-              )}
-              <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.7rem", color: "rgba(255,255,255,0.2)" }}>
-                Ответим в течение дня. Без спама.
-              </p>
-            </form>
-          </>
-        )}
+        <button
+          onClick={handlePay}
+          style={{
+            background: "#FF2D20",
+            color: "#fff",
+            border: "none",
+            padding: "1rem 2.5rem",
+            fontFamily: "'Unbounded', sans-serif",
+            fontSize: "0.8rem",
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            cursor: "pointer",
+            transition: "opacity 0.2s",
+            width: "100%",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+        >
+          Оплатить →
+        </button>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.7rem", color: "rgba(255,255,255,0.2)", marginTop: "1rem" }}>
+          Безопасная оплата. Доступ сразу после оплаты.
+        </p>
       </div>
     </div>
   );
@@ -605,7 +524,7 @@ export default function MarketosPage() {
           if (used >= FREE_LIMIT) {
             // Лимит исчерпан
             addMessage(botMsg(
-              `Вы использовали все ${FREE_LIMIT} бесплатных запроса.\n\nЧтобы продолжить работу с Маркетос — подключите платный тариф. Это займёт 2 минуты.`
+              `Вы использовали все ${FREE_LIMIT} запросов.\n\nЧтобы продолжить работу с Маркетос — подключите платный тариф.`
             ));
             setStage({ type: "limit_reached" });
           } else {
@@ -664,7 +583,7 @@ export default function MarketosPage() {
 
         if (used >= FREE_LIMIT) {
           addMessage(botMsg(
-            `Вы использовали все ${FREE_LIMIT} бесплатных запроса.\n\nЧтобы продолжить — подключите платный тариф.`
+            `Вы использовали все ${FREE_LIMIT} запросов.\n\nЧтобы продолжить — подключите платный тариф.`
           ));
           setStage({ type: "limit_reached" });
         } else {
@@ -719,7 +638,7 @@ export default function MarketosPage() {
           <div className="mk-counter">
             {remaining > 0
               ? <><span className="mk-counter-num">{remaining}</span> / {FREE_LIMIT} запросов</>
-              : <span className="mk-counter-empty" onClick={() => setShowModal(true)}>Подключить тариф →</span>
+              : <span className="mk-counter-empty" onClick={() => setShowModal(true)}>Оплатить →</span>
             }
           </div>
         </div>
@@ -739,7 +658,7 @@ export default function MarketosPage() {
           <div className="mk-limit-bar">
             <span className="mk-limit-text">Бесплатные запросы исчерпаны</span>
             <button className="mk-tariff-btn" onClick={() => setShowModal(true)}>
-              Подключить тариф →
+              Оплатить →
             </button>
           </div>
         ) : isChatMode ? (
@@ -795,8 +714,8 @@ export default function MarketosPage() {
         )}
       </footer>
 
-      {/* Модальное окно тарифа */}
-      {showModal && <TariffModal onClose={() => setShowModal(false)} />}
+      {/* Модальное окно оплаты */}
+      {showModal && <PaymentModal onClose={() => setShowModal(false)} />}
 
       <style>{STYLES}</style>
     </div>

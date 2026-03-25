@@ -100,6 +100,45 @@ async function startServer() {
       return res.status(500).json({ error: String(err) });
     }
   });
+  // MarketOS Pay-click counter endpoint
+  const payClickFile = "/tmp/marketos_pay_clicks.json";
+  const fs = await import("fs");
+
+  function readPayClicks(): { total: number; clicks: { ts: string; ip: string }[] } {
+    try {
+      const raw = fs.readFileSync(payClickFile, "utf8");
+      return JSON.parse(raw);
+    } catch {
+      return { total: 0, clicks: [] };
+    }
+  }
+
+  function savePayClicks(data: { total: number; clicks: { ts: string; ip: string }[] }) {
+    fs.writeFileSync(payClickFile, JSON.stringify(data, null, 2));
+  }
+
+  app.post("/api/marketos/pay-click", (req, res) => {
+    const data = readPayClicks();
+    const ip = (req.headers["x-forwarded-for"] as string || req.socket.remoteAddress || "").split(",")[0].trim();
+    data.total += 1;
+    data.clicks.push({ ts: new Date().toISOString(), ip });
+    // Храним последние 200 кликов
+    if (data.clicks.length > 200) data.clicks = data.clicks.slice(-200);
+    savePayClicks(data);
+    return res.json({ ok: true, total: data.total });
+  });
+
+  app.get("/api/marketos/admin-stats", (req, res) => {
+    const data = readPayClicks();
+    // Группируем по дням
+    const byDay: Record<string, number> = {};
+    for (const c of data.clicks) {
+      const day = c.ts.slice(0, 10);
+      byDay[day] = (byDay[day] || 0) + 1;
+    }
+    return res.json({ total: data.total, byDay, recent: data.clicks.slice(-10).reverse() });
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",
