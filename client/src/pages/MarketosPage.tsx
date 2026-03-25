@@ -253,22 +253,16 @@ type Stage =
 
 // ─── Модальное окно оплаты ────────────────────────────────────────────────────
 
-function PaymentModal({ onClose }: { onClose: () => void }) {
+function PaymentModal({ onClose, requestsUsed }: { onClose: () => void; requestsUsed: number }) {
   const handlePay = async () => {
-    // Фиксируем клик в базе
+    // Фиксируем клик в базе + уведомляем в Telegram через сервер
     try {
-      await fetch("/api/marketos/pay-click", { method: "POST" });
-    } catch {}
-    // Уведомляем в Telegram
-    try {
-      const text = "НАЖАЛИ ОПЛАТИТЬ\n\nПользователь исчерпал бесплатные запросы в MarketOS и нажал кнопку Оплатить.\n\nИсточник: gipoteza.agency/marketos";
-      await Promise.all(TG_CHAT_IDS.map((chat_id: string) =>
-        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id, text, parse_mode: "HTML" }),
-        })
-      ));
+      const sessionId = getOrCreateSessionId();
+      await fetch("/api/marketos/pay-click", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, requestsUsed }),
+      });
     } catch {}
     // Показываем заглушку
     alert("Функционал оплаты в разработке. Скоро здесь появится оплата тарифа MarketOS!");
@@ -349,6 +343,25 @@ function MessageBubble({
   onScenarioSelect: (id: string) => void;
 }) {
   const isBot = msg.role === "bot";
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    if (!msg.text) return;
+    navigator.clipboard.writeText(msg.text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {
+      // fallback
+      const ta = document.createElement("textarea");
+      ta.value = msg.text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   if (msg.isTyping) {
     return (
@@ -370,6 +383,19 @@ function MessageBubble({
         <div className={`mk-bubble ${isBot ? "mk-bubble-bot" : "mk-bubble-user"}`}>
           <span className="mk-text">{msg.text}</span>
         </div>
+        {isBot && !msg.isTyping && msg.text && (
+          <button
+            className="mk-copy-btn"
+            onClick={handleCopy}
+            title="Скопировать текст"
+          >
+            {copied ? (
+              <><span className="mk-copy-icon">✓</span> Скопировано</>
+            ) : (
+              <><span className="mk-copy-icon">⎘</span> Копировать</>
+            )}
+          </button>
+        )}
         {msg.buttons && msg.buttons.length > 0 && (
           <div className="mk-btns">
             {msg.buttons.map((btn) => (
@@ -759,7 +785,7 @@ export default function MarketosPage() {
       </footer>
 
       {/* Модальное окно оплаты */}
-      {showModal && <PaymentModal onClose={() => setShowModal(false)} />}
+      {showModal && <PaymentModal onClose={() => setShowModal(false)} requestsUsed={requestsUsed} />}
 
       <style>{STYLES}</style>
     </div>
@@ -957,6 +983,31 @@ const STYLES = `
     border-color: #FF2D20;
     color: #FF2D20;
     background: rgba(255,45,32,0.05);
+  }
+
+  /* ── Copy button ── */
+  .mk-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.3);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.3rem 0;
+    margin-top: 0.35rem;
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+  .mk-copy-btn:hover {
+    color: rgba(255,255,255,0.65);
+  }
+  .mk-copy-icon {
+    font-size: 0.85rem;
+    line-height: 1;
   }
 
   /* ── Footer ── */

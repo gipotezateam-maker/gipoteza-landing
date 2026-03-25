@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 
+const ADMIN_PASSWORD = "gipoteza2025";
+const ADMIN_KEY = "marketos_admin_auth";
+
 interface Stats {
   totalPayClicks: number;
   totalUsers: number;
@@ -9,7 +12,105 @@ interface Stats {
   recentUsers: { id: string; ts: string; requests: number }[];
 }
 
+function LoginScreen({ onLogin }: { onLogin: () => void }) {
+  const [pwd, setPwd] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pwd === ADMIN_PASSWORD) {
+      sessionStorage.setItem(ADMIN_KEY, "1");
+      onLogin();
+    } else {
+      setError("Неверный пароль");
+      setPwd("");
+    }
+  };
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: "#0a0a0a",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontFamily: "Inter, sans-serif",
+    }}>
+      <div style={{
+        background: "#111",
+        border: "1px solid rgba(255,255,255,0.08)",
+        padding: "2.5rem",
+        width: "100%",
+        maxWidth: 360,
+      }}>
+        <div style={{ marginBottom: "2rem" }}>
+          <div style={{
+            fontFamily: "'Unbounded', sans-serif",
+            fontWeight: 900,
+            fontSize: "1.1rem",
+            color: "#F5F5F0",
+            letterSpacing: "-0.02em",
+          }}>
+            МАРКЕТ<span style={{ color: "#FF2D20" }}>ОС</span>
+            <span style={{
+              fontFamily: "Inter, sans-serif",
+              fontWeight: 400,
+              fontSize: "0.65rem",
+              color: "rgba(255,255,255,0.3)",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              marginLeft: "0.75rem",
+            }}>ADMIN</span>
+          </div>
+          <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.25)", marginTop: "0.35rem", letterSpacing: "0.05em" }}>
+            Введите пароль для доступа
+          </div>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="password"
+            value={pwd}
+            onChange={e => { setPwd(e.target.value); setError(""); }}
+            placeholder="Пароль"
+            autoFocus
+            style={{
+              width: "100%",
+              background: "rgba(255,255,255,0.04)",
+              border: `1px solid ${error ? "#FF2D20" : "rgba(255,255,255,0.1)"}`,
+              color: "#F5F5F0",
+              padding: "0.75rem 1rem",
+              fontFamily: "Inter, sans-serif",
+              fontSize: "0.9rem",
+              outline: "none",
+              marginBottom: "0.75rem",
+              boxSizing: "border-box",
+            }}
+          />
+          {error && (
+            <div style={{ fontSize: "0.72rem", color: "#FF2D20", marginBottom: "0.75rem" }}>{error}</div>
+          )}
+          <button type="submit" style={{
+            width: "100%",
+            background: "#FF2D20",
+            border: "none",
+            color: "#fff",
+            padding: "0.75rem",
+            fontFamily: "'Unbounded', sans-serif",
+            fontWeight: 700,
+            fontSize: "0.75rem",
+            letterSpacing: "0.05em",
+            cursor: "pointer",
+          }}>
+            ВОЙТИ
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function MarketosAdmin() {
+  const [authed, setAuthed] = useState(() => sessionStorage.getItem(ADMIN_KEY) === "1");
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -29,10 +130,15 @@ export default function MarketosAdmin() {
   };
 
   useEffect(() => {
+    if (!authed) return;
     fetchStats();
     const interval = setInterval(fetchStats, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [authed]);
+
+  if (!authed) {
+    return <LoginScreen onLogin={() => setAuthed(true)} />;
+  }
 
   // Объединяем дни из кликов и пользователей
   const allDays = stats
@@ -53,7 +159,6 @@ export default function MarketosAdmin() {
       padding: "2rem 1rem",
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Unbounded:wght@700;800;900&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #0a0a0a; }
         .mk-card { background: #111; border: 1px solid rgba(255,255,255,0.06); padding: 2rem; margin-bottom: 1.5rem; }
@@ -79,12 +184,20 @@ export default function MarketosAdmin() {
               Статистика MarketOS
             </div>
           </div>
-          <button onClick={fetchStats} style={{
-            marginLeft: "auto", background: "transparent",
-            border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.5)",
-            padding: "0.5rem 1rem", fontFamily: "Inter, sans-serif", fontSize: "0.75rem",
-            cursor: "pointer", letterSpacing: "0.05em",
-          }}>↻ Обновить</button>
+          <div style={{ marginLeft: "auto", display: "flex", gap: "0.75rem" }}>
+            <button onClick={fetchStats} style={{
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.5)",
+              padding: "0.5rem 1rem", fontFamily: "Inter, sans-serif", fontSize: "0.75rem",
+              cursor: "pointer", letterSpacing: "0.05em",
+            }}>↻ Обновить</button>
+            <button onClick={() => { sessionStorage.removeItem(ADMIN_KEY); setAuthed(false); }} style={{
+              background: "transparent",
+              border: "1px solid rgba(255,45,32,0.3)", color: "rgba(255,45,32,0.6)",
+              padding: "0.5rem 1rem", fontFamily: "Inter, sans-serif", fontSize: "0.75rem",
+              cursor: "pointer", letterSpacing: "0.05em",
+            }}>Выйти</button>
+          </div>
         </div>
 
         {loading && !stats && (

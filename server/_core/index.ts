@@ -150,14 +150,38 @@ async function startServer() {
     return res.json({ ok: true, isNew: !existing });
   });
 
-  app.post("/api/marketos/pay-click", (req, res) => {
+  app.post("/api/marketos/pay-click", async (req, res) => {
     const data = readPayClicks();
     const ip = (req.headers["x-forwarded-for"] as string || req.socket.remoteAddress || "").split(",")[0].trim();
+    const { sessionId, requestsUsed } = req.body as { sessionId?: string; requestsUsed?: number };
     data.total += 1;
     data.clicks.push({ ts: new Date().toISOString(), ip });
     // Храним последние 200 кликов
     if (data.clicks.length > 200) data.clicks = data.clicks.slice(-200);
     savePayClicks(data);
+
+    // Telegram уведомление
+    const TG_BOT_TOKEN = "8148336028:AAFuOTIb-7YGDPmxBUqnzQwRCVTJjfQJGJg";
+    const TG_CHAT_IDS = ["1342421992", "683646991"];
+    const userData = readUsers();
+    const userInfo = sessionId ? userData.sessions.find(s => s.id === sessionId) : null;
+    const msg = [
+      "\uD83D\uDCB3 <b>\u041A\u043B\u0438\u043A \"\u041E\u043F\u043B\u0430\u0442\u0438\u0442\u044C\" \u0432 MarketOS</b>",
+      "",
+      `\u2022 \u041A\u043B\u0438\u043A\u043E\u0432 \u0432\u0441\u0435\u0433\u043E: <b>${data.total}</b>`,
+      `\u2022 \u0417\u0430\u043F\u0440\u043E\u0441\u043E\u0432 \u0441\u0434\u0435\u043B\u0430\u043D\u043E: <b>${requestsUsed ?? userInfo?.requests ?? "?"}</b>`,
+      `\u2022 \u0423\u043D\u0438\u043A\u0430\u043B\u044C\u043D\u044B\u0445 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439: <b>${userData.total}</b>`,
+      `\u2022 IP: <code>${ip || "?"}</code>`,
+    ].join("\n");
+
+    for (const chatId of TG_CHAT_IDS) {
+      fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: "HTML" }),
+      }).catch(() => {});
+    }
+
     return res.json({ ok: true, total: data.total });
   });
 
