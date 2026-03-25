@@ -141,7 +141,7 @@ function MarketOSForm() {
     await sendToTelegram({
       "Имя": fields.name,
       "Телефон / Telegram": fields.phone,
-      "Тариф": "Доступ участника эфира — 5 000 ₽",
+      "Тариф": "Доступ участника эфира — 0 ₽ (специальная цена)",
     }, "marketos");
     setLoading(false);
     setSent(true);
@@ -232,164 +232,200 @@ export default function OfferPage() {
       </header>
 
       {/* ── Hero ── */}
-      <section style={{ padding: "6rem 0 5rem", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+      <section style={{ padding: "5rem 0 4rem", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="container">
           <FadeUp>
             <p style={{ fontFamily: "Inter", fontSize: "0.72rem", color: "#FF2D20", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
               — Только для участников эфира
             </p>
-            <h1 className="font-display" style={{ fontSize: "clamp(2.2rem, 7vw, 6rem)", fontWeight: 900, lineHeight: 0.92, letterSpacing: "-0.02em", marginBottom: "2rem" }}>
-              РАЗБОР<br />
-              <span style={{ color: "#FF2D20" }}>ВАШЕЙ</span><br />
-              ВОРОНКИ
+            <h1 className="font-display" style={{ fontSize: "clamp(2rem, 6vw, 5rem)", fontWeight: 900, lineHeight: 0.92, letterSpacing: "-0.02em", marginBottom: "1.5rem" }}>
+              ДВА ОФФЕРА<br />
+              <span style={{ color: "#FF2D20" }}>ДЛЯ ВАС</span>
             </h1>
-            <p style={{ fontFamily: "Inter", fontSize: "clamp(1rem, 1.8vw, 1.2rem)", color: "rgba(255,255,255,0.55)", lineHeight: 1.7, maxWidth: "600px" }}>
-              Команда агентства «Гипотеза» разберёт вебинар, оффер, структуру воронки,
-              путь клиента и ключевые точки потерь — и покажет, что именно сдерживает
-              окупаемость и какие изменения дадут максимальный рост.
+            <p style={{ fontFamily: "Inter", fontSize: "clamp(0.95rem, 1.6vw, 1.1rem)", color: "rgba(255,255,255,0.5)", lineHeight: 1.7, maxWidth: "560px" }}>
+              Разбор вашей воронки от команды агентства и доступ к AI-маркетологу MarketOS — оба предложения доступны прямо сейчас.
             </p>
           </FadeUp>
         </div>
       </section>
 
-      {/* ── Что входит в разбор ── */}
-      <section style={{ padding: "5rem 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+      {/* ── Два оффера рядом ── */}
+      <section style={{ padding: "5rem 0" }}>
         <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "4rem" }} className="lg:grid-cols-[1fr_1fr] lg:gap-16">
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+            gap: "2px",
+          }}>
 
-            {/* Левая колонка — что входит */}
-            <FadeUp>
-              <p style={{ fontFamily: "Inter", fontSize: "0.72rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "2rem" }}>
-                ЧТО МЫ РАЗБЕРЁМ
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 0, border: "1px solid rgba(255,255,255,0.06)" }}>
-                {[
-                  { n: "01", title: "Вебинар и оффер", desc: "Структура выступления, логика продажи, сила предложения" },
-                  { n: "02", title: "Воронка целиком", desc: "Путь клиента от первого касания до оплаты" },
-                  { n: "03", title: "Точки потерь", desc: "Где проект теряет заявки, доходимость и продажи" },
-                  { n: "04", title: "3–5 ключевых изменений", desc: "Конкретные шаги, которые сильнее всего повлияют на конверсию" },
-                ].map((item, i) => (
-                  <div key={i} style={{
-                    display: "grid", gridTemplateColumns: "2.5rem 1fr",
-                    gap: "1rem", padding: "1.5rem",
-                    borderBottom: i < 3 ? "1px solid rgba(255,255,255,0.06)" : "none",
-                    alignItems: "start",
-                  }}>
-                    <span style={{ fontFamily: "Inter", fontSize: "0.7rem", color: "rgba(255,255,255,0.25)", paddingTop: "0.15rem" }}>{item.n}</span>
-                    <div>
-                      <div className="font-display" style={{ fontSize: "1rem", fontWeight: 700, color: "#F5F5F0", marginBottom: "0.3rem" }}>{item.title}</div>
-                      <div style={{ fontFamily: "Inter", fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>{item.desc}</div>
+            {/* ─── Оффер 1: Разбор воронки ─── */}
+            <FadeUp delay={0}>
+              <div style={{
+                background: "#0D0D0D",
+                border: "1px solid rgba(255,255,255,0.07)",
+                padding: "3rem 2.5rem",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+              }}>
+                {/* Шапка оффера */}
+                <div style={{ marginBottom: "2.5rem" }}>
+                  <p style={{ fontFamily: "Inter", fontSize: "0.68rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1.25rem" }}>
+                    ОФФЕР 01
+                  </p>
+                  <div className="font-display" style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.5rem)", fontWeight: 900, lineHeight: 0.95, letterSpacing: "-0.02em", marginBottom: "1rem" }}>
+                    РАЗБОР<br />
+                    <span style={{ color: "#FF2D20" }}>ВОРОНКИ</span>
+                  </div>
+                  <p style={{ fontFamily: "Inter", fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.7 }}>
+                    Команда агентства «Гипотеза» разберёт вебинар, оффер, структуру воронки и покажет ключевые точки роста.
+                  </p>
+                </div>
+
+                {/* Что входит */}
+                <div style={{ border: "1px solid rgba(255,255,255,0.06)", marginBottom: "2.5rem" }}>
+                  {[
+                    { n: "01", title: "Вебинар и оффер", desc: "Структура выступления, логика продажи, сила предложения" },
+                    { n: "02", title: "Воронка целиком", desc: "Путь клиента от первого касания до оплаты" },
+                    { n: "03", title: "Точки потерь", desc: "Где проект теряет заявки, доходимость и продажи" },
+                    { n: "04", title: "3–5 изменений", desc: "Конкретные шаги для максимального роста конверсии" },
+                  ].map((item, i) => (
+                    <div key={i} style={{
+                      display: "grid", gridTemplateColumns: "2.5rem 1fr",
+                      gap: "0.75rem", padding: "1.1rem 1.25rem",
+                      borderBottom: i < 3 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                      alignItems: "start",
+                    }}>
+                      <span style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "rgba(255,255,255,0.2)", paddingTop: "0.1rem" }}>{item.n}</span>
+                      <div>
+                        <div className="font-display" style={{ fontSize: "0.9rem", fontWeight: 700, color: "#F5F5F0", marginBottom: "0.2rem" }}>{item.title}</div>
+                        <div style={{ fontFamily: "Inter", fontSize: "0.78rem", color: "rgba(255,255,255,0.35)", lineHeight: 1.5 }}>{item.desc}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Цена */}
+                <div style={{ border: "1px solid rgba(255,45,32,0.2)", padding: "1.5rem", marginBottom: "2rem", background: "rgba(255,45,32,0.03)" }}>
+                  <p style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+                    СПЕЦИАЛЬНАЯ ЦЕНА
+                  </p>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: "1rem" }}>
+                    <span className="font-display" style={{ fontSize: "2.8rem", fontWeight: 900, color: "#FF2D20", lineHeight: 1 }}>
+                      0 ₽
+                    </span>
+                    <span style={{ fontFamily: "Inter", fontSize: "1.1rem", color: "rgba(255,255,255,0.2)", textDecoration: "line-through" }}>
+                      5 000 ₽
+                    </span>
+                  </div>
+                  <p style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.3)", marginTop: "0.5rem" }}>
+                    Бесплатно для участников эфира
+                  </p>
+                </div>
+
+                {/* Форма */}
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontFamily: "Inter", fontSize: "0.68rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
+                    ЗАПИСАТЬСЯ НА РАЗБОР
+                  </p>
+                  <RazborForm />
+                </div>
+              </div>
+            </FadeUp>
+
+            {/* ─── Оффер 2: MarketOS ─── */}
+            <FadeUp delay={0.15}>
+              <div style={{
+                background: "#0D0D0D",
+                border: "1px solid rgba(181,242,61,0.12)",
+                padding: "3rem 2.5rem",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+              }}>
+                {/* Шапка оффера */}
+                <div style={{ marginBottom: "2.5rem" }}>
+                  <p style={{ fontFamily: "Inter", fontSize: "0.68rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1.25rem" }}>
+                    ОФФЕР 02 · БОНУС
+                  </p>
+                  <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
+                    <img
+                      src={MARKETOS_LOGO}
+                      alt="MarketOS"
+                      style={{ width: "56px", height: "56px", objectFit: "cover", borderRadius: "8px", flexShrink: 0 }}
+                    />
+                    <div className="font-display" style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.5rem)", fontWeight: 900, lineHeight: 0.95, letterSpacing: "-0.02em" }}>
+                      MARKET<span style={{ color: "#B5F23D" }}>OS</span>
                     </div>
                   </div>
-                ))}
-              </div>
-            </FadeUp>
+                  <p style={{ fontFamily: "Inter", fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.7 }}>
+                    AI-маркетолог для ускорения маркетинга, усиления материалов и быстрой работы с гипотезами.
+                  </p>
+                </div>
 
-            {/* Правая колонка — форма */}
-            <FadeUp delay={0.15}>
-              <p style={{ fontFamily: "Inter", fontSize: "0.72rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "2rem" }}>
-                ЗАПИСАТЬСЯ НА РАЗБОР
-              </p>
-              <RazborForm />
-            </FadeUp>
+                {/* Что входит */}
+                <div style={{ border: "1px solid rgba(181,242,61,0.12)", marginBottom: "2.5rem" }}>
+                  {[
+                    "Ускоряет работу с маркетинговыми гипотезами",
+                    "Усиливает офферы, тексты и сценарии вебинаров",
+                    "Помогает системно работать с маркетингом",
+                    "Экспертный взгляд агентства + инструмент в одном",
+                  ].map((item, i, arr) => (
+                    <div key={i} style={{
+                      display: "flex", alignItems: "flex-start", gap: "0.75rem",
+                      padding: "1rem 1.25rem",
+                      borderBottom: i < arr.length - 1 ? "1px solid rgba(181,242,61,0.08)" : "none",
+                    }}>
+                      <span style={{ color: "#B5F23D", fontSize: "0.8rem", marginTop: "0.1rem", flexShrink: 0 }}>→</span>
+                      <span style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>{item}</span>
+                    </div>
+                  ))}
+                </div>
 
-          </div>
-        </div>
-      </section>
-
-      {/* ── MarketOS ── */}
-      <section style={{ padding: "5rem 0", background: "#0D0D0D", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-        <div className="container">
-          <FadeUp>
-            <p style={{ fontFamily: "Inter", fontSize: "0.72rem", color: "#B5F23D", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "2rem" }}>
-              БОНУС ДЛЯ УЧАСТНИКОВ ЭФИРА
-            </p>
-          </FadeUp>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "4rem" }} className="lg:grid-cols-[1fr_1fr] lg:gap-16">
-
-            {/* Левая — описание MarketOS */}
-            <FadeUp delay={0.1}>
-              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", marginBottom: "2.5rem" }}>
-                <img
-                  src={MARKETOS_LOGO}
-                  alt="MarketOS"
-                  style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "12px" }}
-                />
-                <div>
-                  <div className="font-display" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", fontWeight: 900, lineHeight: 0.95, letterSpacing: "-0.02em" }}>
-                    MARKET<span style={{ color: "#B5F23D" }}>OS</span>
+                {/* Цена */}
+                <div style={{ border: "1px solid rgba(181,242,61,0.2)", padding: "1.5rem", marginBottom: "2rem", background: "rgba(181,242,61,0.03)" }}>
+                  <p style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+                    СПЕЦИАЛЬНАЯ ЦЕНА
+                  </p>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: "1rem" }}>
+                    <span className="font-display" style={{ fontSize: "2.8rem", fontWeight: 900, color: "#B5F23D", lineHeight: 1 }}>
+                      0 ₽
+                    </span>
+                    <span style={{ fontFamily: "Inter", fontSize: "1.1rem", color: "rgba(255,255,255,0.2)", textDecoration: "line-through" }}>
+                      5 000 ₽
+                    </span>
                   </div>
-                  <div style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.35)", marginTop: "0.3rem" }}>
-                    AI-маркетолог для онлайн-школ
-                  </div>
+                  <p style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.3)", marginTop: "0.5rem" }}>
+                    Бесплатно для участников эфира
+                  </p>
+                </div>
+
+                {/* Ссылка на демо */}
+                <div style={{ marginBottom: "1.5rem" }}>
+                  <a
+                    href="https://gipoteza.agency/marketos"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      fontFamily: "Inter", fontSize: "0.78rem", color: "rgba(181,242,61,0.6)",
+                      textDecoration: "none", borderBottom: "1px solid rgba(181,242,61,0.2)",
+                      paddingBottom: "2px", transition: "color 0.2s",
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.color = "#B5F23D")}
+                    onMouseLeave={e => (e.currentTarget.style.color = "rgba(181,242,61,0.6)")}
+                  >
+                    Попробовать MarketOS →
+                  </a>
+                </div>
+
+                {/* Форма */}
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontFamily: "Inter", fontSize: "0.68rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
+                    ПОЛУЧИТЬ ДОСТУП
+                  </p>
+                  <MarketOSForm />
                 </div>
               </div>
-
-              <p style={{ fontFamily: "Inter", fontSize: "1rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.75, marginBottom: "2rem" }}>
-                Всем участникам эфира открываем доступ к <strong style={{ color: "#F5F5F0" }}>MarketOS</strong> —
-                AI-маркетологу для ускорения маркетинга, усиления материалов и более
-                быстрой работы с гипотезами.
-              </p>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 0, border: "1px solid rgba(181,242,61,0.15)", marginBottom: "2rem" }}>
-                {[
-                  "Ускоряет работу с маркетинговыми гипотезами",
-                  "Усиливает офферы, тексты и сценарии вебинаров",
-                  "Помогает системно работать с маркетингом внутри проекта",
-                  "Экспертный взгляд агентства + инструмент в одном",
-                ].map((item, i, arr) => (
-                  <div key={i} style={{
-                    display: "flex", alignItems: "flex-start", gap: "0.75rem",
-                    padding: "1rem 1.25rem",
-                    borderBottom: i < arr.length - 1 ? "1px solid rgba(181,242,61,0.1)" : "none",
-                  }}>
-                    <span style={{ color: "#B5F23D", fontSize: "0.8rem", marginTop: "0.1rem", flexShrink: 0 }}>→</span>
-                    <span style={{ fontFamily: "Inter", fontSize: "0.875rem", color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>{item}</span>
-                  </div>
-                ))}
-              </div>
-
-              <a
-                href="https://gipoteza-agency.ru/marketos"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.4)",
-                  textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.15)",
-                  paddingBottom: "2px", transition: "color 0.2s",
-                }}
-                onMouseEnter={e => (e.currentTarget.style.color = "#F5F5F0")}
-                onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
-              >
-                Посмотреть сервис →
-              </a>
-            </FadeUp>
-
-            {/* Правая — цена + форма */}
-            <FadeUp delay={0.2}>
-              {/* Цена */}
-              <div style={{ border: "1px solid rgba(181,242,61,0.2)", padding: "2rem", marginBottom: "2.5rem", background: "rgba(181,242,61,0.03)" }}>
-                <p style={{ fontFamily: "Inter", fontSize: "0.72rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "1.25rem" }}>
-                  СПЕЦИАЛЬНАЯ ЦЕНА ДЛЯ УЧАСТНИКОВ
-                </p>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "1rem", marginBottom: "0.5rem" }}>
-                  <span className="font-display" style={{ fontSize: "3rem", fontWeight: 900, color: "#B5F23D", lineHeight: 1 }}>
-                    5 000 ₽
-                  </span>
-                  <span style={{ fontFamily: "Inter", fontSize: "1rem", color: "rgba(255,255,255,0.25)", textDecoration: "line-through" }}>
-                    3 000 ₽
-                  </span>
-                </div>
-                <p style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.35)", lineHeight: 1.6 }}>
-                  Доступ к MarketOS — AI-маркетологу для вашего проекта
-                </p>
-              </div>
-
-              <p style={{ fontFamily: "Inter", fontSize: "0.72rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
-                ОСТАВИТЬ ЗАЯВКУ
-              </p>
-              <MarketOSForm />
             </FadeUp>
 
           </div>
