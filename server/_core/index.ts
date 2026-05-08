@@ -210,6 +210,57 @@ async function startServer() {
     });
   });
 
+  // Game leads endpoint
+  const gameLeadsFile = "/tmp/game_leads.json";
+  function readGameLeads(): { leads: { name: string; phone: string; romi: number; score: number; ts: string }[] } {
+    try {
+      const raw = fs.readFileSync(gameLeadsFile, "utf8");
+      return JSON.parse(raw);
+    } catch {
+      return { leads: [] };
+    }
+  }
+  app.post("/api/game-leads", (req, res) => {
+    try {
+      const { name, phone, romi, score } = req.body as { name?: string; phone?: string; romi?: number; score?: number };
+      if (!name || !phone) return res.status(400).json({ error: "name and phone required" });
+      const data = readGameLeads();
+      data.leads.push({ name, phone, romi: romi || 0, score: score || 0, ts: new Date().toISOString() });
+      fs.writeFileSync(gameLeadsFile, JSON.stringify(data, null, 2));
+      // Telegram notification
+      const TG_BOT_TOKEN = "8148336028:AAFuOTIb-7YGDPmxBUqnzQwRCVTJjfQJGJg";
+      const TG_CHAT_IDS = ["1342421992", "683646991"];
+      const msg = [
+        "🎮 <b>Новый лид из игры ВЕБИНАР РАШ</b>",
+        "",
+        `• Имя: <b>${name}</b>`,
+        `• Контакт: <b>${phone}</b>`,
+        `• ROMI в игре: <b>${romi}%</b>`,
+        `• Счёт: <b>${score}</b>`,
+      ].join("\n");
+      for (const chatId of TG_CHAT_IDS) {
+        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: "HTML" }),
+        }).catch(() => {});
+      }
+      console.log(`[GAME LEAD] ${name} | ${phone} | ROMI: ${romi}% | Score: ${score}`);
+      return res.json({ success: true });
+    } catch (err) {
+      console.error("Game leads error:", err);
+      return res.status(500).json({ error: String(err) });
+    }
+  });
+  app.get("/api/game-leads", (_req, res) => {
+    try {
+      const data = readGameLeads();
+      return res.json(data);
+    } catch (err) {
+      return res.status(500).json({ error: String(err) });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",
