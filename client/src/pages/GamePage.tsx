@@ -1142,6 +1142,7 @@ export default function GamePage() {
   }
 
   // ── END SCREEN ────────────────────────────────────────────────────────────
+  const isNegative = score < 900;
   const rank =
     score >= 2800 ? { title: "⭐⭐⭐ МАРКЕТИНГ-ЛЕГЕНДА", sub: "Ты переиграл CEO и рынок", c: C.green } :
     score >= 1800 ? { title: "⭐⭐ СИЛЬНЫЙ CMO", sub: "CEO доволен. Бюджет сохранён", c: C.yellow } :
@@ -1198,11 +1199,13 @@ export default function GamePage() {
               <div style={{ position: "absolute", left: 0, right: 0, height: 2, background: `linear-gradient(90deg,transparent,${C.red}22,transparent)`, animation: "scanH 3s linear infinite" }} />
             </div>
             <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 8, color: C.red, marginBottom: 6, textShadow: `0 0 8px ${C.red}`, position: "relative" }}>
-              ХОЧЕШЬ ТАКОЙ ROMI В РЕАЛЬНОСТИ?
+              {isNegative ? "ХОЧЕШЬ ОКУПАЕМЫЙ ЗАПУСК?" : "ХОЧЕШЬ ТАКОЙ ROMI В РЕАЛЬНОСТИ?"}
             </div>
             <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.muted, marginBottom: 14, lineHeight: 2.2, position: "relative" }}>
-              Разберём твою воронку бесплатно за 30 минут.<br />
-              Покажем где теряются деньги прямо сейчас.
+              {isNegative
+                ? <>Покажем как делать запуски с ROMI 200%+.<br />На реальных кейсах Гипотезы — без воды.</>
+                : <>Разберём твою воронку бесплатно за 30 минут.<br />Покажем где теряются деньги прямо сейчас.</>
+              }
             </div>
             <form onSubmit={submitForm} style={{ display: "flex", flexDirection: "column", gap: 9, position: "relative" }}>
               <input className="inp" placeholder="ИМЯ" value={formData.name} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} required />
@@ -1225,7 +1228,7 @@ export default function GamePage() {
 
         <div style={{ display: "flex", gap: 10, width: "100%", flexWrap: "wrap" }}>
           <button className="pbtn" style={{ flex: 1, fontSize: 7, padding: "12px" }} onClick={restart}>↺ ИГРАТЬ СНОВА</button>
-          <button className="pbtn" style={{ flex: 1, fontSize: 7, padding: "12px", background: "#0c0c0c", boxShadow: `2px 2px 0 ${C.redDark}` }} onClick={() => window.location.href = "/"}>← НА САЙТ</button>
+          <button className="pbtn" style={{ flex: 1, fontSize: 7, padding: "12px", background: "#0c0c0c", boxShadow: `2px 2px 0 ${C.redDark}` }} onClick={() => window.location.href = "https://gipoteza-agency.ru/#cases"}>← КЕЙСЫ ГИПОТЕЗЫ</button>
         </div>
 
         <div style={{ marginTop: 18, fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.muted, textAlign: "center" }}>
