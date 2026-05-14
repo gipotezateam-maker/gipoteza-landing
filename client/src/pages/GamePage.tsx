@@ -1154,36 +1154,79 @@ export default function GamePage() {
   }
 
   // ── END SCREEN ────────────────────────────────────────────────────────────
-  const isNegative = score < 900;
-  const rank =
-    score >= 2800 ? { title: "🏆 Маркетинг-легенда", sub: "Ты переиграл CEO и рынок", c: C.green } :
-    score >= 1800 ? { title: "⭐⭐ Сильный CMO", sub: "CEO доволен. Бюджет сохранён", c: C.yellow } :
-    score >= 900  ? { title: "⭐ Растущий CMO", sub: "Есть потенциал, но воронка дырявая", c: C.orange } :
-                    { title: "💀 Стажёр маркетинга", sub: "CEO урезал бюджет. Ищи новую работу", c: C.red };
+  // Three endings based on ROMI: fail (<50%), normal (50–150%), expert (>150%)
+  const ending = romi > 150
+    ? {
+        key: "expert",
+        headline: "Эксперт-запуск! 🏆",
+        sub: "ROMI выше 150% — ты в топ-5% CMO детского EdTech России",
+        color: C.green,
+        glowColor: "rgba(34,197,94,0.25)",
+        mood: "win" as const,
+        crisis: false,
+        rank: "🏆 Маркетинг-легенда",
+        rankSub: "CEO удвоил бюджет. Тебя зовут на конференцию EdTech Russia 2026",
+        insight: "Ты освоил ключевые инструменты детского EdTech: сегментацию родителей, OTO-воронки, Telegram-цепочки и защиту бюджета перед CEO. Именно так работают топовые запуски на российском рынке.",
+        ctaTitle: "Хочешь такой ROMI в реальности?",
+        ctaText: "Разберём твою воронку бесплатно за 30 минут. Покажем где теряются деньги прямо сейчас — на реальных цифрах.",
+        ctaBtn: "▶ Разобрать мою воронку",
+      }
+    : romi >= 50
+    ? {
+        key: "normal",
+        headline: "Неплохой результат ⭐",
+        sub: "ROMI 50–150% — выше среднего по рынку, но есть куда расти",
+        color: C.yellow,
+        glowColor: "rgba(250,204,21,0.2)",
+        mood: "win" as const,
+        crisis: false,
+        rank: "⭐⭐ Крепкий CMO",
+        rankSub: "CEO доволен. Бюджет сохранён. Но конкуренты Учи.ру и Skysmart не спят",
+        insight: "Ты принял несколько верных решений, но часть бюджета ушла впустую. В детском EdTech 2026 разница между 100% и 300% ROMI — в точности сегментации и тайминге оффера.",
+        ctaTitle: "Хочешь вырасти до ROMI 200%+?",
+        ctaText: "Покажем конкретные точки роста в твоей воронке. Бесплатный аудит за 30 минут — только реальные цифры, без воды.",
+        ctaBtn: "▶ Получить аудит воронки",
+      }
+    : {
+        key: "fail",
+        headline: "Провал запуска 💀",
+        sub: "ROMI ниже 50% — CEO урезал бюджет. Следующий квартал под угрозой",
+        color: C.red,
+        glowColor: C.redGlow,
+        mood: "lose" as const,
+        crisis: true,
+        rank: "💀 Стажёр маркетинга",
+        rankSub: "Бюджет сожжён. CEO требует объяснений. Воронка дырявая",
+        insight: "Главные ошибки: масштабирование без оптимизации воронки, ценовые войны с Учи.ру и игнорирование сегментации родителей. В детском EdTech каждый неверный шаг стоит 50–150К ₽.",
+        ctaTitle: "Хочешь окупаемый запуск?",
+        ctaText: "Покажем как делать запуски с ROMI 200%+. На реальных кейсах Гипотезы — без воды. Разберём твою воронку бесплатно.",
+        ctaBtn: "▶ Спасти мою воронку",
+      };
 
   return (
     <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", padding: "32px 16px", position: "relative", overflow: "hidden" }}>
       <style>{css}</style>
-      <AnimatedBg crisis={!isWin} />
+      <AnimatedBg crisis={ending.crisis} />
 
       <div style={{ position: "relative", zIndex: 10, maxWidth: 600, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", animation: "introSlide 0.5s ease" }}>
 
-        <div style={{ fontSize: "clamp(24px,6vw,40px)", fontWeight: 900, color: isWin ? C.green : C.red, marginBottom: 6, textAlign: "center" }}>
-          {isWin ? "Запуск удался! 🎉" : "Провал запуска 💀"}
+        {/* Headline */}
+        <div style={{ fontSize: "clamp(24px,6vw,42px)", fontWeight: 900, color: ending.color, marginBottom: 8, textAlign: "center", lineHeight: 1.1 }}>
+          {ending.headline}
         </div>
-        <div style={{ fontSize: 14, color: C.muted, marginBottom: 28, textAlign: "center", fontWeight: 500 }}>
-          {isWin ? "Ты доказал CEO что маркетинг работает" : "CEO урезал бюджет. Следующий квартал под угрозой"}
+        <div style={{ fontSize: 14, color: C.muted, marginBottom: 28, textAlign: "center", fontWeight: 500, maxWidth: 440, lineHeight: 1.6 }}>
+          {ending.sub}
         </div>
 
-        {/* Final avatar */}
+        {/* Avatar */}
         <div style={{ marginBottom: 24, animation: "avatarBob 1.5s ease-in-out infinite" }}>
-          <CMOAvatar mood={isWin ? "win" : "lose"} size={96} />
+          <CMOAvatar mood={ending.mood} size={96} />
         </div>
 
-        {/* Stats */}
+        {/* Stats grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 10, width: "100%", marginBottom: 16 }}>
           {[
-            { l: "Итоговый ROMI", v: `${romi}%`, c: romi >= 100 ? C.green : romi >= 50 ? C.yellow : C.red, i: "📈" },
+            { l: "Итоговый ROMI", v: `${romi}%`, c: romi > 150 ? C.green : romi >= 50 ? C.yellow : C.red, i: "📈" },
             { l: "Остаток бюджета", v: `${(budget / 1000).toFixed(0)}К ₽`, c: C.yellow, i: "💰" },
             { l: "Конверсия", v: `${conv.toFixed(1)}%`, c: C.blue, i: "🎯" },
             { l: "Итоговый счёт", v: score.toLocaleString(), c: C.yellow, i: "⭐" },
@@ -1196,31 +1239,36 @@ export default function GamePage() {
           ))}
         </div>
 
-        {/* Rank */}
-        <div style={{ background: C.card, borderRadius: 12, border: `1.5px solid ${rank.c}44`, padding: "16px 20px", marginBottom: 16, width: "100%", textAlign: "center", boxShadow: `0 0 24px ${rank.c}22` }}>
+        {/* Rank card */}
+        <div style={{ background: C.card, borderRadius: 12, border: `1.5px solid ${ending.color}44`, padding: "18px 20px", marginBottom: 14, width: "100%", textAlign: "center", boxShadow: `0 0 28px ${ending.glowColor}` }}>
           <div style={{ fontSize: 11, color: C.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Ранг CMO</div>
-          <div style={{ fontSize: "clamp(16px,3.5vw,22px)", fontWeight: 800, color: rank.c, marginBottom: 6 }}>{rank.title}</div>
-          <div style={{ fontSize: 13, color: C.muted }}>{rank.sub}</div>
+          <div style={{ fontSize: "clamp(16px,3.5vw,22px)", fontWeight: 800, color: ending.color, marginBottom: 6 }}>{ending.rank}</div>
+          <div style={{ fontSize: 13, color: C.muted, lineHeight: 1.6 }}>{ending.rankSub}</div>
+        </div>
+
+        {/* Insight card */}
+        <div style={{ background: C.card, borderRadius: 12, border: `1px solid ${C.cardBorder}`, padding: "16px 18px", marginBottom: 16, width: "100%" }}>
+          <div style={{ fontSize: 11, color: ending.color, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 10 }}>Разбор результата</div>
+          <p style={{ fontSize: 14, color: C.text, lineHeight: 1.75, margin: 0 }}>{ending.insight}</p>
         </div>
 
         {/* Lead form */}
         {!formSent ? (
-          <div style={{ background: C.card, borderRadius: 12, border: `1.5px solid ${C.red}44`, padding: "20px", width: "100%", marginBottom: 14, boxShadow: `0 0 28px ${C.redGlow}` }}>
-            <div style={{ fontSize: 18, fontWeight: 800, color: C.red, marginBottom: 6 }}>
-              {isNegative ? "Хочешь окупаемый запуск?" : "Хочешь такой ROMI в реальности?"}
+          <div style={{ background: C.card, borderRadius: 12, border: `1.5px solid ${ending.color}44`, padding: "20px", width: "100%", marginBottom: 14, boxShadow: `0 0 28px ${ending.glowColor}` }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: ending.color, marginBottom: 8 }}>
+              {ending.ctaTitle}
             </div>
             <div style={{ fontSize: 14, color: C.muted, marginBottom: 16, lineHeight: 1.7 }}>
-              {isNegative
-                ? "Покажем как делать запуски с ROMI 200%+. На реальных кейсах Гипотезы — без воды."
-                : "Разберём твою воронку бесплатно за 30 минут. Покажем где теряются деньги прямо сейчас."
-              }
+              {ending.ctaText}
             </div>
             <form onSubmit={submitForm} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <input className="form-input" placeholder="Имя" value={formData.name} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} required />
               <input className="form-input" placeholder="Телефон" type="tel" value={formData.phone} onChange={e => setFormData(f => ({ ...f, phone: e.target.value }))} required />
               <input className="form-input" placeholder="Email" type="email" value={formData.email} onChange={e => setFormData(f => ({ ...f, email: e.target.value }))} required />
-              <button className="game-btn" type="submit" style={{ marginTop: 4 }} disabled={formLoading}>
-                {formLoading ? "Отправка..." : "▶ Разобрать мою воронку"}
+              <button className="game-btn" type="submit"
+                style={{ marginTop: 4, background: ending.color === C.green ? C.green : ending.color === C.yellow ? C.yellow : C.red, color: ending.color === C.yellow ? "#000" : "#fff" }}
+                disabled={formLoading}>
+                {formLoading ? "Отправка..." : ending.ctaBtn}
               </button>
             </form>
           </div>
