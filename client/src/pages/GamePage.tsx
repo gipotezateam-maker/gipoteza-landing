@@ -1,167 +1,83 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
-const FONT_URL = "https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap";
+// ─── Music Engine (Web Audio API) ────────────────────────────────────────────
+function useGameMusic() {
+  const [playing, setPlaying] = useState(false);
+  const ctxRef = useRef<AudioContext | null>(null);
+  const seqRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const beatRef = useRef(0);
 
-const C = {
-  bg: "#0a0a0a",
-  panel: "#0e0e0e",
-  border: "#1a1a1a",
-  red: "#ff2d20",
-  redDark: "#a01a10",
-  redGlow: "rgba(255,45,32,0.4)",
-  redMid: "rgba(255,45,32,0.15)",
-  text: "#f5f5f0",
-  muted: "rgba(245,245,240,0.45)",
-  green: "#22c55e",
-  greenGlow: "rgba(34,197,94,0.35)",
-  yellow: "#facc15",
-  blue: "#60a5fa",
-  purple: "#a78bfa",
-  orange: "#fb923c",
-};
+  const NOTES = [
+    [440, 0.15], [0, 0.05], [494, 0.1], [0, 0.05], [523, 0.2], [0, 0.05],
+    [494, 0.1], [0, 0.05], [440, 0.15], [0, 0.1],
+    [392, 0.15], [0, 0.05], [440, 0.1], [0, 0.05], [494, 0.2], [0, 0.05],
+    [440, 0.1], [0, 0.05], [392, 0.15], [0, 0.1],
+    [349, 0.15], [0, 0.05], [392, 0.1], [0, 0.05], [440, 0.2], [0, 0.05],
+    [494, 0.1], [0, 0.05], [523, 0.15], [0, 0.1],
+    [587, 0.2], [0, 0.05], [523, 0.15], [0, 0.05], [494, 0.1], [0, 0.05],
+    [440, 0.1], [0, 0.05], [392, 0.2], [0, 0.15],
+  ] as [number, number][];
 
-// ─── Animated Canvas background ──────────────────────────────────────────────
-function AnimatedBg({ crisis }: { crisis: boolean }) {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const canvas = ref.current!;
-    const ctx = canvas.getContext("2d")!;
-    let raf: number;
-    let frame = 0;
+  const playNote = (ctx: AudioContext, freq: number, dur: number, t: number) => {
+    if (freq === 0) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.08, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.9);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + dur);
+  };
 
-    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-    resize();
-    window.addEventListener("resize", resize);
+  const startMusic = () => {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    ctxRef.current = ctx;
 
-    // Particles
-    const pts = Array.from({ length: 120 }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: -(Math.random() * 0.8 + 0.1),
-      size: Math.ceil(Math.random() * 2) * 2,
-      alpha: Math.random() * 0.5 + 0.05,
-      color: crisis
-        ? (Math.random() > 0.5 ? C.red : "#ff6b5b")
-        : (Math.random() > 0.7 ? C.red : "#ffffff"),
-    }));
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Scrolling grid
-      const gs = 48;
-      const off = (frame * 0.25) % gs;
-      ctx.strokeStyle = crisis ? "rgba(255,45,32,0.09)" : "rgba(255,45,32,0.05)";
-      ctx.lineWidth = 1;
-      for (let x = -gs + off; x < canvas.width + gs; x += gs) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+    let t = ctx.currentTime;
+    const schedule = () => {
+      while (t < ctx.currentTime + 1.5) {
+        const [freq, dur] = NOTES[beatRef.current % NOTES.length];
+        playNote(ctx, freq, dur, t);
+        t += dur;
+        beatRef.current++;
       }
-      for (let y = -gs + off; y < canvas.height + gs; y += gs) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-      }
-
-      // Diagonal scan line
-      if (crisis) {
-        const scanX = ((frame * 2) % (canvas.width + 200)) - 100;
-        const grad = ctx.createLinearGradient(scanX - 60, 0, scanX + 60, 0);
-        grad.addColorStop(0, "transparent");
-        grad.addColorStop(0.5, "rgba(255,45,32,0.08)");
-        grad.addColorStop(1, "transparent");
-        ctx.fillStyle = grad;
-        ctx.fillRect(scanX - 60, 0, 120, canvas.height);
-      }
-
-      // Floating pixels
-      pts.forEach((p) => {
-        ctx.globalAlpha = p.alpha;
-        ctx.fillStyle = p.color;
-        ctx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
-        p.x += p.vx; p.y += p.vy;
-        if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
-        if (p.x < -10) p.x = canvas.width + 10;
-        if (p.x > canvas.width + 10) p.x = -10;
-      });
-      ctx.globalAlpha = 1;
-
-      // Corner decorations (pixel brackets)
-      const drawBracket = (x: number, y: number, flipX: boolean, flipY: boolean) => {
-        const sx = flipX ? -1 : 1; const sy = flipY ? -1 : 1;
-        ctx.save(); ctx.translate(x, y); ctx.scale(sx, sy);
-        ctx.fillStyle = "rgba(255,45,32,0.25)";
-        for (let i = 0; i < 3; i++) ctx.fillRect(i * 4, 0, 4, 4);
-        ctx.fillRect(0, 4, 4, 12);
-        ctx.restore();
-      };
-      drawBracket(20, 20, false, false);
-      drawBracket(canvas.width - 20, 20, true, false);
-      drawBracket(20, canvas.height - 20, false, true);
-      drawBracket(canvas.width - 20, canvas.height - 20, true, true);
-
-      frame++;
-      raf = requestAnimationFrame(draw);
+      seqRef.current = setTimeout(schedule, 500);
     };
-    draw();
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
-  }, [crisis]);
+    schedule();
+    setPlaying(true);
+  };
 
-  return <canvas ref={ref} style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }} />;
-}
+  const stopMusic = () => {
+    if (seqRef.current) clearTimeout(seqRef.current);
+    ctxRef.current?.close();
+    ctxRef.current = null;
+    setPlaying(false);
+  };
 
-// ─── CRT overlay ──────────────────────────────────────────────────────────────
-function CRT() {
-  return (
-    <>
-      <div style={{ position: "fixed", inset: 0, zIndex: 9997, pointerEvents: "none",
-        background: "repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px)" }} />
-      <div style={{ position: "fixed", inset: 0, zIndex: 9996, pointerEvents: "none",
-        background: "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.75) 100%)" }} />
-    </>
-  );
-}
+  const toggle = () => (playing ? stopMusic() : startMusic());
 
-// ─── Pixel explosion ──────────────────────────────────────────────────────────
-interface Burst { id: number; x: number; y: number; good: boolean }
-function Bursts({ list }: { list: Burst[] }) {
-  return (
-    <>
-      {list.map((b) => (
-        <div key={b.id} style={{ position: "fixed", left: b.x, top: b.y, pointerEvents: "none", zIndex: 9990 }}>
-          {Array.from({ length: 16 }).map((_, i) => {
-            const a = (i / 16) * Math.PI * 2;
-            const d = 35 + Math.random() * 45;
-            const size = Math.ceil(Math.random() * 3) * 2;
-            return (
-              <div key={i} style={{
-                position: "absolute", width: size, height: size,
-                background: b.good ? C.green : C.red,
-                boxShadow: `0 0 4px ${b.good ? C.green : C.red}`,
-                animation: "burstOut 0.65s ease-out forwards",
-                "--tx": `${Math.cos(a) * d}px`, "--ty": `${Math.sin(a) * d}px`,
-              } as React.CSSProperties} />
-            );
-          })}
-        </div>
-      ))}
-    </>
-  );
-}
+  useEffect(() => () => { if (seqRef.current) clearTimeout(seqRef.current); ctxRef.current?.close(); }, []);
 
-// ─── Blink ────────────────────────────────────────────────────────────────────
-function Blink({ children, ms = 550 }: { children: React.ReactNode; ms?: number }) {
-  const [v, setV] = useState(true);
-  useEffect(() => { const t = setInterval(() => setV(x => !x), ms); return () => clearInterval(t); }, [ms]);
-  return <span style={{ opacity: v ? 1 : 0 }}>{children}</span>;
+  return { playing, toggle };
 }
 
 // ─── Typewriter ───────────────────────────────────────────────────────────────
-function useTypewriter(text: string, spd = 20) {
+function useTypewriter(text: string, spd = 22) {
   const [out, setOut] = useState("");
   const [done, setDone] = useState(false);
   useEffect(() => {
     setOut(""); setDone(false);
     let i = 0;
-    const t = setInterval(() => { i++; setOut(text.slice(0, i)); if (i >= text.length) { clearInterval(t); setDone(true); } }, spd);
+    const t = setInterval(() => {
+      i++;
+      setOut(text.slice(0, i));
+      if (i >= text.length) { clearInterval(t); setDone(true); }
+    }, spd);
     return () => clearInterval(t);
   }, [text]);
   return { out, done };
@@ -179,184 +95,179 @@ function useCountdown(secs: number, active: boolean, onEnd: () => void) {
   return left;
 }
 
-// ─── DETAILED PIXEL ART CHARACTERS ───────────────────────────────────────────
+// ─── Animated Background ──────────────────────────────────────────────────────
+function AnimatedBg({ crisis }: { crisis: boolean }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = ref.current!;
+    const ctx = canvas.getContext("2d")!;
+    let raf: number;
+    let frame = 0;
 
-// CMO — detailed 24×32 pixel art
-function CMOChar({ mood, scale = 1 }: { mood: "idle" | "think" | "win" | "lose" | "talk"; scale?: number }) {
-  const W = 24 * scale, H = 32 * scale;
-  const skin = "#c8956c", hair = "#1a0f05", suit = "#111", lapel = "#1c1c1c";
-  const tie = C.red, pants = "#0d0d0d", shoe = "#080808", shirt = "#eee";
-  const eyeC = mood === "lose" ? C.red : mood === "win" ? C.green : "#111";
-  const mouthRow = mood === "lose" ? 8 : 7;
-  const armY = mood === "win" ? 11 : 13;
-  const glowColor = mood === "win" ? C.green : mood === "lose" ? C.red : "transparent";
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+    resize();
+    window.addEventListener("resize", resize);
 
-  // pixel grid helper
-  const px = (col: number, row: number, w = 1, h = 1, color: string) =>
-    <rect key={`${col}-${row}`} x={col} y={row} width={w} height={h} fill={color} />;
+    // Floating orbs
+    const orbs = Array.from({ length: 8 }, (_, i) => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: 80 + Math.random() * 160,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      hue: crisis ? 0 : (i % 2 === 0 ? 0 : 220),
+      alpha: 0.03 + Math.random() * 0.04,
+    }));
 
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Grid lines
+      ctx.strokeStyle = crisis ? "rgba(255,45,32,0.06)" : "rgba(255,255,255,0.025)";
+      ctx.lineWidth = 1;
+      const gs = 60;
+      const off = (frame * 0.15) % gs;
+      for (let x = -gs + off; x < canvas.width + gs; x += gs) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = -gs + off; y < canvas.height + gs; y += gs) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      // Orbs
+      orbs.forEach(o => {
+        const grad = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
+        const color = crisis ? `rgba(255,45,32,${o.alpha})` : `rgba(255,45,32,${o.alpha * 0.6})`;
+        grad.addColorStop(0, color);
+        grad.addColorStop(1, "transparent");
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+        ctx.fill();
+        o.x += o.vx; o.y += o.vy;
+        if (o.x < -o.r) o.x = canvas.width + o.r;
+        if (o.x > canvas.width + o.r) o.x = -o.r;
+        if (o.y < -o.r) o.y = canvas.height + o.r;
+        if (o.y > canvas.height + o.r) o.y = -o.r;
+      });
+
+      // Crisis scan line
+      if (crisis) {
+        const scanX = ((frame * 3) % (canvas.width + 300)) - 150;
+        const grad = ctx.createLinearGradient(scanX - 80, 0, scanX + 80, 0);
+        grad.addColorStop(0, "transparent");
+        grad.addColorStop(0.5, "rgba(255,45,32,0.06)");
+        grad.addColorStop(1, "transparent");
+        ctx.fillStyle = grad;
+        ctx.fillRect(scanX - 80, 0, 160, canvas.height);
+      }
+
+      frame++;
+      raf = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
+  }, [crisis]);
+
+  return <canvas ref={ref} style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }} />;
+}
+
+// ─── Burst particles ──────────────────────────────────────────────────────────
+interface Burst { id: number; x: number; y: number; good: boolean }
+function Bursts({ list }: { list: Burst[] }) {
   return (
-    <svg width={W} height={H} viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg"
-      shapeRendering="crispEdges"
-      style={{ imageRendering: "pixelated", filter: glowColor !== "transparent" ? `drop-shadow(0 0 8px ${glowColor}) drop-shadow(0 0 16px ${glowColor}88)` : `drop-shadow(0 0 6px ${C.red}44)` }}>
-      {/* === HEAD === */}
-      {px(8, 0, 8, 1, hair)}
-      {px(7, 1, 10, 1, hair)}
-      {px(7, 2, 10, 7, skin)}
-      {/* hair sides */}
-      {px(7, 2, 1, 3, hair)}{px(16, 2, 1, 3, hair)}
-      {/* ear */}
-      {px(6, 4, 1, 2, skin)}{px(17, 4, 1, 2, skin)}
-      {/* eyes */}
-      {px(9, 4, 2, 2, eyeC)}{px(13, 4, 2, 2, eyeC)}
-      {/* pupils */}
-      {px(10, 5, 1, 1, "#fff")}{px(14, 5, 1, 1, "#fff")}
-      {/* eyebrows */}
-      {mood === "think" && <>{px(9, 3, 2, 1, hair)}{px(13, 3, 2, 1, hair)}</>}
-      {mood === "lose" && <>{px(9, 3, 3, 1, hair)}{px(12, 3, 3, 1, hair)}</>}
-      {/* nose */}
-      {px(11, 6, 2, 1, "#b07050")}
-      {/* mouth */}
-      {mood === "win"
-        ? <>{px(9, mouthRow, 6, 1, "#8b4513")}{px(9, mouthRow + 1, 1, 1, "#8b4513")}{px(14, mouthRow + 1, 1, 1, "#8b4513")}</>
-        : mood === "lose"
-        ? <>{px(10, mouthRow, 4, 1, "#8b4513")}{px(9, mouthRow + 1, 2, 1, "#8b4513")}{px(13, mouthRow + 1, 2, 1, "#8b4513")}</>
-        : <>{px(10, mouthRow, 4, 1, "#8b4513")}</>}
-      {/* === NECK === */}
-      {px(10, 9, 4, 2, skin)}
-      {/* === SHIRT COLLAR === */}
-      {px(9, 10, 2, 1, shirt)}{px(13, 10, 2, 1, shirt)}
-      {/* === SUIT BODY === */}
-      {px(6, 11, 12, 9, suit)}
-      {/* lapels */}
-      {px(6, 11, 3, 5, lapel)}{px(15, 11, 3, 5, lapel)}
-      {/* tie */}
-      {px(11, 10, 2, 1, tie)}{px(11, 11, 2, 6, tie)}{px(10, 14, 4, 2, tie)}
-      {/* suit buttons */}
-      {px(11, 17, 2, 1, "#333")}{px(11, 19, 2, 1, "#333")}
-      {/* pocket square */}
-      {px(6, 12, 2, 2, "#ff6b5b")}
-      {/* === ARMS === */}
-      {px(3, armY, 3, 6, suit)}{px(18, armY, 3, 6, suit)}
-      {/* cuffs */}
-      {px(3, armY + 5, 3, 1, shirt)}{px(18, armY + 5, 3, 1, shirt)}
-      {/* hands */}
-      {px(3, armY + 6, 3, 2, skin)}{px(18, armY + 6, 3, 2, skin)}
-      {/* win: raised arms */}
-      {mood === "win" && <>{px(1, 8, 3, 5, suit)}{px(20, 8, 3, 5, suit)}{px(1, 13, 3, 2, skin)}{px(20, 13, 3, 2, skin)}</>}
-      {/* === BELT === */}
-      {px(6, 20, 12, 1, "#222")}{px(10, 20, 4, 1, "#444")}
-      {/* === PANTS === */}
-      {px(6, 21, 5, 7, pants)}{px(13, 21, 5, 7, pants)}
-      {/* crease */}
-      {px(8, 22, 1, 5, "#1a1a1a")}{px(15, 22, 1, 5, "#1a1a1a")}
-      {/* === SHOES === */}
-      {px(5, 28, 7, 3, shoe)}{px(13, 28, 7, 3, shoe)}
-      {px(5, 30, 1, 1, "#222")}{px(12, 30, 1, 1, "#222")}
-      {/* shadow */}
-      <ellipse cx="12" cy="31.5" rx="6" ry="0.8" fill="rgba(0,0,0,0.4)" />
-      {/* talk bubble */}
-      {mood === "talk" && <>
-        {px(17, 0, 6, 4, "#111")}{px(18, 1, 4, 2, C.red)}
-        {px(17, 4, 2, 2, "#111")}
-      </>}
-    </svg>
+    <>
+      {list.map(b => (
+        <div key={b.id} style={{ position: "fixed", left: b.x, top: b.y, pointerEvents: "none", zIndex: 9990 }}>
+          {Array.from({ length: 12 }).map((_, i) => {
+            const a = (i / 12) * Math.PI * 2;
+            const d = 30 + Math.random() * 50;
+            return (
+              <div key={i} style={{
+                position: "absolute",
+                width: 6, height: 6,
+                borderRadius: "50%",
+                background: b.good ? "#22c55e" : "#ff2d20",
+                boxShadow: `0 0 6px ${b.good ? "#22c55e" : "#ff2d20"}`,
+                animation: "burstOut 0.6s ease-out forwards",
+                "--tx": `${Math.cos(a) * d}px`,
+                "--ty": `${Math.sin(a) * d}px`,
+              } as React.CSSProperties} />
+            );
+          })}
+        </div>
+      ))}
+    </>
   );
 }
 
-// CEO — detailed 24×32 pixel art, intimidating boss
-function CEOChar({ angry, scale = 1 }: { angry: boolean; scale?: number }) {
-  const W = 24 * scale, H = 32 * scale;
-  const skin = "#d4a574", hair = "#555", suit = "#0f1520", lapel = "#161e30";
-  const tie = "#facc15", pants = "#0a0f18", shoe = "#050a10";
+// ─── CMO Avatar (modern illustration style) ──────────────────────────────────
+function CMOAvatar({ mood, size = 80 }: { mood: "idle" | "think" | "win" | "lose"; size?: number }) {
+  const faceColor = mood === "win" ? "#22c55e" : mood === "lose" ? "#ff2d20" : "#ff2d20";
+  const bgColor = mood === "win" ? "rgba(34,197,94,0.15)" : mood === "lose" ? "rgba(255,45,32,0.15)" : "rgba(255,45,32,0.1)";
 
   return (
-    <svg width={W} height={H} viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg"
-      shapeRendering="crispEdges"
-      style={{ imageRendering: "pixelated", filter: angry ? `drop-shadow(0 0 10px ${C.red}) drop-shadow(0 0 20px ${C.red}66)` : `drop-shadow(0 0 4px #facc1544)` }}>
-      {/* head */}
-      <rect x="7" y="1" width="10" height="8" fill={skin} />
-      {/* grey hair */}
-      <rect x="6" y="0" width="12" height="3" fill={hair} />
-      <rect x="6" y="0" width="2" height="6" fill={hair} />
-      <rect x="16" y="0" width="2" height="6" fill={hair} />
-      {/* glasses */}
-      <rect x="8" y="3" width="3" height="3" fill="none" stroke="#888" strokeWidth="0.5" />
-      <rect x="13" y="3" width="3" height="3" fill="none" stroke="#888" strokeWidth="0.5" />
-      <rect x="11" y="4" width="2" height="1" fill="#888" />
-      {/* eyes behind glasses */}
-      <rect x="9" y="4" width="1" height="1" fill={angry ? C.red : "#333"} />
-      <rect x="14" y="4" width="1" height="1" fill={angry ? C.red : "#333"} />
-      {/* angry brows */}
-      {angry && <><rect x="8" y="2" width="4" height="1" fill="#333" /><rect x="12" y="2" width="4" height="1" fill="#333" /></>}
-      {/* nose */}
-      <rect x="11" y="6" width="2" height="1" fill="#b07050" />
-      {/* mouth */}
-      {angry
-        ? <><rect x="9" y="8" width="6" height="1" fill="#8b4513" /><rect x="8" y="7" width="2" height="1" fill="#8b4513" /><rect x="14" y="7" width="2" height="1" fill="#8b4513" /></>
-        : <rect x="10" y="8" width="4" height="1" fill="#8b4513" />}
-      {/* neck */}
-      <rect x="10" y="9" width="4" height="2" fill={skin} />
-      {/* suit */}
-      <rect x="5" y="11" width="14" height="9" fill={suit} />
-      <rect x="5" y="11" width="4" height="6" fill={lapel} />
-      <rect x="15" y="11" width="4" height="6" fill={lapel} />
-      {/* gold tie */}
-      <rect x="11" y="10" width="2" height="1" fill={tie} />
-      <rect x="11" y="11" width="2" height="6" fill={tie} />
-      <rect x="10" y="14" width="4" height="2" fill={tie} />
-      {/* medal/badge */}
-      <rect x="16" y="12" width="2" height="2" fill="#facc15" />
-      <rect x="16" y="14" width="2" height="1" fill="#f59e0b" />
-      {/* arms */}
-      <rect x="2" y="13" width="3" height="6" fill={suit} />
-      <rect x="19" y="13" width="3" height="6" fill={suit} />
-      <rect x="2" y="19" width="3" height="1" fill="#eee" />
-      <rect x="19" y="19" width="3" height="1" fill="#eee" />
-      <rect x="2" y="20" width="3" height="2" fill={skin} />
-      <rect x="19" y="20" width="3" height="2" fill={skin} />
-      {/* belt */}
-      <rect x="5" y="20" width="14" height="1" fill="#111" />
-      <rect x="10" y="20" width="4" height="1" fill="#333" />
-      {/* pants */}
-      <rect x="5" y="21" width="6" height="7" fill={pants} />
-      <rect x="13" y="21" width="6" height="7" fill={pants} />
-      {/* shoes */}
-      <rect x="4" y="28" width="8" height="3" fill={shoe} />
-      <rect x="13" y="28" width="8" height="3" fill={shoe} />
-      <ellipse cx="12" cy="31.5" rx="6" ry="0.8" fill="rgba(0,0,0,0.4)" />
-      {/* angry steam */}
-      {angry && <>
-        <rect x="5" y="0" width="2" height="3" fill={C.red} opacity="0.7" />
-        <rect x="17" y="0" width="2" height="3" fill={C.red} opacity="0.7" />
-      </>}
-    </svg>
+    <div style={{
+      width: size, height: size,
+      borderRadius: "50%",
+      background: bgColor,
+      border: `2px solid ${faceColor}44`,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontSize: size * 0.5,
+      boxShadow: `0 0 20px ${faceColor}33`,
+      transition: "all 0.3s ease",
+      flexShrink: 0,
+    }}>
+      {mood === "win" ? "🏆" : mood === "lose" ? "😰" : mood === "think" ? "🤔" : "💼"}
+    </div>
   );
 }
 
-// ─── Pixel bar ────────────────────────────────────────────────────────────────
-function Bar({ val, max, color, label, icon }: { val: number; max: number; color: string; label: string; icon: string }) {
+// ─── CEO Avatar ───────────────────────────────────────────────────────────────
+function CEOAvatar({ angry, size = 80 }: { angry: boolean; size?: number }) {
+  return (
+    <div style={{
+      width: size, height: size,
+      borderRadius: "50%",
+      background: angry ? "rgba(255,45,32,0.2)" : "rgba(250,204,21,0.1)",
+      border: `2px solid ${angry ? "#ff2d20" : "#facc15"}44`,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontSize: size * 0.5,
+      boxShadow: `0 0 20px ${angry ? "#ff2d20" : "#facc15"}33`,
+      transition: "all 0.3s ease",
+      flexShrink: 0,
+    }}>
+      {angry ? "😤" : "👔"}
+    </div>
+  );
+}
+
+// ─── Progress Bar ─────────────────────────────────────────────────────────────
+function MetricBar({ val, max, color, label, icon }: { val: number; max: number; color: string; label: string; icon: string }) {
   const pct = Math.max(0, Math.min(100, (val / max) * 100));
   const low = pct < 20;
   return (
-    <div style={{ fontFamily: "'Press Start 2P', monospace" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-        <span style={{ fontSize: 6, color: C.muted }}>{icon} {label}</span>
-        <span style={{ fontSize: 7, color: low ? C.red : color, animation: low ? "blink 0.4s steps(1) infinite" : "none" }}>
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, alignItems: "center" }}>
+        <span style={{ fontSize: 11, color: "rgba(245,245,240,0.5)", fontWeight: 500 }}>{icon} {label}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: low ? "#ff2d20" : color }}>
           {val > 999 ? `${(val / 1000).toFixed(0)}K` : val}
         </span>
       </div>
-      <div style={{ height: 12, background: "#080808", border: `2px solid ${color}33`, position: "relative", overflow: "hidden" }}>
-        <div style={{ width: `${pct}%`, height: "100%", background: `linear-gradient(90deg, ${color}cc, ${color})`, boxShadow: `0 0 8px ${color}`, transition: "width 0.7s steps(24)" }} />
-        {Array.from({ length: 24 }).map((_, i) => (
-          <div key={i} style={{ position: "absolute", left: `${(i + 1) * (100 / 24)}%`, top: 0, width: 1, height: "100%", background: "#0a0a0a66" }} />
-        ))}
+      <div style={{ height: 6, background: "rgba(255,255,255,0.06)", borderRadius: 3, overflow: "hidden" }}>
+        <div style={{
+          width: `${pct}%`, height: "100%",
+          background: `linear-gradient(90deg, ${color}88, ${color})`,
+          borderRadius: 3,
+          transition: "width 0.7s cubic-bezier(0.4,0,0.2,1)",
+          boxShadow: `0 0 8px ${color}66`,
+        }} />
       </div>
     </div>
   );
 }
 
-// ─── GAME DATA — hard CMO scenarios ──────────────────────────────────────────
+// ─── GAME DATA — Russian EdTech 2026 scenarios ────────────────────────────────
 interface Opt {
   label: string; icon: string; detail: string; consequence: string;
   delta: { romi: number; budget: number; conv: number; score: number };
@@ -370,250 +281,292 @@ interface Scene {
 
 const SCENES: Scene[] = [
   {
-    id: 0, day: 3, phase: "PREP", difficulty: "HARD",
-    title: "ВОРОНКА РЕГИСТРАЦИЙ",
-    situation: "Запускаешь вебинар по EdTech B2B. Лендинг готов: CR в регистрацию 5.2%. Средний CR по рынку — 22–28%. Бюджет на трафик: 300К. CAC текущий: 4 200 ₽. Целевой CAC: 800 ₽. Трафик: Facebook Ads, холодная аудитория.",
-    metrics: "CR: 5.2% | CAC: 4200₽ | Бюджет: 300К",
+    id: 0, day: 3, phase: "ПОДГОТОВКА", difficulty: "HARD",
+    title: "Воронка регистраций не конвертит",
+    situation: "Запускаешь вебинар для B2B EdTech — корпоративное обучение менеджеров. Лендинг готов, трафик идёт из Яндекс.Директ. CR в регистрацию: 3.8%. Средний CR по рынку — 18–24%. Бюджет на трафик: 280К ₽. CAC текущий: 5 200 ₽. Целевой CAC: 900 ₽. Вебинар через 10 дней.",
+    metrics: "CR: 3.8% | CAC: 5 200 ₽ | Бюджет: 280К ₽ | Канал: Яндекс.Директ",
     insight: "Гипотеза: Смена оффера с «узнай как» на «получи конкретный результат» + социальное доказательство поднимают CR до 18–24% за 72 часа A/B теста",
     options: [
       {
-        label: "A/B тест: оффер + VSL 90 сек",
-        icon: "🧪", detail: "Тест 3 офферов + видео-лендинг. Срок: 72 часа, бюджет теста: 30К",
-        consequence: "CR вырос до 21%. CAC упал до 1 100 ₽. Нашли оффер «+40% к конверсии вебинара за 14 дней» — работает лучше всего на холодную аудиторию B2B.",
-        delta: { romi: 35, budget: -30000, conv: 16, score: 420 }, isOptimal: true,
+        label: "A/B тест: 3 оффера + видео-лендинг 90 сек",
+        icon: "🧪",
+        detail: "Тест 3 офферов + VSL. Срок: 72 часа, бюджет теста: 28К ₽. Оффер «+40% к конверсии вебинара за 14 дней» vs «Как обучить команду без потери времени»",
+        consequence: "CR вырос до 19.4%. CAC упал до 1 050 ₽. Оффер с конкретным результатом для HR-директора сработал лучше всего на холодную B2B аудиторию.",
+        delta: { romi: 38, budget: -28000, conv: 16, score: 440 }, isOptimal: true,
       },
       {
-        label: "Масштабировать текущий трафик x3",
-        icon: "📈", detail: "Увеличить бюджет с 300К до 900К при CR 5.2%",
-        consequence: "CAC вырос до 5 800 ₽. Потратили 600К дополнительно. ROMI ушёл в минус. Facebook начал показывать рекламу нецелевой аудитории при масштабировании.",
-        delta: { romi: -28, budget: -600000, conv: 4, score: 30 }, isOptimal: false,
+        label: "Масштабировать текущий трафик ×3",
+        icon: "📈",
+        detail: "Увеличить бюджет с 280К до 840К при CR 3.8%",
+        consequence: "CAC вырос до 6 800 ₽. Потратили 560К дополнительно. Яндекс начал показывать рекламу нецелевой аудитории при резком росте бюджета. ROMI ушёл в минус.",
+        delta: { romi: -30, budget: -560000, conv: 3, score: 25 }, isOptimal: false,
         trap: "Масштабирование дырявой воронки = сжигание бюджета",
       },
       {
-        label: "Переключиться на Telegram Ads",
-        icon: "✈️", detail: "Перенести весь бюджет в Telegram Ads",
-        consequence: "CR 8.1% — лучше, но аудитория меньше. CAC 2 400 ₽. Не хватает объёма для выполнения плана по регистрациям.",
-        delta: { romi: 5, budget: -50000, conv: 3, score: 140 }, isOptimal: false,
+        label: "Переключиться на ВКонтакте Ads",
+        icon: "💙",
+        detail: "Перенести весь бюджет в VK Ads на HR-директоров и T&D менеджеров",
+        consequence: "CR 7.2% — лучше, но объём аудитории B2B в VK ограничен. CAC 2 800 ₽. Не хватает регистраций для выполнения плана.",
+        delta: { romi: 6, budget: -45000, conv: 4, score: 150 }, isOptimal: false,
       },
       {
         label: "Нанять UX-дизайнера для редизайна",
-        icon: "🎨", detail: "Полный редизайн лендинга. Срок: 2 недели",
-        consequence: "Потеряли 2 недели и 80К. CR вырос до 7.4%. Дизайн не решает проблему оффера — люди не понимают ценность продукта.",
-        delta: { romi: -5, budget: -80000, conv: 2, score: 60 }, isOptimal: false,
+        icon: "🎨",
+        detail: "Полный редизайн лендинга. Срок: 2 недели, стоимость: 90К ₽",
+        consequence: "Потеряли 2 недели и 90К ₽. CR вырос до 5.1%. Дизайн не решает проблему оффера — пользователи не понимают ценность продукта.",
+        delta: { romi: -6, budget: -90000, conv: 1, score: 55 }, isOptimal: false,
         trap: "Красивый дизайн не заменяет сильный оффер",
       },
     ],
   },
   {
-    id: 1, day: 7, phase: "PREP", difficulty: "EXPERT",
-    title: "ДОХОДИМОСТЬ: КРИЗИС ВОРОНКИ",
-    situation: "500 регистраций собрано. Исторические данные: доходимость 9%, конверсия в продажу 1.2%. Вебинар через 5 дней. Конкурент объявил скидку 50% на аналогичный курс. Твоя задача: поднять доходимость до 35%+ и удержать позиционирование без ценовой войны.",
-    metrics: "Регистраций: 500 | Доходимость: 9% | Конверсия: 1.2%",
-    insight: "Гипотеза: Персонализированная мессенджер-цепочка с предварительным контентом поднимает доходимость до 38–45%. Ценовая война разрушает маржу — лучше усилить уникальность",
+    id: 1, day: 7, phase: "ПОДГОТОВКА", difficulty: "EXPERT",
+    title: "Доходимость 8% — катастрофа",
+    situation: "480 регистраций собрано. Исторические данные: доходимость 8%, конверсия в продажу 1.1%. Вебинар через 5 дней. Конкурент — крупная онлайн-школа — объявил скидку 40% на аналогичный курс по корпоративному обучению. Твоя задача: поднять доходимость до 35%+ и удержать позиционирование без ценовой войны.",
+    metrics: "Регистраций: 480 | Доходимость: 8% | Конверсия: 1.1% | Конкурент: скидка 40%",
+    insight: "Гипотеза: Персонализированная цепочка в Telegram-боте с предварительным контентом поднимает доходимость до 38–45%. Ценовая война разрушает маржу — лучше усилить уникальность оффера",
     options: [
       {
-        label: "Мессенджер-бот: 6 касаний + pre-value",
-        icon: "🤖", detail: "Автоматическая цепочка: день -5, -3, -1, -0.5, +1 час, напоминание. Контент: мини-уроки, кейсы, Q&A",
-        consequence: "Доходимость 41%. Open rate бота 84%. Люди пришли прогретые — конверсия в продажу выросла до 4.8%. Конкурент не страшен: аудитория уже лояльна.",
-        delta: { romi: 45, budget: -22000, conv: 18, score: 520 }, isOptimal: true,
+        label: "Telegram-бот: 6 касаний + pre-value контент",
+        icon: "🤖",
+        detail: "Автоматическая цепочка: день -5, -3, -1, -0.5, +1 час, напоминание. Контент: мини-кейсы, Q&A, инсайты по рынку EdTech",
+        consequence: "Доходимость 43%. Open rate бота 81%. Люди пришли прогретые — конверсия в продажу выросла до 5.2%. Конкурент не страшен: аудитория уже лояльна к вашему контенту.",
+        delta: { romi: 48, budget: -20000, conv: 19, score: 540 }, isOptimal: true,
       },
       {
         label: "Ответить скидкой 30% на флагман",
-        icon: "🏷️", detail: "Объявить скидку 30% в ответ на конкурента",
-        consequence: "Продажи выросли на 15%, но маржа упала на 30%. Обесценили продукт в глазах аудитории. Следующий запуск будет сложнее продавать по полной цене.",
-        delta: { romi: -18, budget: 0, conv: 6, score: 80 }, isOptimal: false,
+        icon: "🏷️",
+        detail: "Объявить скидку 30% в ответ на конкурента",
+        consequence: "Продажи выросли на 12%, но маржа упала на 30%. Обесценили продукт. Следующий запуск будет сложнее продавать по полной цене — аудитория ждёт скидок.",
+        delta: { romi: -20, budget: 0, conv: 5, score: 75 }, isOptimal: false,
         trap: "Ценовая война убивает LTV и позиционирование",
       },
       {
-        label: "Email-рассылка: 3 письма",
-        icon: "📧", detail: "Стандартные напоминания по email",
-        consequence: "Open rate 14%. Доходимость выросла до 16%. Недостаточно для выполнения плана. Email работает плохо для вебинарных воронок в 2025.",
-        delta: { romi: 8, budget: -8000, conv: 5, score: 130 }, isOptimal: false,
+        label: "Email-рассылка: 3 стандартных письма",
+        icon: "📧",
+        detail: "Напоминания по email за 3 дня, 1 день и 1 час до вебинара",
+        consequence: "Open rate 11%. Доходимость выросла до 14%. Недостаточно для выполнения плана. Email работает слабо для вебинарных воронок — аудитория давно переехала в мессенджеры.",
+        delta: { romi: 7, budget: -6000, conv: 4, score: 120 }, isOptimal: false,
       },
       {
         label: "Добавить бонус «только для пришедших»",
-        icon: "🎁", detail: "Анонсировать эксклюзивный бонус только для участников вебинара",
-        consequence: "Доходимость 28%. Хорошо, но не достигли цели 35%+. Часть аудитории всё равно не пришла — нет системы напоминаний.",
-        delta: { romi: 18, budget: -5000, conv: 10, score: 240 }, isOptimal: false,
+        icon: "🎁",
+        detail: "Анонсировать эксклюзивный бонус — шаблон KPI для T&D — только для участников вебинара",
+        consequence: "Доходимость 26%. Хорошо, но не достигли цели 35%+. Часть аудитории всё равно не пришла — нет системы напоминаний.",
+        delta: { romi: 16, budget: -4000, conv: 9, score: 230 }, isOptimal: false,
       },
     ],
   },
   {
-    id: 2, day: 11, phase: "LAUNCH", crisis: true, difficulty: "NIGHTMARE",
-    title: "⚠ КРИЗИС: КОНВЕРСИЯ ВЕБИНАРА 0.8%",
-    situation: "Вебинар прошёл. 210 участников. Продаж: 2 на сумму 120К. Конверсия 0.8% при плане 6%. CEO требует объяснений. Анализ записи: 60% аудитории ушло на 40-й минуте. Оффер был на 75-й минуте. Средний чек: 60К. Следующий запуск через 3 недели.",
-    metrics: "Участников: 210 | Продаж: 2 | Конверсия: 0.8% | Ушли: 60% на 40 мин",
-    insight: "Гипотеза: Оффер на 45–50 мин + дожимная автоворонка на 7 дней = конверсия 5–9%. Проблема не в продукте — в структуре вебинара",
+    id: 2, day: 11, phase: "ЗАПУСК", crisis: true, difficulty: "NIGHTMARE",
+    title: "⚠ КРИЗИС: Конверсия вебинара 0.7%",
+    situation: "Вебинар прошёл. 195 участников. Продаж: 1 на сумму 95К ₽. Конверсия 0.7% при плане 5%. CEO требует объяснений прямо сейчас. Анализ записи: 65% аудитории ушло на 38-й минуте. Оффер был на 72-й минуте. Средний чек: 95К ₽. Следующий запуск через 3 недели.",
+    metrics: "Участников: 195 | Продаж: 1 | Конверсия: 0.7% | Ушли: 65% на 38 мин",
+    insight: "Гипотеза: Оффер на 42–48 мин + дожимная автоворонка на 7 дней = конверсия 5–8%. Проблема не в продукте — в структуре вебинара и тайминге оффера",
     options: [
       {
         label: "Реструктурировать вебинар + 7-дневный дожим",
-        icon: "🔧", detail: "Перенести оффер на 45 мин, добавить автоворонку: email + мессенджер 7 дней",
-        consequence: "Следующий вебинар: конверсия 5.2%. Дожимная воронка добрала ещё 8 продаж. Итого: 180К выручки с одного запуска. CEO доволен.",
-        delta: { romi: 55, budget: -35000, conv: 22, score: 580 }, isOptimal: true,
+        icon: "🔧",
+        detail: "Перенести оффер на 45 мин, добавить автоворонку: Telegram + email 7 дней по сегментам",
+        consequence: "Следующий вебинар: конверсия 5.8%. Дожимная воронка добрала ещё 9 продаж. Итого: 950К ₽ выручки с одного запуска. CEO доволен — план перевыполнен.",
+        delta: { romi: 58, budget: -32000, conv: 23, score: 600 }, isOptimal: true,
       },
       {
         label: "Повторить вебинар с той же структурой",
-        icon: "🔄", detail: "Запустить ещё один вебинар без изменений",
-        consequence: "Конверсия снова 0.9%. Потратили ещё 150К на трафик. CEO урезал бюджет на следующий квартал.",
-        delta: { romi: -35, budget: -150000, conv: -2, score: 20 }, isOptimal: false,
+        icon: "🔄",
+        detail: "Запустить ещё один вебинар без изменений через неделю",
+        consequence: "Конверсия снова 0.8%. Потратили ещё 140К ₽ на трафик. CEO урезал бюджет на следующий квартал на 35%.",
+        delta: { romi: -38, budget: -140000, conv: -3, score: 15 }, isOptimal: false,
         trap: "Повторять одну и ту же ошибку — определение безумия",
       },
       {
-        label: "Обзвонить всех 210 участников",
-        icon: "📞", detail: "Ручные продажи всем участникам вебинара",
-        consequence: "Закрыли 6 сделок. Выручка 360К. Но потратили 3 недели работы отдела продаж. Не масштабируется.",
-        delta: { romi: 15, budget: -60000, conv: 8, score: 160 }, isOptimal: false,
+        label: "Обзвонить всех 195 участников",
+        icon: "📞",
+        detail: "Ручные продажи через отдел продаж всем участникам вебинара",
+        consequence: "Закрыли 5 сделок. Выручка 475К ₽. Но потратили 3 недели работы отдела продаж. Не масштабируется — следующий запуск снова будет провальным.",
+        delta: { romi: 12, budget: -55000, conv: 7, score: 155 }, isOptimal: false,
       },
       {
-        label: "Снизить цену флагмана до 15К",
-        icon: "💥", detail: "Экстренное снижение цены с 60К до 15К",
-        consequence: "Продали 12 штук на 180К. Но обесценили продукт. Аудитория теперь ждёт скидок. LTV упал на 40%.",
-        delta: { romi: -10, budget: 0, conv: 5, score: 70 }, isOptimal: false,
+        label: "Снизить цену флагмана до 12К ₽",
+        icon: "💥",
+        detail: "Экстренное снижение цены с 95К до 12К ₽ для спасения запуска",
+        consequence: "Продали 14 штук на 168К ₽. Но обесценили продукт. Аудитория теперь ждёт скидок. LTV упал на 45%. Партнёры недовольны.",
+        delta: { romi: -12, budget: 0, conv: 4, score: 65 }, isOptimal: false,
         trap: "Паника + снижение цены = долгосрочный ущерб бренду",
       },
     ],
   },
   {
-    id: 3, day: 15, phase: "LIVE", crisis: true, difficulty: "NIGHTMARE",
-    title: "⚠ КРИЗИС: ТЕХНИЧЕСКИЙ СБОЙ НА ВЕБИНАРЕ",
-    situation: "Вебинар идёт. 380 человек онлайн. На 23-й минуте — сбой стриминга. Чат: 'ничего не слышно', 'экран завис', 'возврат денег'. Технический отдел говорит: починим за 20–40 минут. Ты ведущий и CMO одновременно. Таймер: 90 секунд на решение.",
-    metrics: "Онлайн: 380 | Сбой: 23 мин | Время до починки: 20–40 мин",
-    insight: "Гипотеза: Честность + немедленный переход в резервный канал сохраняет 70–80% аудитории. Молчание и ожидание — теряешь всех",
+    id: 3, day: 15, phase: "ПРЯМОЙ ЭФИР", crisis: true, difficulty: "NIGHTMARE",
+    title: "⚠ КРИЗИС: Технический сбой на вебинаре",
+    situation: "Вебинар идёт. 360 человек онлайн в Bizon365. На 21-й минуте — сбой трансляции. Чат: «ничего не слышно», «экран завис», «хочу возврат». Технический отдел: починим за 25–40 минут. Ты ведущий и CMO одновременно. У тебя 90 секунд на решение.",
+    metrics: "Онлайн: 360 | Платформа: Bizon365 | Сбой: 21 мин | Время починки: 25–40 мин",
+    insight: "Гипотеза: Честность + немедленный переход в резервный канал (Telegram-трансляция) сохраняет 70–80% аудитории. Молчание и ожидание — теряешь всех",
     options: [
       {
         label: "Telegram-трансляция + честное объяснение",
-        icon: "✈️", detail: "Немедленно: «Переходим в Telegram @channel — продолжаем там»",
-        consequence: "310 из 380 перешли в Telegram. Вебинар продолжился через 4 минуты. Аудитория оценила честность — конверсия выросла до 6.1% (эффект сочувствия).",
-        delta: { romi: 30, budget: -5000, conv: 12, score: 460 }, isOptimal: true,
+        icon: "📱",
+        detail: "Немедленно: «Технические проблемы — переходим в Telegram @channel, продолжаем там через 3 минуты»",
+        consequence: "295 из 360 перешли в Telegram. Вебинар продолжился через 5 минут. Аудитория оценила честность — конверсия выросла до 6.4% (эффект сочувствия и доверия).",
+        delta: { romi: 32, budget: -4000, conv: 13, score: 480 }, isOptimal: true,
       },
       {
         label: "Молчать, ждать починки 30 минут",
-        icon: "⏳", detail: "Ничего не делать, ждать технарей",
-        consequence: "За 30 минут ушло 290 человек. Осталось 90. Конверсия 0.4%. Репутационный ущерб в соцсетях.",
-        delta: { romi: -30, budget: -20000, conv: -8, score: 15 }, isOptimal: false,
-        trap: "Молчание в кризис = потеря доверия",
+        icon: "⏳",
+        detail: "Ничего не делать, ждать технарей без объяснений аудитории",
+        consequence: "За 30 минут ушло 280 человек. Осталось 80. Конверсия 0.3%. Негативные отзывы в EdTech-сообществах ВКонтакте и Telegram.",
+        delta: { romi: -32, budget: -18000, conv: -9, score: 10 }, isOptimal: false,
+        trap: "Молчание в кризис = потеря доверия навсегда",
       },
       {
         label: "Перенести вебинар на следующий день",
-        icon: "📅", detail: "Объявить перенос и попросить прийти завтра",
-        consequence: "Пришло 140 из 380 на следующий день. Конверсия 2.1%. Потеряли 60% аудитории.",
-        delta: { romi: -15, budget: -15000, conv: -3, score: 90 }, isOptimal: false,
+        icon: "📅",
+        detail: "Объявить перенос и попросить прийти завтра в то же время",
+        consequence: "Пришло 130 из 360 на следующий день. Конверсия 1.9%. Потеряли 64% аудитории — у людей другие планы.",
+        delta: { romi: -18, budget: -12000, conv: -4, score: 85 }, isOptimal: false,
       },
       {
         label: "Записать и отправить запись всем",
-        icon: "🎬", detail: "Остановить вебинар, прислать запись позже",
-        consequence: "Запись посмотрели 45%. Конверсия с записи 0.6%. Потеряли живую энергию вебинара.",
-        delta: { romi: -5, budget: -8000, conv: 1, score: 110 }, isOptimal: false,
+        icon: "🎬",
+        detail: "Остановить вебинар, записать и прислать запись на email",
+        consequence: "Запись посмотрели 38%. Конверсия с записи 0.5%. Потеряли живую энергию вебинара и срочность покупки.",
+        delta: { romi: -8, budget: -6000, conv: 0, score: 100 }, isOptimal: false,
       },
     ],
   },
   {
-    id: 4, day: 19, phase: "POST", difficulty: "EXPERT",
-    title: "ДОЖИМ: АВТОВОРОНКА ПОСЛЕ ВЕБИНАРА",
-    situation: "Вебинар завершён. 380 участников. Купили сразу: 12 человек (3.2%). Осталось 368 «тёплых» лидов. Исторически: 40% решений принимается в течение 7 дней после вебинара. Бюджет на дожим: 50К. Задача: максимизировать конверсию из оставшихся лидов.",
-    metrics: "Лидов: 368 | Купили сразу: 3.2% | Бюджет дожима: 50К",
-    insight: "Гипотеза: OTO 990₽ + сегментированная автоворонка 7 дней по типу возражения = +5–8% к конверсии. Один оффер для всех — теряешь половину потенциала",
+    id: 4, day: 19, phase: "ДОЖИМ", difficulty: "EXPERT",
+    title: "Дожим: 368 тёплых лидов ждут",
+    situation: "Вебинар завершён. 360 участников. Купили сразу: 11 человек (3.1%). Осталось 349 «тёплых» лидов. По данным российского EdTech рынка 2026: 42% решений принимается в течение 7 дней после вебинара. Бюджет на дожим: 45К ₽. Задача: максимизировать конверсию из оставшихся лидов.",
+    metrics: "Лидов: 349 | Купили сразу: 3.1% | Бюджет дожима: 45К ₽ | Окно: 7 дней",
+    insight: "Гипотеза: OTO за 990 ₽ + сегментированная автоворонка 7 дней по типу возражения = +5–9% к конверсии. Один оффер для всех — теряешь половину потенциала",
     options: [
       {
-        label: "OTO 990₽ + сегментация по возражениям",
-        icon: "🎯", detail: "OTO сразу после вебинара. Автоворонка: сегменты «дорого», «не сейчас», «не уверен» — разные цепочки",
-        consequence: "OTO купили 28% (103 чел). Из них 19% дошли до флагмана. Сегментированная цепочка добрала ещё 22 продажи. Итого конверсия: 9.4%. ROMI 280%.",
-        delta: { romi: 65, budget: -35000, conv: 28, score: 620 }, isOptimal: true,
+        label: "OTO 990 ₽ + сегментация по возражениям",
+        icon: "🎯",
+        detail: "OTO сразу после вебинара. Автоворонка: сегменты «дорого», «не сейчас», «не уверен» — разные цепочки в Telegram-боте",
+        consequence: "OTO купили 26% (91 чел). Из них 21% дошли до флагмана. Сегментированная цепочка добрала ещё 24 продажи. Итого конверсия: 9.8%. ROMI 290%.",
+        delta: { romi: 68, budget: -32000, conv: 29, score: 640 }, isOptimal: true,
       },
       {
-        label: "Ретаргетинг на всех участников",
-        icon: "🔁", detail: "Запустить ретаргетинг в Facebook/VK на всех 368 лидов",
-        consequence: "Потратили 50К на ретаргетинг. Конверсия +1.8%. Лиды уже видели рекламу — баннерная слепота. Дорого и неэффективно.",
-        delta: { romi: 5, budget: -50000, conv: 4, score: 100 }, isOptimal: false,
+        label: "Ретаргетинг в Яндекс.Аудиториях",
+        icon: "🔁",
+        detail: "Запустить ретаргетинг в Яндекс.Директ на всех 349 лидов через загрузку базы",
+        consequence: "Потратили 45К ₽ на ретаргетинг. Конверсия +1.6%. Лиды уже видели рекламу — баннерная слепота. Дорого и неэффективно для тёплой базы.",
+        delta: { romi: 4, budget: -45000, conv: 3, score: 95 }, isOptimal: false,
         trap: "Ретаргетинг не заменяет персональную коммуникацию",
       },
       {
-        label: "Скидка 35% на флагман 48 часов",
-        icon: "⚡", detail: "Дедлайн-оффер: скидка 35% только 48 часов",
-        consequence: "Продали 18 флагманов. Выручка выросла, но маржа упала на 35%. Аудитория теперь ждёт скидок на каждый запуск.",
-        delta: { romi: 10, budget: 0, conv: 8, score: 130 }, isOptimal: false,
+        label: "Скидка 30% на флагман на 48 часов",
+        icon: "⚡",
+        detail: "Дедлайн-оффер: скидка 30% только 48 часов для участников вебинара",
+        consequence: "Продали 16 флагманов. Выручка выросла, но маржа упала на 30%. Аудитория теперь ждёт скидок на каждый следующий запуск.",
+        delta: { romi: 9, budget: 0, conv: 7, score: 125 }, isOptimal: false,
       },
       {
         label: "Личные звонки топ-50 лидам",
-        icon: "🤝", detail: "Отдел продаж звонит 50 самым активным участникам",
-        consequence: "Закрыли 14 сделок. Хороший результат, но не масштабируется. Остальные 318 лидов не охвачены.",
-        delta: { romi: 20, budget: -40000, conv: 6, score: 200 }, isOptimal: false,
+        icon: "🤝",
+        detail: "Отдел продаж звонит 50 самым активным участникам (смотрели 80%+ вебинара)",
+        consequence: "Закрыли 13 сделок. Хороший результат, но не масштабируется. Остальные 299 лидов не охвачены — деньги остались на столе.",
+        delta: { romi: 18, budget: -38000, conv: 5, score: 195 }, isOptimal: false,
       },
     ],
   },
   {
-    id: 5, day: 23, phase: "POST", crisis: true, difficulty: "NIGHTMARE",
-    title: "⚠ CEO-МИТИНГ: ЗАЩИТА БЮДЖЕТА",
-    situation: "Квартальный отчёт. ROMI запуска: 140% (план был 200%). CEO: «Почему не выполнили план? Предлагаю урезать маркетинговый бюджет на 40% и перевести деньги в продажи». Совет директоров смотрит на тебя. У тебя 2 минуты на ответ.",
-    metrics: "ROMI факт: 140% | ROMI план: 200% | Под угрозой: 40% бюджета",
-    insight: "Гипотеза: Данные + конкретный план роста + бенчмарки рынка убеждают CEO лучше, чем эмоции. Атрибуция и unit-экономика — язык CEO",
+    id: 5, day: 23, phase: "ОТЧЁТНОСТЬ", crisis: true, difficulty: "NIGHTMARE",
+    title: "⚠ CEO-митинг: защита маркетингового бюджета",
+    situation: "Квартальный отчёт. ROMI запуска: 145% (план был 200%). CEO: «Почему не выполнили план? Предлагаю урезать маркетинговый бюджет на 40% и перевести деньги в отдел продаж». Совет директоров смотрит на тебя. У тебя 2 минуты на ответ.",
+    metrics: "ROMI факт: 145% | ROMI план: 200% | Под угрозой: 40% бюджета | Бенчмарк рынка: 120%",
+    insight: "Гипотеза: Данные + конкретный план роста + бенчмарки российского EdTech рынка убеждают CEO лучше, чем эмоции. Unit-экономика и LTV/CAC — язык CEO",
     options: [
       {
-        label: "Unit-экономика + план на 200%+ в Q2",
-        icon: "📊", detail: "Показать: LTV/CAC = 4.2x, бенчмарк рынка 120%, наш результат 140%. Конкретный план: 3 оптимизации → 200%+ в Q2",
-        consequence: "CEO: «Убедил. Оставляем бюджет и добавляем 20% на тест новых каналов». Совет одобрил план. Следующий запуск с увеличенным бюджетом.",
-        delta: { romi: 25, budget: 200000, conv: 5, score: 560 }, isOptimal: true,
+        label: "Unit-экономика + конкретный план на 200%+ в Q2",
+        icon: "📊",
+        detail: "Показать: LTV/CAC = 4.1x, бенчмарк российского EdTech 2026 = 120%, наш результат = 145%. Конкретный план: 3 оптимизации → 200%+ в Q2",
+        consequence: "CEO: «Убедил. Оставляем бюджет и добавляем 15% на тест новых каналов». Совет одобрил план. Следующий запуск с увеличенным бюджетом.",
+        delta: { romi: 28, budget: 180000, conv: 6, score: 580 }, isOptimal: true,
       },
       {
         label: "Объяснить провалом внешних факторов",
-        icon: "🌧️", detail: "«Конкурент демпинговал, рынок просел, сезонность»",
-        consequence: "CEO: «Маркетинг не контролирует результат — зачем нам такой маркетинг?» Бюджет урезан на 50%.",
-        delta: { romi: -20, budget: -200000, conv: -3, score: 20 }, isOptimal: false,
+        icon: "🌧️",
+        detail: "«Конкурент демпинговал, рынок просел, сезонность в EdTech»",
+        consequence: "CEO: «Маркетинг не контролирует результат — зачем нам такой маркетинг?» Бюджет урезан на 50%. Тебя предупредили.",
+        delta: { romi: -22, budget: -200000, conv: -4, score: 18 }, isOptimal: false,
         trap: "Внешние факторы — признак отсутствия ответственности",
       },
       {
         label: "Согласиться с урезанием бюджета",
-        icon: "😔", detail: "«Да, мы не справились, принимаем решение»",
-        consequence: "Бюджет урезан на 40%. Следующий запуск провален из-за нехватки трафика. Тебя заменяют через квартал.",
-        delta: { romi: -15, budget: -160000, conv: -5, score: 10 }, isOptimal: false,
+        icon: "😔",
+        detail: "«Да, мы не справились, принимаем решение об урезании»",
+        consequence: "Бюджет урезан на 40%. Следующий запуск провален из-за нехватки трафика. Через квартал тебя заменяют.",
+        delta: { romi: -18, budget: -160000, conv: -6, score: 8 }, isOptimal: false,
       },
       {
-        label: "Предложить перевести всё в performance",
-        icon: "🎯", detail: "«Давайте перейдём на CPA-модель, платим только за результат»",
-        consequence: "CEO заинтересован, но CPA-агентства берут 40% маржи. ROMI упал ещё ниже. Потеряли контроль над воронкой.",
-        delta: { romi: -8, budget: -80000, conv: 2, score: 75 }, isOptimal: false,
+        label: "Предложить перейти на CPA-модель",
+        icon: "🎯",
+        detail: "«Давайте перейдём на CPA-модель с агентством — платим только за результат»",
+        consequence: "CEO заинтересован, но CPA-агентства берут 35–45% маржи. ROMI упал ещё ниже. Потеряли контроль над воронкой и данными.",
+        delta: { romi: -10, budget: -75000, conv: 1, score: 70 }, isOptimal: false,
       },
     ],
   },
   {
-    id: 6, day: 28, phase: "SCALE", difficulty: "EXPERT",
-    title: "СТРАТЕГИЯ МАСШТАБИРОВАНИЯ",
-    situation: "Первый запуск завершён. ROMI 140–280% в зависимости от твоих решений. CEO доволен (или нет). Теперь нужно выбрать стратегию на следующие 6 месяцев. Бюджет: 2М ₽. Команда: 5 человек. Цель: x3 к выручке.",
-    metrics: "Бюджет: 2М | Команда: 5 чел | Цель: x3 выручка",
-    insight: "Гипотеза: Продуктовая линейка OTO→Флагман→Апселл + автоматизация воронки = окупаемость трафика с первого касания и x3 к LTV",
+    id: 6, day: 28, phase: "МАСШТАБ", difficulty: "EXPERT",
+    title: "Стратегия масштабирования на 6 месяцев",
+    situation: "Первый запуск завершён. ROMI 145–290% в зависимости от твоих решений. CEO доволен (или нет). Теперь нужно выбрать стратегию на следующие 6 месяцев. Бюджет: 1.8М ₽. Команда: 5 человек. Цель: x3 к выручке. Российский EdTech рынок в 2026 году: рост 28% год к году, средний чек корпоративного обучения — 85–150К ₽.",
+    metrics: "Бюджет: 1.8М ₽ | Команда: 5 чел | Цель: x3 выручка | Рынок: +28% г/г",
+    insight: "Гипотеза: Продуктовая линейка OTO→Флагман→Апселл + автоматизация воронки = окупаемость трафика с первого касания и x3 к LTV за 6 месяцев",
     options: [
       {
-        label: "Продуктовая линейка + автоматизация",
-        icon: "🏗️", detail: "OTO 990₽ → Флагман 60К → Апселл 120К. Автоворонка на каждый этап. Трафик окупается с OTO.",
-        consequence: "За 6 месяцев: LTV вырос в 3.2 раза. Трафик окупается с первого касания. ROMI 340%. Команда работает на автопилоте. CEO предлагает удвоить бюджет.",
-        delta: { romi: 75, budget: -150000, conv: 30, score: 700 }, isOptimal: true,
+        label: "Продуктовая линейка + автоматизация воронки",
+        icon: "🏗️",
+        detail: "OTO 990 ₽ → Флагман 95К ₽ → Апселл 180К ₽. Автоворонка на каждый этап. Трафик окупается с OTO.",
+        consequence: "За 6 месяцев: LTV вырос в 3.4 раза. Трафик окупается с первого касания. ROMI 360%. Команда работает на автопилоте. CEO предлагает удвоить бюджет на Q3.",
+        delta: { romi: 80, budget: -140000, conv: 32, score: 720 }, isOptimal: true,
       },
       {
-        label: "Удвоить бюджет на текущий канал",
-        icon: "🚀", detail: "Влить 2М в Facebook Ads на проверенную воронку",
-        consequence: "При масштабировании CPM вырос в 2.4 раза. ROMI упал с 140% до 80%. Алгоритмы Facebook не справляются с резким ростом бюджета.",
-        delta: { romi: -25, budget: -2000000, conv: 5, score: 50 }, isOptimal: false,
+        label: "Удвоить бюджет на Яндекс.Директ",
+        icon: "🚀",
+        detail: "Влить 1.8М ₽ в Яндекс.Директ на проверенную воронку без изменений",
+        consequence: "При масштабировании CPM вырос в 2.2 раза. ROMI упал с 145% до 75%. Алгоритмы Яндекса не справляются с резким ростом бюджета без оптимизации.",
+        delta: { romi: -28, budget: -1800000, conv: 4, score: 45 }, isOptimal: false,
         trap: "Масштабирование без оптимизации воронки = сжигание денег",
       },
       {
         label: "Нанять 3 новых маркетологов",
-        icon: "👥", detail: "Расширить команду: таргетолог, контент, аналитик",
-        consequence: "ФОТ вырос на 600К/год. Результат через 3 месяца — +15% к выручке. Проблема не в людях, а в системе воронки.",
-        delta: { romi: 5, budget: -600000, conv: 8, score: 90 }, isOptimal: false,
+        icon: "👥",
+        detail: "Расширить команду: таргетолог, контент-маркетолог, аналитик данных",
+        consequence: "ФОТ вырос на 720К ₽/год. Результат через 3 месяца — +12% к выручке. Проблема не в людях, а в системе воронки и продуктовой линейке.",
+        delta: { romi: 4, budget: -720000, conv: 7, score: 85 }, isOptimal: false,
       },
       {
-        label: "Диверсификация: 5 новых каналов",
-        icon: "🌐", detail: "Тестировать: YouTube, Яндекс, TikTok, Telegram, SEO одновременно",
-        consequence: "Распылили бюджет по 5 каналам. Ни один не получил достаточно данных для оптимизации. Через 3 месяца — хаос и нет результата.",
-        delta: { romi: -5, budget: -500000, conv: 3, score: 80 }, isOptimal: false,
+        label: "Диверсификация: 5 новых каналов одновременно",
+        icon: "🌐",
+        detail: "Тестировать параллельно: YouTube, Яндекс.Дзен, TenChat, Telegram Ads, ВКонтакте",
+        consequence: "Распылили бюджет по 5 каналам. Ни один не получил достаточно данных для оптимизации. Через 3 месяца — хаос в аналитике и нет результата.",
+        delta: { romi: -6, budget: -480000, conv: 2, score: 75 }, isOptimal: false,
         trap: "Диверсификация без фокуса = диверсификация провала",
       },
     ],
   },
 ];
 
-// ─── MAIN ─────────────────────────────────────────────────────────────────────
+// ─── MAIN COMPONENT ────────────────────────────────────────────────────────────
 type Screen = "intro" | "game" | "end";
+
+const C = {
+  bg: "#0a0a0a",
+  card: "#111111",
+  cardBorder: "#1e1e1e",
+  red: "#ff2d20",
+  redGlow: "rgba(255,45,32,0.25)",
+  text: "#f5f5f0",
+  muted: "rgba(245,245,240,0.5)",
+  green: "#22c55e",
+  yellow: "#facc15",
+  blue: "#60a5fa",
+  orange: "#fb923c",
+};
 
 export default function GamePage() {
   const [screen, setScreen] = useState<Screen>("intro");
@@ -633,6 +586,7 @@ export default function GamePage() {
   const [timerOn, setTimerOn] = useState(false);
   const [scoreAnim, setScoreAnim] = useState({ val: 0, show: false });
   const burstId = useRef(0);
+  const { playing: musicPlaying, toggle: toggleMusic } = useGameMusic();
 
   const scene = SCENES[Math.min(idx, SCENES.length - 1)];
   const isCrisis = scene?.crisis ?? false;
@@ -640,10 +594,10 @@ export default function GamePage() {
   const progress = (idx / SCENES.length) * 100;
 
   const { out: typeOut, done: typeDone } = useTypewriter(
-    screen === "game" ? scene.situation : "", 18
+    screen === "game" ? scene.situation : "", 20
   );
 
-  const timerSecs = isCrisis ? 18 : 40;
+  const timerSecs = isCrisis ? 20 : 45;
   const handleTimerEnd = useCallback(() => {
     if (chosen !== null) return;
     const worst = scene.options.reduce((wi, o, i) =>
@@ -671,18 +625,24 @@ export default function GamePage() {
     setChosen(i);
     setTimerOn(false);
     const opt = scene.options[i];
-    const isOk = opt.isOptimal;
-    const mult = isOk ? Math.min(combo + 1, 6) : 1;
-    const earned = isOk ? opt.delta.score * mult : Math.floor(opt.delta.score * 0.25);
-    setBudget(b => Math.max(0, b + opt.delta.budget));
-    setRomi(r => Math.max(-100, r + opt.delta.romi));
-    setConv(c => Math.max(0, c + opt.delta.conv));
-    setScore(s => s + earned);
-    if (isOk) setCombo(c => c + 1);
-    else { setCombo(0); if (!forced) setLives(l => Math.max(0, l - 1)); }
-    setScoreAnim({ val: earned, show: true });
-    setTimeout(() => setScoreAnim(a => ({ ...a, show: false })), 1400);
-    setShowRes(true);
+    const isGood = opt.isOptimal;
+    const comboMult = isGood ? Math.max(1, combo) : 1;
+    const pts = Math.round(opt.delta.score * (isGood ? comboMult : 1));
+
+    setBudget(b => b + opt.delta.budget);
+    setRomi(r => r + opt.delta.romi);
+    setConv(c => c + opt.delta.conv);
+    setScore(s => s + pts);
+    setScoreAnim({ val: pts, show: true });
+    setTimeout(() => setScoreAnim(a => ({ ...a, show: false })), 1200);
+
+    if (isGood) {
+      setCombo(c => c + 1);
+    } else {
+      setCombo(0);
+      if (!forced) setLives(l => Math.max(0, l - 1));
+    }
+    setTimeout(() => setShowRes(true), 200);
   }
 
   function next() {
@@ -693,8 +653,17 @@ export default function GamePage() {
   }
 
   function restart() {
-    setScreen("intro"); setIdx(0); setBudget(500000); setRomi(0); setConv(0);
-    setScore(0); setLives(3); setCombo(0); setChosen(null); setShowRes(false); setFormSent(false);
+    setScreen("intro");
+    setIdx(0);
+    setBudget(500000);
+    setRomi(0);
+    setConv(0);
+    setScore(0);
+    setLives(3);
+    setCombo(0);
+    setChosen(null);
+    setShowRes(false);
+    setFormSent(false);
   }
 
   async function submitForm(e: React.FormEvent) {
@@ -702,183 +671,198 @@ export default function GamePage() {
     setFormLoading(true);
     try {
       await fetch("/api/game-leads", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, score, romi, budget }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, score, romi }),
       });
-    } catch { /* ignore */ }
-    setFormSent(true);
+      setFormSent(true);
+    } catch {
+      setFormSent(true);
+    }
     setFormLoading(false);
   }
 
   const isWin = romi >= 80 && lives > 0;
   const timerPct = (timeLeft / timerSecs) * 100;
   const timerColor = timeLeft <= 5 ? C.red : timeLeft <= 12 ? C.yellow : C.green;
-  const diffColor = { HARD: C.yellow, EXPERT: C.orange, NIGHTMARE: C.red };
+  const diffColor: Record<string, string> = { HARD: C.yellow, EXPERT: C.orange, NIGHTMARE: C.red };
 
   const css = `
-    @import url('${FONT_URL}');
     * { box-sizing: border-box; }
-    body { margin: 0; background: ${C.bg}; overflow-x: hidden; }
+    body { margin: 0; background: ${C.bg}; overflow-x: hidden; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; }
 
     @keyframes burstOut { to { transform: translate(var(--tx),var(--ty)) scale(0); opacity:0; } }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-    @keyframes floatUp { 0%{opacity:1;transform:translateX(-50%) translateY(0)} 100%{opacity:0;transform:translateX(-50%) translateY(-60px)} }
-    @keyframes introGlow { 0%,100%{text-shadow:0 0 12px ${C.red},0 0 24px ${C.red}44} 50%{text-shadow:0 0 24px ${C.red},0 0 48px ${C.red},0 0 72px ${C.red}44} }
-    @keyframes pixelBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-    @keyframes pixelFloat { 0%,100%{transform:translateY(0) rotate(0deg)} 33%{transform:translateY(-8px) rotate(-2deg)} 66%{transform:translateY(-4px) rotate(2deg)} }
     @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
     @keyframes slideL { from{opacity:0;transform:translateX(-20px)} to{opacity:1;transform:translateX(0)} }
     @keyframes slideR { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
-    @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-5px)} 40%,80%{transform:translateX(5px)} }
-    @keyframes crisisPulse { 0%,100%{box-shadow:0 0 20px ${C.redGlow},inset 0 0 20px ${C.redMid}} 50%{box-shadow:0 0 40px rgba(255,45,32,0.6),inset 0 0 40px rgba(255,45,32,0.2)} }
-    @keyframes comboAnim { 0%{transform:scale(0);opacity:0} 60%{transform:scale(1.4)} 100%{transform:scale(1);opacity:1} }
-    @keyframes glitch { 0%,90%,100%{clip-path:none;transform:none} 91%{clip-path:inset(20% 0 40% 0);transform:skewX(-4deg)} 93%{clip-path:inset(60% 0 10% 0);transform:skewX(3deg)} 95%{clip-path:inset(40% 0 55% 0);transform:skewX(-2deg)} }
-    @keyframes scanH { from{top:-100%} to{top:200%} }
-    @keyframes borderMarch { 0%{border-color:${C.red}} 50%{border-color:#ff6b5b} 100%{border-color:${C.red}} }
-    @keyframes charIdle { 0%,100%{transform:translateY(0) scaleX(1)} 25%{transform:translateY(-3px) scaleX(0.97)} 75%{transform:translateY(1px) scaleX(1.03)} }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    @keyframes crisisBorder { 0%,100%{border-color:${C.red}} 50%{border-color:#ff6b5b} }
+    @keyframes scoreFloat { 0%{opacity:1;transform:translateX(-50%) translateY(0)} 100%{opacity:0;transform:translateX(-50%) translateY(-50px)} }
+    @keyframes introSlide { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes avatarBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    @keyframes glow { 0%,100%{box-shadow:0 0 20px ${C.redGlow}} 50%{box-shadow:0 0 40px rgba(255,45,32,0.4)} }
 
-    .pbtn {
-      font-family:'Press Start 2P',monospace;
-      background:${C.red};
-      color:#fff;
-      border:none;
-      outline:none;
-      box-shadow:4px 4px 0 ${C.redDark},0 0 16px ${C.redGlow};
-      cursor:pointer;
-      transition:transform .08s,box-shadow .08s;
-      image-rendering:pixelated;
+    .game-btn {
+      background: ${C.red};
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 14px 28px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      letter-spacing: 0.5px;
     }
-    .pbtn:hover { transform:translate(2px,2px); box-shadow:2px 2px 0 ${C.redDark},0 0 24px ${C.redGlow}; }
-    .pbtn:active { transform:translate(4px,4px); box-shadow:none; }
-    .pbtn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+    .game-btn:hover { background: #e8261a; transform: translateY(-1px); box-shadow: 0 4px 20px ${C.redGlow}; }
+    .game-btn:active { transform: translateY(0); }
+    .game-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .game-btn.secondary {
+      background: transparent;
+      border: 1.5px solid ${C.cardBorder};
+      color: ${C.text};
+    }
+    .game-btn.secondary:hover { border-color: ${C.red}; color: ${C.red}; background: rgba(255,45,32,0.05); }
 
-    .opt {
-      font-family:'Press Start 2P',monospace;
-      background:#0c0c0c;
-      color:${C.text};
-      border:2px solid #1e1e1e;
-      box-shadow:3px 3px 0 #0a0a0a;
-      cursor:pointer;
-      text-align:left;
-      width:100%;
-      transition:all .1s;
-      position:relative;
-      overflow:hidden;
+    .opt-btn {
+      background: ${C.card};
+      border: 1.5px solid ${C.cardBorder};
+      border-radius: 10px;
+      color: ${C.text};
+      font-family: inherit;
+      font-size: 14px;
+      text-align: left;
+      width: 100%;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+      overflow: hidden;
     }
-    .opt::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,transparent 50%,rgba(255,45,32,0.04)); pointer-events:none; }
-    .opt:not(.dis):hover { border-color:${C.red}; box-shadow:3px 3px 0 ${C.redDark},0 0 12px ${C.redGlow}; transform:translate(-2px,-2px); background:#120505; }
-    .opt.ok { border-color:${C.green}!important; box-shadow:3px 3px 0 #166534,0 0 16px ${C.greenGlow}!important; background:#040f07!important; }
-    .opt.bad { border-color:${C.red}!important; background:#0f0404!important; animation:shake .4s ease; }
-    .opt.dis { opacity:.3; cursor:not-allowed; }
+    .opt-btn:not(.disabled):hover {
+      border-color: ${C.red};
+      background: rgba(255,45,32,0.06);
+      transform: translateX(3px);
+    }
+    .opt-btn.correct {
+      border-color: ${C.green} !important;
+      background: rgba(34,197,94,0.08) !important;
+    }
+    .opt-btn.wrong {
+      border-color: ${C.red} !important;
+      background: rgba(255,45,32,0.08) !important;
+      animation: shake 0.4s ease;
+    }
+    .opt-btn.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
 
-    .inp {
-      font-family:'Press Start 2P',monospace;
-      font-size:8px;
-      background:#0c0c0c;
-      color:${C.text};
-      border:2px solid #222;
-      padding:12px;
-      width:100%;
-      outline:none;
-      transition:border-color .2s,box-shadow .2s;
+    .form-input {
+      background: ${C.card};
+      border: 1.5px solid ${C.cardBorder};
+      border-radius: 8px;
+      color: ${C.text};
+      font-family: inherit;
+      font-size: 15px;
+      padding: 12px 14px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
     }
-    .inp:focus { border-color:${C.red}; box-shadow:0 0 10px ${C.redGlow}; }
-    .inp::placeholder { color:#333; }
+    .form-input:focus { border-color: ${C.red}; }
+    .form-input::placeholder { color: rgba(245,245,240,0.25); }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: ${C.bg}; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
   `;
 
   // ── INTRO ─────────────────────────────────────────────────────────────────
   if (screen === "intro") return (
-    <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px 16px", position: "relative", overflow: "hidden" }}>
+    <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 16px", position: "relative", overflow: "hidden" }}>
       <style>{css}</style>
       <AnimatedBg crisis={false} />
-      <CRT />
 
-      <div style={{ position: "relative", zIndex: 10, maxWidth: 640, width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div style={{ position: "relative", zIndex: 10, maxWidth: 600, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", animation: "introSlide 0.6s ease" }}>
 
-        {/* Studio label */}
-        <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: "clamp(6px,1.5vw,8px)", color: C.muted, letterSpacing: 5, marginBottom: 20, textAlign: "center" }}>
-          ГИПОТЕЗА AGENCY PRESENTS
+        {/* Agency label */}
+        <div style={{ fontSize: 11, color: C.muted, letterSpacing: 4, marginBottom: 24, textTransform: "uppercase", fontWeight: 600 }}>
+          Гипотеза Agency · EdTech Simulator
         </div>
 
-        {/* Title with glitch */}
-        <div style={{ position: "relative", textAlign: "center", marginBottom: 6 }}>
-          <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: "clamp(28px,9vw,56px)", color: C.red, animation: "introGlow 2s ease-in-out infinite, glitch 6s steps(1) infinite", lineHeight: 1.1, letterSpacing: 2 }}>
+        {/* Title */}
+        <div style={{ textAlign: "center", marginBottom: 8 }}>
+          <div style={{ fontSize: "clamp(36px,9vw,64px)", fontWeight: 900, color: C.red, lineHeight: 1, letterSpacing: -1 }}>
             ВЕБИНАР
           </div>
-          <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: "clamp(28px,9vw,56px)", color: C.text, lineHeight: 1.1, letterSpacing: 2 }}>
+          <div style={{ fontSize: "clamp(36px,9vw,64px)", fontWeight: 900, color: C.text, lineHeight: 1, letterSpacing: -1 }}>
             РАШ
           </div>
         </div>
 
-        <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: "clamp(6px,1.8vw,8px)", color: C.muted, letterSpacing: 4, marginBottom: 36, textAlign: "center" }}>
-          CMO SIMULATOR v3.0
+        <div style={{ fontSize: 13, color: C.muted, letterSpacing: 3, marginBottom: 40, textTransform: "uppercase", fontWeight: 500 }}>
+          CMO Simulator · EdTech Russia 2026
         </div>
 
-        {/* Characters stage */}
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 24, marginBottom: 32, padding: "20px 32px", background: "#080808", border: `2px solid #1a1a1a`, boxShadow: `0 0 30px ${C.redMid}`, position: "relative", overflow: "hidden" }}>
-          {/* Stage floor */}
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, transparent, ${C.red}44, transparent)` }} />
-          {/* Spotlight CMO */}
-          <div style={{ position: "absolute", left: "20%", top: 0, width: 80, height: "100%", background: "radial-gradient(ellipse at 50% 0%, rgba(255,45,32,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
-          {/* Spotlight CEO */}
-          <div style={{ position: "absolute", right: "20%", top: 0, width: 80, height: "100%", background: "radial-gradient(ellipse at 50% 0%, rgba(250,204,21,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
-
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-            <div style={{ animation: "charIdle 2s ease-in-out infinite" }}>
-              <CMOChar mood="idle" scale={2.5} />
+        {/* Characters */}
+        <div style={{ display: "flex", alignItems: "center", gap: 32, marginBottom: 36, padding: "24px 40px", background: C.card, borderRadius: 16, border: `1px solid ${C.cardBorder}`, width: "100%" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, flex: 1 }}>
+            <div style={{ animation: "avatarBob 2s ease-in-out infinite" }}>
+              <CMOAvatar mood="idle" size={72} />
             </div>
-            <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.red }}>ВЫ — CMO</div>
+            <div style={{ fontSize: 12, color: C.red, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>Вы — CMO</div>
           </div>
 
-          <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 14, color: C.red, textShadow: `0 0 12px ${C.red}`, animation: "blink 1s steps(1) infinite", alignSelf: "center" }}>VS</div>
+          <div style={{ fontSize: 24, fontWeight: 900, color: C.red }}>VS</div>
 
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-            <div style={{ animation: "pixelFloat 3s ease-in-out infinite" }}>
-              <CEOChar angry={false} scale={2.5} />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, flex: 1 }}>
+            <div style={{ animation: "avatarBob 2.5s ease-in-out infinite 0.5s" }}>
+              <CEOAvatar angry={false} size={72} />
             </div>
-            <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.yellow }}>CEO-БОСС</div>
+            <div style={{ fontSize: 12, color: C.yellow, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>CEO-Босс</div>
           </div>
         </div>
 
         {/* Brief */}
-        <div style={{ border: `2px solid ${C.red}`, boxShadow: `0 0 24px ${C.redGlow}, 4px 4px 0 ${C.redDark}`, background: "#0c0c0c", padding: "18px 20px", marginBottom: 24, width: "100%", position: "relative" }}>
-          <div style={{ position: "absolute", top: -10, left: 16, background: C.bg, padding: "0 8px", fontFamily: "'Press Start 2P',monospace", fontSize: 8, color: C.red }}>БРИФИНГ</div>
-          {/* scan line effect */}
-          <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-            <div style={{ position: "absolute", left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${C.red}22, transparent)`, animation: "scanH 3s linear infinite" }} />
-          </div>
-          <p style={{ fontFamily: "'Press Start 2P',monospace", fontSize: "clamp(7px,2vw,8px)", color: C.text, lineHeight: 2.5, margin: 0, position: "relative" }}>
-            Ты — CMO онлайн-школы.<br />
-            <span style={{ color: C.red }}>30 дней. 500K бюджета. 7 кризисов.</span><br /><br />
-            Каждое решение — реальная ситуация.<br />
-            Таймер давит. CEO злится.<br />
-            Один неверный выбор — теряешь жизнь.<br /><br />
-            <span style={{ color: C.yellow }}>Сложность: EXPERT / NIGHTMARE</span>
+        <div style={{ background: C.card, borderRadius: 12, border: `1px solid ${C.cardBorder}`, padding: "20px 24px", marginBottom: 24, width: "100%" }}>
+          <div style={{ fontSize: 11, color: C.red, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Брифинг</div>
+          <p style={{ fontSize: 15, color: C.text, lineHeight: 1.7, margin: 0 }}>
+            Ты — CMO онлайн-школы в сфере корпоративного EdTech.<br />
+            <span style={{ color: C.red, fontWeight: 700 }}>30 дней. 500К ₽ бюджета. 7 реальных ситуаций.</span><br /><br />
+            Каждое решение — реальный кейс российского рынка 2026 года.
+            Таймер давит. CEO злится. Один неверный выбор — теряешь жизнь.
           </p>
+          <div style={{ marginTop: 14, padding: "10px 14px", background: "rgba(255,45,32,0.06)", borderRadius: 8, border: `1px solid rgba(255,45,32,0.2)` }}>
+            <span style={{ fontSize: 13, color: C.yellow, fontWeight: 600 }}>⚡ Сложность: EXPERT / NIGHTMARE</span>
+          </div>
         </div>
 
-        {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 28, width: "100%" }}>
+        {/* Stats grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 28, width: "100%" }}>
           {[
-            { icon: "💰", val: "500K ₽", lbl: "БЮДЖЕТ", c: C.yellow },
-            { icon: "⚡", val: "7", lbl: "СЦЕН.", c: C.red },
-            { icon: "♥", val: "3", lbl: "ЖИЗНИ", c: C.red },
-            { icon: "🔥", val: "x6", lbl: "МАКС COMBO", c: C.orange },
+            { icon: "💰", val: "500К ₽", lbl: "Бюджет", c: C.yellow },
+            { icon: "⚡", val: "7", lbl: "Сценариев", c: C.red },
+            { icon: "❤️", val: "3", lbl: "Жизни", c: C.red },
+            { icon: "🔥", val: "×6", lbl: "Макс комбо", c: C.orange },
           ].map(s => (
-            <div key={s.lbl} style={{ border: `2px solid ${s.c}33`, background: "#0c0c0c", padding: "10px 6px", textAlign: "center", boxShadow: `0 0 8px ${s.c}22` }}>
-              <div style={{ fontSize: 18, marginBottom: 4 }}>{s.icon}</div>
-              <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 10, color: s.c, marginBottom: 3 }}>{s.val}</div>
-              <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 5, color: C.muted }}>{s.lbl}</div>
+            <div key={s.lbl} style={{ background: C.card, borderRadius: 10, border: `1px solid ${C.cardBorder}`, padding: "12px 8px", textAlign: "center" }}>
+              <div style={{ fontSize: 20, marginBottom: 6 }}>{s.icon}</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: s.c, marginBottom: 2 }}>{s.val}</div>
+              <div style={{ fontSize: 11, color: C.muted }}>{s.lbl}</div>
             </div>
           ))}
         </div>
 
-        <button className="pbtn" style={{ fontSize: "clamp(10px,3vw,12px)", padding: "18px 52px", marginBottom: 14 }} onClick={() => setScreen("game")}>
-          <Blink>▶ НАЧАТЬ ИГРУ</Blink>
+        <button className="game-btn" style={{ fontSize: 17, padding: "16px 56px", marginBottom: 12, width: "100%" }} onClick={() => setScreen("game")}>
+          ▶ Начать игру
         </button>
 
-        <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.muted, textAlign: "center" }}>
-          Powered by ГИПОТЕЗА agency
+        <div style={{ fontSize: 12, color: C.muted, textAlign: "center" }}>
+          Powered by <span style={{ color: C.red, fontWeight: 700 }}>Гипотеза Agency</span>
         </div>
       </div>
     </div>
@@ -894,160 +878,206 @@ export default function GamePage() {
       <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
         <style>{css}</style>
         <AnimatedBg crisis={isCrisis} />
-        <CRT />
         <Bursts list={bursts} />
 
-        {/* ── HUD TOP ── */}
+        {/* Score float */}
+        {scoreAnim.show && (
+          <div style={{
+            position: "fixed", top: "20%", left: "50%", zIndex: 9999,
+            fontSize: 28, fontWeight: 900,
+            color: scoreAnim.val > 0 ? C.green : C.red,
+            animation: "scoreFloat 1.2s ease-out forwards",
+            pointerEvents: "none",
+            textShadow: `0 0 20px ${scoreAnim.val > 0 ? C.green : C.red}`,
+          }}>
+            {scoreAnim.val > 0 ? `+${scoreAnim.val}` : scoreAnim.val}
+          </div>
+        )}
+
+        {/* ── TOP BAR ── */}
         <div style={{
-          background: "#080808", borderBottom: `3px solid ${isCrisis ? C.red : "#1a1a1a"}`,
-          padding: "8px 14px", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
-          position: "relative", zIndex: 10,
-          animation: isCrisis ? "crisisPulse 1.2s ease-in-out infinite" : "none",
+          background: "rgba(10,10,10,0.95)",
+          backdropFilter: "blur(10px)",
+          borderBottom: `1px solid ${isCrisis ? C.red : C.cardBorder}`,
+          padding: "10px 16px",
+          display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+          position: "sticky", top: 0, zIndex: 100,
+          animation: isCrisis ? "crisisBorder 1.2s ease-in-out infinite" : "none",
         }}>
-          <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 9, color: C.red, textShadow: `0 0 8px ${C.red}`, letterSpacing: 2 }}>
+          {/* Logo */}
+          <div style={{ fontSize: 14, fontWeight: 800, color: C.red, letterSpacing: 1 }}>
             ВЕБИНАР РАШ
           </div>
 
-          {/* progress */}
-          <div style={{ flex: 1, minWidth: 60, height: 8, background: "#111", border: `1px solid #1e1e1e`, overflow: "hidden" }}>
-            <div style={{ width: `${progress}%`, height: "100%", background: C.red, boxShadow: `0 0 6px ${C.red}`, transition: "width .5s steps(14)" }} />
+          {/* Progress */}
+          <div style={{ flex: 1, minWidth: 60, height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
+            <div style={{ width: `${progress}%`, height: "100%", background: C.red, borderRadius: 2, transition: "width 0.5s ease", boxShadow: `0 0 8px ${C.red}` }} />
           </div>
 
-          <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 7, color: C.text }}>
-            ДЕНЬ {scene.day}/30
-          </div>
+          {/* Day */}
+          <div style={{ fontSize: 12, color: C.muted, fontWeight: 600 }}>День {scene.day}/30</div>
 
-          {/* lives */}
-          <div style={{ display: "flex", gap: 2 }}>
+          {/* Lives */}
+          <div style={{ display: "flex", gap: 3 }}>
             {[0, 1, 2].map(i => (
-              <span key={i} style={{ fontSize: 13, color: C.red, opacity: i < lives ? 1 : 0.12, textShadow: i < lives ? `0 0 8px ${C.red}` : "none", transition: "opacity .3s" }}>♥</span>
+              <span key={i} style={{ fontSize: 14, opacity: i < lives ? 1 : 0.15, transition: "opacity 0.3s" }}>❤️</span>
             ))}
           </div>
 
-          {/* combo */}
+          {/* Combo */}
           {combo >= 2 && (
-            <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 8, color: C.yellow, textShadow: `0 0 8px ${C.yellow}`, animation: "comboAnim .3s ease" }}>
-              x{combo}🔥
+            <div style={{ fontSize: 13, fontWeight: 800, color: C.yellow, padding: "2px 8px", background: "rgba(250,204,21,0.1)", borderRadius: 6, border: `1px solid rgba(250,204,21,0.3)` }}>
+              ×{combo} 🔥
             </div>
           )}
 
-          {/* score */}
-          <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 8, color: C.yellow }}>
-            {score.toLocaleString()}
+          {/* Score */}
+          <div style={{ fontSize: 14, fontWeight: 800, color: C.yellow }}>
+            {score.toLocaleString()} очков
           </div>
 
-          {/* difficulty */}
-          <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.bg, background: diffColor[scene.difficulty], padding: "3px 7px" }}>
+          {/* Difficulty badge */}
+          <div style={{ fontSize: 10, fontWeight: 700, color: "#000", background: diffColor[scene.difficulty], padding: "3px 8px", borderRadius: 4, letterSpacing: 0.5 }}>
             {scene.difficulty}
           </div>
 
-          {/* phase */}
-          <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: isCrisis ? C.red : C.muted, border: `1px solid ${isCrisis ? C.red : "#222"}`, padding: "3px 7px", animation: isCrisis ? "borderMarch 1s ease-in-out infinite" : "none" }}>
+          {/* Phase */}
+          <div style={{ fontSize: 11, fontWeight: 600, color: isCrisis ? C.red : C.muted, padding: "2px 8px", border: `1px solid ${isCrisis ? C.red : C.cardBorder}`, borderRadius: 4, animation: isCrisis ? "pulse 1s ease-in-out infinite" : "none" }}>
             {isCrisis ? "⚠ КРИЗИС" : scene.phase}
           </div>
+
+          {/* Music toggle */}
+          <button
+            onClick={toggleMusic}
+            style={{
+              background: musicPlaying ? "rgba(250,204,21,0.1)" : "transparent",
+              border: `1px solid ${musicPlaying ? "rgba(250,204,21,0.4)" : C.cardBorder}`,
+              borderRadius: 6,
+              color: musicPlaying ? C.yellow : C.muted,
+              padding: "4px 10px",
+              cursor: "pointer",
+              fontSize: 14,
+              transition: "all 0.2s",
+              lineHeight: 1,
+            }}
+            title={musicPlaying ? "Выключить музыку" : "Включить музыку"}
+          >
+            {musicPlaying ? "🎵" : "🔇"}
+          </button>
         </div>
 
-        {/* ── MAIN ── */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", maxWidth: 800, margin: "0 auto", width: "100%", padding: "12px 14px", gap: 12, position: "relative", zIndex: 10 }}>
+        {/* ── MAIN CONTENT ── */}
+        <div style={{ flex: 1, maxWidth: 760, margin: "0 auto", width: "100%", padding: "16px 16px 24px", display: "flex", flexDirection: "column", gap: 14, position: "relative", zIndex: 10 }}>
 
-          {/* Stat bars */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10 }}>
-            <Bar val={budget} max={500000} color={budget < 80000 ? C.red : C.yellow} label="БЮДЖЕТ" icon="💰" />
-            <Bar val={Math.max(0, romi)} max={200} color={romi >= 100 ? C.green : romi >= 50 ? C.yellow : C.red} label="ROMI %" icon="📈" />
-            <Bar val={conv} max={40} color={C.blue} label="КОНВЕРСИЯ" icon="🎯" />
+          {/* Metrics */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, background: C.card, borderRadius: 10, border: `1px solid ${C.cardBorder}`, padding: "14px 16px" }}>
+            <MetricBar val={budget} max={500000} color={budget < 80000 ? C.red : C.yellow} label="Бюджет" icon="💰" />
+            <MetricBar val={Math.max(0, romi)} max={200} color={romi >= 100 ? C.green : romi >= 50 ? C.yellow : C.red} label="ROMI %" icon="📈" />
+            <MetricBar val={conv} max={40} color={C.blue} label="Конверсия" icon="🎯" />
           </div>
 
           {/* Timer */}
           {chosen === null && typeDone && (
-            <div style={{ animation: "fadeUp .3s ease" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.muted }}>
-                  {isCrisis ? "⚠ КРИЗИС — РЕШАЙ БЫСТРО" : "⏱ ВРЕМЯ НА РЕШЕНИЕ"}
+            <div style={{ animation: "fadeUp 0.3s ease" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <span style={{ fontSize: 12, color: isCrisis ? C.red : C.muted, fontWeight: 600 }}>
+                  {isCrisis ? "⚠ КРИЗИС — РЕШАЙ БЫСТРО" : "⏱ Время на решение"}
                 </span>
-                <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 10, color: timerColor, textShadow: timeLeft <= 5 ? `0 0 8px ${C.red}` : "none", animation: timeLeft <= 5 ? "blink .4s steps(1) infinite" : "none" }}>
-                  {timeLeft}s
+                <span style={{ fontSize: 18, fontWeight: 900, color: timerColor, animation: timeLeft <= 5 ? "pulse 0.4s steps(1) infinite" : "none" }}>
+                  {timeLeft}с
                 </span>
               </div>
-              <div style={{ height: 10, background: "#080808", border: `2px solid ${timerColor}33`, overflow: "hidden" }}>
-                <div style={{ width: `${timerPct}%`, height: "100%", background: timerColor, boxShadow: `0 0 8px ${timerColor}`, transition: "width 1s linear, background .3s" }} />
+              <div style={{ height: 6, background: "rgba(255,255,255,0.06)", borderRadius: 3, overflow: "hidden" }}>
+                <div style={{ width: `${timerPct}%`, height: "100%", background: timerColor, borderRadius: 3, transition: "width 1s linear", boxShadow: `0 0 8px ${timerColor}66` }} />
               </div>
             </div>
           )}
 
           {/* Scene title */}
-          <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: "clamp(7px,2vw,9px)", color: isCrisis ? C.red : C.yellow, textShadow: isCrisis ? `0 0 8px ${C.red}` : "none", animation: "fadeUp .3s ease" }}>
+          <div style={{ fontSize: "clamp(16px,3vw,20px)", fontWeight: 800, color: isCrisis ? C.red : C.text, animation: "fadeUp 0.3s ease", lineHeight: 1.3 }}>
             {scene.title}
           </div>
 
-          {/* Characters + dialogue */}
-          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", animation: "fadeUp .4s ease" }}>
+          {/* Characters + Dialogue */}
+          <div style={{ display: "flex", gap: 12, alignItems: "flex-start", animation: "fadeUp 0.4s ease" }}>
             {/* CMO */}
-            <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-              <div style={{ animation: showRes ? "none" : "charIdle 2s ease-in-out infinite" }}>
-                <CMOChar mood={showRes ? (isGood ? "win" : "lose") : "think"} scale={1.8} />
+            <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+              <div style={{ animation: showRes ? "none" : "avatarBob 2s ease-in-out infinite" }}>
+                <CMOAvatar mood={showRes ? (isGood ? "win" : "lose") : "think"} size={56} />
               </div>
-              <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 5, color: C.muted }}>CMO</div>
+              <div style={{ fontSize: 10, color: C.muted, fontWeight: 600 }}>CMO</div>
             </div>
 
             {/* Dialogue box */}
             <div style={{
-              flex: 1, border: `2px solid ${isCrisis ? C.red : "#252525"}`,
-              boxShadow: isCrisis ? `0 0 20px ${C.redGlow}, 3px 3px 0 ${C.redDark}` : `3px 3px 0 #111`,
-              background: "#0c0c0c", padding: "12px 14px", position: "relative", overflow: "hidden",
-              animation: isCrisis ? "crisisPulse 1.5s ease-in-out infinite" : "none",
+              flex: 1,
+              background: C.card,
+              borderRadius: 12,
+              border: `1.5px solid ${isCrisis ? C.red : C.cardBorder}`,
+              padding: "16px 18px",
+              boxShadow: isCrisis ? `0 0 24px ${C.redGlow}` : "none",
+              animation: isCrisis ? "crisisBorder 1.5s ease-in-out infinite" : "none",
+              position: "relative",
             }}>
-              {/* bubble tail */}
-              <div style={{ position: "absolute", left: -8, top: 14, width: 0, height: 0, borderTop: "7px solid transparent", borderBottom: "7px solid transparent", borderRight: `8px solid ${isCrisis ? C.red : "#252525"}` }} />
-              {/* scan line */}
-              <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-                <div style={{ position: "absolute", left: 0, right: 0, height: 1, background: `linear-gradient(90deg,transparent,${C.red}18,transparent)`, animation: "scanH 4s linear infinite" }} />
-              </div>
+              {/* Speech bubble tail */}
+              <div style={{ position: "absolute", left: -8, top: 18, width: 0, height: 0, borderTop: "7px solid transparent", borderBottom: "7px solid transparent", borderRight: `8px solid ${isCrisis ? C.red : C.cardBorder}` }} />
+
               {isCrisis && (
-                <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 7, color: C.red, marginBottom: 8, textShadow: `0 0 8px ${C.red}`, animation: "blink .5s steps(1) infinite" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: C.red, marginBottom: 10, animation: "pulse 0.8s ease-in-out infinite", letterSpacing: 1 }}>
                   ⚠ КРИЗИСНАЯ СИТУАЦИЯ
                 </div>
               )}
-              <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: "clamp(6px,1.8vw,8px)", color: C.text, lineHeight: 2.4, position: "relative" }}>
+
+              <div style={{ fontSize: "clamp(13px,2vw,15px)", color: C.text, lineHeight: 1.75, fontWeight: 400 }}>
                 {typeOut}
-                {!typeDone && <Blink ms={350}>█</Blink>}
+                {!typeDone && <span style={{ animation: "pulse 0.6s steps(1) infinite" }}>|</span>}
               </div>
+
               {typeDone && (
-                <div style={{ marginTop: 10, padding: "8px 10px", background: "#080808", border: `1px solid #1a1a1a`, fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.muted, lineHeight: 2.2, animation: "fadeUp .4s ease" }}>
+                <div style={{ marginTop: 12, padding: "10px 12px", background: "rgba(255,255,255,0.04)", borderRadius: 8, fontSize: 12, color: C.muted, lineHeight: 1.7, animation: "fadeUp 0.4s ease", fontWeight: 500 }}>
                   📊 {scene.metrics}
                 </div>
               )}
             </div>
 
             {/* CEO */}
-            <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-              <div style={{ animation: "pixelFloat 2.5s ease-in-out infinite" }}>
-                <CEOChar angry={isCrisis || (showRes && !isGood)} scale={1.8} />
+            <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+              <div style={{ animation: "avatarBob 2.5s ease-in-out infinite 0.5s" }}>
+                <CEOAvatar angry={isCrisis || (showRes && !isGood)} size={56} />
               </div>
-              <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 5, color: C.muted }}>CEO</div>
+              <div style={{ fontSize: 10, color: C.muted, fontWeight: 600 }}>CEO</div>
             </div>
           </div>
 
           {/* Options */}
           {!showRes && typeDone && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 7, animation: "slideL .4s ease" }}>
-              <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.muted }}>▶ ВЫБЕРИТЕ СТРАТЕГИЮ:</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, animation: "slideL 0.4s ease" }}>
+              <div style={{ fontSize: 12, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>
+                ▶ Выберите стратегию:
+              </div>
               {scene.options.map((opt, i) => {
                 const letter = String.fromCharCode(65 + i);
                 return (
-                  <button key={i} className={`opt${chosen !== null ? " dis" : ""}`}
-                    style={{ padding: "10px 12px", fontSize: "clamp(6px,1.8vw,7px)", lineHeight: 2 }}
+                  <button
+                    key={i}
+                    className={`opt-btn${chosen !== null ? " disabled" : ""}`}
                     onClick={(e) => { spawnBurst(e.clientX, e.clientY, opt.isOptimal); pick(i); }}
-                    disabled={chosen !== null}>
-                    <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                      <span style={{ color: C.red, flexShrink: 0 }}>{letter}.</span>
-                      <span style={{ fontSize: 14, flexShrink: 0 }}>{opt.icon}</span>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ marginBottom: 3 }}>{opt.label}</div>
-                        <div style={{ fontSize: 6, color: C.muted, lineHeight: 1.8 }}>{opt.detail}</div>
+                    disabled={chosen !== null}
+                  >
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: 6, background: "rgba(255,45,32,0.1)", border: `1px solid rgba(255,45,32,0.3)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 13, fontWeight: 800, color: C.red }}>
+                        {letter}
                       </div>
-                      <span style={{ flexShrink: 0, fontSize: 6, color: opt.delta.budget < 0 ? C.red : C.muted }}>
-                        {opt.delta.budget !== 0 ? `${opt.delta.budget > 0 ? "+" : ""}${(opt.delta.budget / 1000).toFixed(0)}K` : ""}
-                      </span>
+                      <span style={{ fontSize: 18, flexShrink: 0 }}>{opt.icon}</span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4, color: C.text }}>{opt.label}</div>
+                        <div style={{ fontSize: 12, color: C.muted, lineHeight: 1.6 }}>{opt.detail}</div>
+                      </div>
+                      {opt.delta.budget !== 0 && (
+                        <div style={{ flexShrink: 0, fontSize: 12, fontWeight: 700, color: opt.delta.budget < 0 ? C.red : C.green, padding: "2px 8px", background: opt.delta.budget < 0 ? "rgba(255,45,32,0.1)" : "rgba(34,197,94,0.1)", borderRadius: 4 }}>
+                          {opt.delta.budget > 0 ? "+" : ""}{(opt.delta.budget / 1000).toFixed(0)}К
+                        </div>
+                      )}
                     </div>
                   </button>
                 );
@@ -1057,83 +1087,70 @@ export default function GamePage() {
 
           {/* Result */}
           {showRes && chosenOpt && (
-            <div style={{ animation: "fadeUp .4s ease", position: "relative" }}>
-              {/* Score popup */}
-              {scoreAnim.show && (
-                <div style={{ position: "absolute", top: -36, left: "50%", fontFamily: "'Press Start 2P',monospace", fontSize: 13, color: isGood ? C.green : C.red, textShadow: `0 0 10px ${isGood ? C.green : C.red}`, animation: "floatUp 1.2s ease-out forwards", pointerEvents: "none", zIndex: 100 }}>
-                  {scoreAnim.val > 0 ? `+${scoreAnim.val}` : scoreAnim.val}
+            <div style={{ animation: "fadeUp 0.4s ease" }}>
+              {/* Chosen option highlight */}
+              <div className={`opt-btn ${isGood ? "correct" : "wrong"}`} style={{ marginBottom: 12, cursor: "default" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <span style={{ fontSize: 20 }}>{isGood ? "✅" : "❌"}</span>
+                  <span style={{ fontSize: 14, fontWeight: 700 }}>{chosenOpt.label}</span>
+                  {combo >= 2 && isGood && (
+                    <span style={{ fontSize: 12, color: C.yellow, fontWeight: 700, padding: "2px 8px", background: "rgba(250,204,21,0.1)", borderRadius: 4 }}>
+                      КОМБО ×{combo}
+                    </span>
+                  )}
                 </div>
-              )}
-
-              {/* Chosen + optimal highlight */}
-              <div style={{ marginBottom: 8, display: "flex", flexDirection: "column", gap: 5 }}>
-                {scene.options.map((opt, i) => {
-                  const isChosen = i === chosen;
-                  const isOpt = opt.isOptimal;
-                  if (!isChosen && !isOpt) return null;
-                  return (
-                    <div key={i} className={`opt ${isOpt ? "ok" : "bad"}`} style={{ padding: "8px 12px", fontSize: 7, cursor: "default" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span>{opt.icon} {opt.label}</span>
-                        <span style={{ fontSize: 8, color: isOpt ? C.green : C.red }}>{isOpt ? "✓ ОПТИМАЛЬНО" : "✗ ОШИБКА"}</span>
-                      </div>
-                      {opt.trap && !isOpt && (
-                        <div style={{ marginTop: 5, fontSize: 6, color: C.red, opacity: 0.8 }}>⚠ {opt.trap}</div>
-                      )}
-                    </div>
-                  );
-                })}
+                <p style={{ fontSize: 14, color: C.text, lineHeight: 1.7, margin: 0 }}>{chosenOpt.consequence}</p>
+                {chosenOpt.trap && (
+                  <div style={{ marginTop: 10, padding: "8px 12px", background: "rgba(255,45,32,0.08)", borderRadius: 6, border: `1px solid rgba(255,45,32,0.2)`, fontSize: 12, color: C.red, fontWeight: 600 }}>
+                    ⚠ {chosenOpt.trap}
+                  </div>
+                )}
               </div>
 
-              {/* Consequence */}
-              <div style={{ border: `2px solid ${isGood ? C.green : C.red}`, boxShadow: `0 0 14px ${isGood ? C.greenGlow : C.redGlow}`, background: "#0a0a0a", padding: "12px 14px", marginBottom: 8 }}>
-                <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.muted, marginBottom: 7 }}>
-                  {isGood ? "✓ РЕЗУЛЬТАТ:" : "✗ ПОСЛЕДСТВИЯ:"}
+              {/* Insight */}
+              <div style={{ background: "rgba(255,45,32,0.05)", borderRadius: 10, border: `1px solid rgba(255,45,32,0.2)`, padding: "14px 16px", marginBottom: 12 }}>
+                <div style={{ fontSize: 11, color: C.red, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 }}>
+                  💡 Инсайт Гипотезы
                 </div>
-                <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: "clamp(6px,1.8vw,7px)", color: C.text, lineHeight: 2.4, marginBottom: 10 }}>
-                  {chosenOpt.consequence}
-                </div>
-                <div style={{ padding: "8px 10px", background: "#0c0c0c", border: `1px solid ${C.red}33`, fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.red, lineHeight: 2.2 }}>
-                  💡 {scene.insight}
-                </div>
+                <p style={{ fontSize: 13, color: C.text, lineHeight: 1.7, margin: 0 }}>{scene.insight}</p>
               </div>
 
-              {/* Delta */}
-              <div style={{ display: "flex", gap: 7, marginBottom: 10, flexWrap: "wrap" }}>
+              {/* Deltas */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 14 }}>
                 {[
                   { l: "ROMI", v: chosenOpt.delta.romi, s: "%" },
-                  { l: "БЮДЖЕТ", v: chosenOpt.delta.budget / 1000, s: "K" },
-                  { l: "КОНВЕРС.", v: chosenOpt.delta.conv, s: "%" },
-                  { l: "ОЧКИ", v: scoreAnim.val, s: "" },
+                  { l: "Бюджет", v: chosenOpt.delta.budget / 1000, s: "К" },
+                  { l: "Конверсия", v: chosenOpt.delta.conv, s: "%" },
+                  { l: "Очки", v: scoreAnim.val || chosenOpt.delta.score, s: "" },
                 ].map(d => (
-                  <div key={d.l} style={{ flex: 1, minWidth: 70, border: `1px solid #1a1a1a`, background: "#0c0c0c", padding: "7px 5px", textAlign: "center" }}>
-                    <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 5, color: C.muted, marginBottom: 4 }}>{d.l}</div>
-                    <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 10, color: d.v >= 0 ? C.green : C.red }}>
-                      {d.v >= 0 ? "+" : ""}{d.v.toFixed(0)}{d.s}
+                  <div key={d.l} style={{ background: C.card, borderRadius: 8, border: `1px solid ${C.cardBorder}`, padding: "10px 8px", textAlign: "center" }}>
+                    <div style={{ fontSize: 11, color: C.muted, marginBottom: 4, fontWeight: 500 }}>{d.l}</div>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: d.v > 0 ? C.green : d.v < 0 ? C.red : C.muted }}>
+                      {d.v > 0 ? "+" : ""}{d.v}{d.s}
                     </div>
                   </div>
                 ))}
               </div>
 
-              <button className="pbtn" style={{ fontSize: 8, padding: "13px 20px", width: "100%" }} onClick={next}>
-                {isLast || lives <= 0 ? "▶ ЗАВЕРШИТЬ ЗАПУСК" : `▶ ДЕНЬ ${SCENES[Math.min(idx + 1, SCENES.length - 1)]?.day || 30} →`}
+              <button className="game-btn" style={{ width: "100%" }} onClick={next}>
+                {isLast || lives <= 0 ? "▶ Завершить запуск" : `▶ День ${SCENES[Math.min(idx + 1, SCENES.length - 1)]?.day || 30} →`}
               </button>
             </div>
           )}
         </div>
 
-        {/* Bottom status bar */}
-        <div style={{ borderTop: `2px solid #141414`, padding: "7px 14px", display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap", position: "relative", zIndex: 10, background: "#060606" }}>
+        {/* Bottom status */}
+        <div style={{ borderTop: `1px solid ${C.cardBorder}`, padding: "8px 16px", display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", position: "sticky", bottom: 0, zIndex: 100, background: "rgba(10,10,10,0.95)", backdropFilter: "blur(10px)" }}>
           {[
-            { l: "БЮДЖЕТ", v: `${(budget / 1000).toFixed(0)}K ₽`, c: budget < 80000 ? C.red : C.yellow },
+            { l: "Бюджет", v: `${(budget / 1000).toFixed(0)}К ₽`, c: budget < 80000 ? C.red : C.yellow },
             { l: "ROMI", v: `${romi}%`, c: romi >= 100 ? C.green : romi >= 0 ? C.yellow : C.red },
-            { l: "КОНВЕРСИЯ", v: `${conv.toFixed(1)}%`, c: C.blue },
-            { l: "ОЧКИ", v: score.toLocaleString(), c: C.yellow },
-            { l: "COMBO", v: combo >= 2 ? `x${combo}🔥` : "—", c: C.orange },
+            { l: "Конверсия", v: `${conv.toFixed(1)}%`, c: C.blue },
+            { l: "Очки", v: score.toLocaleString(), c: C.yellow },
+            { l: "Комбо", v: combo >= 2 ? `×${combo} 🔥` : "—", c: C.orange },
           ].map(s => (
             <div key={s.l} style={{ textAlign: "center" }}>
-              <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 5, color: C.muted }}>{s.l}</div>
-              <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 8, color: s.c }}>{s.v}</div>
+              <div style={{ fontSize: 10, color: C.muted, fontWeight: 500 }}>{s.l}</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: s.c }}>{s.v}</div>
             </div>
           ))}
         </div>
@@ -1144,95 +1161,91 @@ export default function GamePage() {
   // ── END SCREEN ────────────────────────────────────────────────────────────
   const isNegative = score < 900;
   const rank =
-    score >= 2800 ? { title: "⭐⭐⭐ МАРКЕТИНГ-ЛЕГЕНДА", sub: "Ты переиграл CEO и рынок", c: C.green } :
-    score >= 1800 ? { title: "⭐⭐ СИЛЬНЫЙ CMO", sub: "CEO доволен. Бюджет сохранён", c: C.yellow } :
-    score >= 900  ? { title: "⭐ РАСТУЩИЙ CMO", sub: "Есть потенциал, но воронка дырявая", c: C.orange } :
-                    { title: "💀 СТАЖЁР МАРКЕТИНГА", sub: "CEO урезал бюджет. Ищи новую работу", c: C.red };
+    score >= 2800 ? { title: "🏆 Маркетинг-легенда", sub: "Ты переиграл CEO и рынок", c: C.green } :
+    score >= 1800 ? { title: "⭐⭐ Сильный CMO", sub: "CEO доволен. Бюджет сохранён", c: C.yellow } :
+    score >= 900  ? { title: "⭐ Растущий CMO", sub: "Есть потенциал, но воронка дырявая", c: C.orange } :
+                    { title: "💀 Стажёр маркетинга", sub: "CEO урезал бюджет. Ищи новую работу", c: C.red };
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", padding: "24px 16px", position: "relative", overflow: "hidden" }}>
+    <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", padding: "32px 16px", position: "relative", overflow: "hidden" }}>
       <style>{css}</style>
       <AnimatedBg crisis={!isWin} />
-      <CRT />
 
-      <div style={{ position: "relative", zIndex: 10, maxWidth: 640, width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div style={{ position: "relative", zIndex: 10, maxWidth: 600, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", animation: "introSlide 0.5s ease" }}>
 
-        <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: "clamp(13px,4.5vw,22px)", color: isWin ? C.green : C.red, textShadow: `0 0 16px ${isWin ? C.green : C.red}`, marginBottom: 6, textAlign: "center", animation: "introGlow 2s ease-in-out infinite" }}>
-          {isWin ? "ЗАПУСК УДАЛСЯ!" : "ПРОВАЛ ЗАПУСКА"}
+        <div style={{ fontSize: "clamp(24px,6vw,40px)", fontWeight: 900, color: isWin ? C.green : C.red, marginBottom: 6, textAlign: "center" }}>
+          {isWin ? "Запуск удался! 🎉" : "Провал запуска 💀"}
         </div>
-        <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 7, color: C.muted, marginBottom: 24, textAlign: "center" }}>
+        <div style={{ fontSize: 14, color: C.muted, marginBottom: 28, textAlign: "center", fontWeight: 500 }}>
           {isWin ? "Ты доказал CEO что маркетинг работает" : "CEO урезал бюджет. Следующий квартал под угрозой"}
         </div>
 
-        {/* Final character */}
-        <div style={{ marginBottom: 20, animation: "charIdle 1.5s ease-in-out infinite" }}>
-          <CMOChar mood={isWin ? "win" : "lose"} scale={3} />
+        {/* Final avatar */}
+        <div style={{ marginBottom: 24, animation: "avatarBob 1.5s ease-in-out infinite" }}>
+          <CMOAvatar mood={isWin ? "win" : "lose"} size={96} />
         </div>
 
         {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 10, width: "100%", marginBottom: 16 }}>
           {[
-            { l: "ИТОГОВЫЙ ROMI", v: `${romi}%`, c: romi >= 100 ? C.green : romi >= 50 ? C.yellow : C.red, i: "📈" },
-            { l: "ОСТАТОК БЮДЖЕТА", v: `${(budget / 1000).toFixed(0)}K ₽`, c: C.yellow, i: "💰" },
-            { l: "КОНВЕРСИЯ", v: `${conv.toFixed(1)}%`, c: C.blue, i: "🎯" },
-            { l: "ИТОГОВЫЙ СЧЁТ", v: score.toLocaleString(), c: C.yellow, i: "⭐" },
+            { l: "Итоговый ROMI", v: `${romi}%`, c: romi >= 100 ? C.green : romi >= 50 ? C.yellow : C.red, i: "📈" },
+            { l: "Остаток бюджета", v: `${(budget / 1000).toFixed(0)}К ₽`, c: C.yellow, i: "💰" },
+            { l: "Конверсия", v: `${conv.toFixed(1)}%`, c: C.blue, i: "🎯" },
+            { l: "Итоговый счёт", v: score.toLocaleString(), c: C.yellow, i: "⭐" },
           ].map(s => (
-            <div key={s.l} style={{ border: `2px solid ${s.c}44`, background: "#0c0c0c", padding: "14px", textAlign: "center", boxShadow: `0 0 12px ${s.c}22` }}>
-              <div style={{ fontSize: 20, marginBottom: 6 }}>{s.i}</div>
-              <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: "clamp(10px,3vw,14px)", color: s.c, marginBottom: 4 }}>{s.v}</div>
-              <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 5, color: C.muted }}>{s.l}</div>
+            <div key={s.l} style={{ background: C.card, borderRadius: 12, border: `1px solid ${C.cardBorder}`, padding: "16px", textAlign: "center" }}>
+              <div style={{ fontSize: 24, marginBottom: 8 }}>{s.i}</div>
+              <div style={{ fontSize: "clamp(18px,4vw,24px)", fontWeight: 900, color: s.c, marginBottom: 4 }}>{s.v}</div>
+              <div style={{ fontSize: 12, color: C.muted, fontWeight: 500 }}>{s.l}</div>
             </div>
           ))}
         </div>
 
         {/* Rank */}
-        <div style={{ border: `2px solid ${rank.c}`, background: "#0c0c0c", padding: "14px 20px", marginBottom: 16, width: "100%", textAlign: "center", boxShadow: `0 0 20px ${rank.c}44` }}>
-          <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.muted, marginBottom: 8 }}>РАНГ CMO</div>
-          <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: "clamp(8px,2.5vw,11px)", color: rank.c, marginBottom: 6 }}>{rank.title}</div>
-          <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.muted }}>{rank.sub}</div>
+        <div style={{ background: C.card, borderRadius: 12, border: `1.5px solid ${rank.c}44`, padding: "16px 20px", marginBottom: 16, width: "100%", textAlign: "center", boxShadow: `0 0 24px ${rank.c}22` }}>
+          <div style={{ fontSize: 11, color: C.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Ранг CMO</div>
+          <div style={{ fontSize: "clamp(16px,3.5vw,22px)", fontWeight: 800, color: rank.c, marginBottom: 6 }}>{rank.title}</div>
+          <div style={{ fontSize: 13, color: C.muted }}>{rank.sub}</div>
         </div>
 
         {/* Lead form */}
         {!formSent ? (
-          <div style={{ border: `2px solid ${C.red}`, background: "#0c0c0c", padding: "18px", width: "100%", marginBottom: 14, boxShadow: `0 0 24px ${C.redGlow}`, position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-              <div style={{ position: "absolute", left: 0, right: 0, height: 2, background: `linear-gradient(90deg,transparent,${C.red}22,transparent)`, animation: "scanH 3s linear infinite" }} />
+          <div style={{ background: C.card, borderRadius: 12, border: `1.5px solid ${C.red}44`, padding: "20px", width: "100%", marginBottom: 14, boxShadow: `0 0 28px ${C.redGlow}` }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: C.red, marginBottom: 6 }}>
+              {isNegative ? "Хочешь окупаемый запуск?" : "Хочешь такой ROMI в реальности?"}
             </div>
-            <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 8, color: C.red, marginBottom: 6, textShadow: `0 0 8px ${C.red}`, position: "relative" }}>
-              {isNegative ? "ХОЧЕШЬ ОКУПАЕМЫЙ ЗАПУСК?" : "ХОЧЕШЬ ТАКОЙ ROMI В РЕАЛЬНОСТИ?"}
-            </div>
-            <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.muted, marginBottom: 14, lineHeight: 2.2, position: "relative" }}>
+            <div style={{ fontSize: 14, color: C.muted, marginBottom: 16, lineHeight: 1.7 }}>
               {isNegative
-                ? <>Покажем как делать запуски с ROMI 200%+.<br />На реальных кейсах Гипотезы — без воды.</>
-                : <>Разберём твою воронку бесплатно за 30 минут.<br />Покажем где теряются деньги прямо сейчас.</>
+                ? "Покажем как делать запуски с ROMI 200%+. На реальных кейсах Гипотезы — без воды."
+                : "Разберём твою воронку бесплатно за 30 минут. Покажем где теряются деньги прямо сейчас."
               }
             </div>
-            <form onSubmit={submitForm} style={{ display: "flex", flexDirection: "column", gap: 9, position: "relative" }}>
-              <input className="inp" placeholder="ИМЯ" value={formData.name} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} required />
-              <input className="inp" placeholder="ТЕЛЕФОН" type="tel" value={formData.phone} onChange={e => setFormData(f => ({ ...f, phone: e.target.value }))} required />
-              <input className="inp" placeholder="EMAIL" type="email" value={formData.email} onChange={e => setFormData(f => ({ ...f, email: e.target.value }))} required />
-              <button className="pbtn" type="submit" style={{ fontSize: 8, padding: "13px", marginTop: 3 }} disabled={formLoading}>
-                {formLoading ? <Blink>ОТПРАВКА...</Blink> : "▶ РАЗОБРАТЬ МОЮ ВОРОНКУ"}
+            <form onSubmit={submitForm} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <input className="form-input" placeholder="Имя" value={formData.name} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} required />
+              <input className="form-input" placeholder="Телефон" type="tel" value={formData.phone} onChange={e => setFormData(f => ({ ...f, phone: e.target.value }))} required />
+              <input className="form-input" placeholder="Email" type="email" value={formData.email} onChange={e => setFormData(f => ({ ...f, email: e.target.value }))} required />
+              <button className="game-btn" type="submit" style={{ marginTop: 4 }} disabled={formLoading}>
+                {formLoading ? "Отправка..." : "▶ Разобрать мою воронку"}
               </button>
             </form>
           </div>
         ) : (
-          <div style={{ border: `2px solid ${C.green}`, background: "#040f07", padding: "18px", width: "100%", marginBottom: 14, textAlign: "center", boxShadow: `0 0 20px ${C.greenGlow}` }}>
-            <div style={{ fontSize: 36, marginBottom: 10 }}>✓</div>
-            <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 9, color: C.green, marginBottom: 8 }}>ЗАЯВКА ПРИНЯТА!</div>
-            <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.muted, lineHeight: 2.2 }}>
+          <div style={{ background: "rgba(34,197,94,0.08)", borderRadius: 12, border: `1.5px solid rgba(34,197,94,0.3)`, padding: "24px", width: "100%", marginBottom: 14, textAlign: "center" }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>✅</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: C.green, marginBottom: 8 }}>Заявка принята!</div>
+            <div style={{ fontSize: 14, color: C.muted, lineHeight: 1.7 }}>
               Свяжемся в течение 2 часов.<br />Готовься к разбору воронки.
             </div>
           </div>
         )}
 
         <div style={{ display: "flex", gap: 10, width: "100%", flexWrap: "wrap" }}>
-          <button className="pbtn" style={{ flex: 1, fontSize: 7, padding: "12px" }} onClick={restart}>↺ ИГРАТЬ СНОВА</button>
-          <button className="pbtn" style={{ flex: 1, fontSize: 7, padding: "12px", background: "#0c0c0c", boxShadow: `2px 2px 0 ${C.redDark}` }} onClick={() => window.location.href = "https://gipoteza-agency.ru/#cases"}>← КЕЙСЫ ГИПОТЕЗЫ</button>
+          <button className="game-btn" style={{ flex: 1 }} onClick={restart}>↺ Играть снова</button>
+          <button className="game-btn secondary" style={{ flex: 1 }} onClick={() => window.location.href = "https://gipoteza-agency.ru/#cases"}>← Кейсы Гипотезы</button>
         </div>
 
-        <div style={{ marginTop: 18, fontFamily: "'Press Start 2P',monospace", fontSize: 6, color: C.muted, textAlign: "center" }}>
-          Powered by ГИПОТЕЗА agency
+        <div style={{ marginTop: 20, fontSize: 12, color: C.muted, textAlign: "center" }}>
+          Powered by <span style={{ color: C.red, fontWeight: 700 }}>Гипотеза Agency</span>
         </div>
       </div>
     </div>
