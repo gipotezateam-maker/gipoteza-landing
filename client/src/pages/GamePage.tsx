@@ -268,18 +268,13 @@ function MetricBar({ val, max, color, label, icon }: { val: number; max: number;
 }
 
 // ─── GAME DATA — Russian EdTech 2026 scenarios ────────────────────────────────
-interface Opt {
-  label: string; icon: string; detail: string; consequence: string;
-  delta: { romi: number; budget: number; conv: number; score: number };
-  isOptimal: boolean; trap?: string;
-}
-interface Scene {
-  id: number; day: number; phase: string; crisis?: boolean;
-  title: string; situation: string; metrics: string;
-  options: Opt[]; insight: string; difficulty: "HARD" | "EXPERT" | "NIGHTMARE";
-}
+import { SCENES } from "./GameScenes";
+import type { Scene } from "./GameScenes";
 
-const SCENES: Scene[] = [
+type Opt = Scene["options"][number];
+
+// Old SCENES removed — now imported from GameScenes.ts
+const _SCENES_PLACEHOLDER_UNUSED = [
   {
     id: 0, day: 3, phase: "ПОДГОТОВКА", difficulty: "HARD",
     title: "Воронка регистраций не конвертит",
@@ -831,7 +826,7 @@ export default function GamePage() {
         <div style={{ background: C.card, borderRadius: 12, border: `1px solid ${C.cardBorder}`, padding: "20px 24px", marginBottom: 24, width: "100%" }}>
           <div style={{ fontSize: 11, color: C.red, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Брифинг</div>
           <p style={{ fontSize: 15, color: C.text, lineHeight: 1.7, margin: 0 }}>
-            Ты — CMO онлайн-школы в сфере B2C EdTech (курсы для физлиц).<br />
+            Ты — CMO детской онлайн-школы. Родители — твоя аудитория. CAC сейчас 56 000 ₽ — это провал.<br />
             <span style={{ color: C.red, fontWeight: 700 }}>30 дней. 500К ₽ бюджета. 7 реальных ситуаций.</span><br /><br />
             Каждое решение — реальный кейс российского рынка 2026 года.
             Таймер давит. CEO злится. Один неверный выбор — теряешь жизнь.
@@ -1061,7 +1056,7 @@ export default function GamePage() {
                   <button
                     key={i}
                     className={`opt-btn${chosen !== null ? " disabled" : ""}`}
-                    onClick={(e) => { spawnBurst(e.clientX, e.clientY, opt.isOptimal); pick(i); }}
+                    onClick={(e) => { spawnBurst(e.clientX, e.clientY, opt.isOptimal ?? false); pick(i); }}
                     disabled={chosen !== null}
                   >
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
