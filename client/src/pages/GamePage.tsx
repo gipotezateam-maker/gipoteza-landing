@@ -200,24 +200,24 @@ export default function GamePage() {
   // ─── INTRO ─────────────────────────────────────────────────────────────────
   if (screen === "intro") return (
     <div style={{
-      minHeight: "100vh",
+      width: "100vw", height: "100vh",
       background: "linear-gradient(160deg, #120d08 0%, #1c1208 40%, #0f0c08 100%)",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      padding: "24px 16px", fontFamily: "'Inter','Segoe UI',system-ui,sans-serif", color: "#f0ede8",
-      overflowY: "auto",
+      padding: "16px", fontFamily: "'Inter','Segoe UI',system-ui,sans-serif", color: "#f0ede8",
+      overflow: "hidden",
     }}>
       <style>{GLOBAL_CSS}</style>
-      <div style={{ maxWidth: 540, width: "100%", animation: "fadeUp 0.6s ease" }}>
+      <div style={{ maxWidth: 520, width: "100%", animation: "fadeUp 0.6s ease", display: "flex", flexDirection: "column", gap: 12 }}>
         {/* Logo */}
-        <div style={{ marginBottom: 24, textAlign: "center" }}>
-          <div style={{ fontSize: "clamp(52px,11vw,84px)", fontWeight: 900, color: "#fff", lineHeight: 0.9, letterSpacing: -3 }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: "clamp(40px,8vw,68px)", fontWeight: 900, color: "#fff", lineHeight: 0.9, letterSpacing: -3 }}>
             ЗАПУСК<span style={{ fontSize: "0.18em", verticalAlign: "super", color: "#f5a623" }}>✦</span>
           </div>
-          <div style={{ fontSize: 11, color: "rgba(240,237,232,0.38)", letterSpacing: 4, marginTop: 10, textTransform: "uppercase" }}>Маркетинговый симулятор для EdTech</div>
+          <div style={{ fontSize: 10, color: "rgba(240,237,232,0.38)", letterSpacing: 4, marginTop: 6, textTransform: "uppercase" }}>Маркетинговый симулятор для EdTech</div>
         </div>
 
         {/* Characters preview */}
-        <div style={{ position: "relative", height: 260, borderRadius: 16, overflow: "hidden", marginBottom: 22, border: "1px solid rgba(255,255,255,0.07)" }}>
+        <div style={{ position: "relative", height: 200, borderRadius: 14, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, #1c1208 0%, #110d06 100%)" }} />
           <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 35% 80%, rgba(180,100,20,0.3) 0%, transparent 55%), radial-gradient(ellipse at 70% 30%, rgba(100,50,10,0.22) 0%, transparent 50%)" }} />
           <div style={{ position: "absolute", left: 0, bottom: 0, width: "52%", height: "100%" }}>
@@ -231,33 +231,32 @@ export default function GamePage() {
             <div style={{ fontSize: 34, fontWeight: 900, color: "#ff3d2e", textShadow: "0 0 28px rgba(255,61,46,0.9)", background: "rgba(0,0,0,0.5)", padding: "2px 18px", borderRadius: 8, lineHeight: 1.2 }}>VS</div>
             <div style={{ fontSize: 9, color: "#ff3d2e", fontWeight: 700, letterSpacing: 3, textTransform: "uppercase", background: "rgba(0,0,0,0.65)", padding: "3px 12px", borderRadius: 20 }}>Вы — CMO</div>
           </div>
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 70, background: "linear-gradient(to top, #120d08, transparent)" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 50, background: "linear-gradient(to top, #120d08, transparent)" }} />
         </div>
 
         {/* Briefing */}
-        <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 14, border: "1px solid rgba(255,255,255,0.08)", padding: "18px 20px", marginBottom: 16 }}>
-          <div style={{ fontSize: 10, color: "#ff3d2e", fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 10 }}>Брифинг</div>
-          <p style={{ fontSize: 14, color: "#f0ede8", lineHeight: 1.8 }}>
-            Ты — CMO детской онлайн-школы. Родители — твоя аудитория.{" "}
-            <span style={{ color: "#ff3d2e", fontWeight: 700 }}>CAC сейчас 56 000 ₽ — это провал.</span>
-            <br /><br />
-            <span style={{ color: "#f5a623", fontWeight: 700 }}>30 дней. 500К ₽ бюджета. 7 реальных ситуаций.</span>{" "}
-            Каждое решение — реальный кейс российского рынка 2026 года.
+        <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)", padding: "12px 16px" }}>
+          <div style={{ fontSize: 10, color: "#ff3d2e", fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 6 }}>Брифинг</div>
+          <p style={{ fontSize: 13, color: "#f0ede8", lineHeight: 1.6 }}>
+            Ты — CMO детской онлайн-школы.{" "}
+            <span style={{ color: "#ff3d2e", fontWeight: 700 }}>CAC сейчас 56 000 ₽ — это провал.</span>{" "}
+            <span style={{ color: "#f5a623", fontWeight: 700 }}>500К ₽ бюджета. 7 реальных ситуаций.</span>{" "}
+            Каждое решение — реальный кейс 2026 года.
           </p>
         </div>
 
         {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10, marginBottom: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8 }}>
           {[
             { icon: "💰", val: "500К ₽", lbl: "Бюджет", c: "#f5a623" },
             { icon: "⚡", val: "7", lbl: "Сценариев", c: "#ff3d2e" },
             { icon: "❤️", val: "3", lbl: "Жизни", c: "#ff6b5b" },
             { icon: "💡", val: "3", lbl: "Подсказки", c: "#f5a623" },
           ].map(s => (
-            <div key={s.lbl} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, border: "1px solid rgba(255,255,255,0.07)", padding: "14px 8px", textAlign: "center" }}>
-              <div style={{ fontSize: 22, marginBottom: 6 }}>{s.icon}</div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: s.c, marginBottom: 3 }}>{s.val}</div>
-              <div style={{ fontSize: 11, color: "rgba(240,237,232,0.38)" }}>{s.lbl}</div>
+            <div key={s.lbl} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.07)", padding: "10px 6px", textAlign: "center" }}>
+              <div style={{ fontSize: 18, marginBottom: 4 }}>{s.icon}</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: s.c, marginBottom: 2 }}>{s.val}</div>
+              <div style={{ fontSize: 10, color: "rgba(240,237,232,0.38)" }}>{s.lbl}</div>
             </div>
           ))}
         </div>
