@@ -120,22 +120,7 @@ export default function GamePage() {
 
   useEffect(() => { setTypingDone(typeDone); }, [typeDone]);
 
-  const timerSecs = scene.crisis ? 18 : 40;
-  const handleTimerEnd = useCallback(() => {
-    if (chosen !== null) return;
-    const worst = scene.options.reduce((wi, o, i) =>
-      o.delta.score < scene.options[wi].delta.score ? i : wi, 0);
-    pick(worst, true);
-  }, [chosen, scene]);
-
-  const timeLeft = useCountdown(timerSecs, timerOn && screen === "game" && chosen === null, handleTimerEnd);
-
-  useEffect(() => {
-    if (screen === "game" && typeDone && chosen === null) setTimerOn(true);
-    else setTimerOn(false);
-  }, [screen, typeDone, chosen]);
-
-  useEffect(() => { setTimerOn(false); setTypingDone(false); }, [idx]);
+  useEffect(() => { setTypingDone(false); }, [idx]);
 
   function pick(i: number, forced = false) {
     if (chosen !== null) return;
@@ -187,8 +172,7 @@ export default function GamePage() {
     setFormSent(true); setFormLoading(false);
   }
 
-  const timerPct = (timeLeft / timerSecs) * 100;
-  const timerColor = timeLeft <= 5 ? "#ff3d2e" : timeLeft <= 12 ? "#f5a623" : "#22c55e";
+
 
   const metrics = [
     { icon: "👥", iconBg: "#4a1010", label: "Пользователи", value: (12580 + score * 2).toLocaleString("ru"), delta: romi > 0 ? `+${Math.round(romi * 0.4)}%` : "-8%", up: romi > 0, color: "#ff6b5b" },
@@ -403,19 +387,7 @@ export default function GamePage() {
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, #1c1208 0%, #130e07 50%, #0a0a0a 100%)" }} />
             <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 28% 85%, rgba(160,90,15,0.32) 0%, transparent 50%), radial-gradient(ellipse at 78% 20%, rgba(80,40,8,0.22) 0%, transparent 45%)" }} />
 
-            {/* Timer bar */}
-            {chosen === null && typingDone && (
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "rgba(255,255,255,0.05)", zIndex: 30 }}>
-                <div style={{ width: `${timerPct}%`, height: "100%", background: timerColor, transition: "width 1s linear, background 0.5s", boxShadow: `0 0 10px ${timerColor}` }} />
-              </div>
-            )}
 
-            {/* Timer number */}
-            {chosen === null && typingDone && timeLeft <= 10 && (
-              <div style={{ position: "absolute", top: 8, right: 12, zIndex: 30, fontSize: 22, fontWeight: 900, color: timerColor, animation: "glow 0.5s ease infinite", textShadow: `0 0 16px ${timerColor}` }}>
-                {timeLeft}
-              </div>
-            )}
 
             {/* CEO — left side */}
             <div style={{ position: "absolute", left: 0, bottom: 0, width: "55%", height: "100%" }}>
