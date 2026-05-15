@@ -61,7 +61,8 @@ const CARD_COLORS = [
 
 const GLOBAL_CSS = `
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; overflow: hidden; }
+  html, body { height: 100%; }
+  .game-screen { overflow: hidden; }
   @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
   @keyframes fadeUp  { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
   @keyframes fadeDown { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
@@ -259,7 +260,7 @@ export default function GamePage() {
     const isGood = chosen === optimalIdx;
 
     return (
-      <div style={{
+      <div className="game-screen" style={{
         width: "100vw", height: "100vh",
         display: "flex", flexDirection: "column",
         background: "#111",
