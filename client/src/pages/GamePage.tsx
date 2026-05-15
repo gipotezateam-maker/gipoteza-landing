@@ -307,7 +307,6 @@ export default function GamePage() {
                 <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "nowrap" }}>
                   <span style={{ fontSize: 18, fontWeight: 700, color: "#fff", lineHeight: 1, whiteSpace: "nowrap" }}>{m.value}</span>
                   <span style={{ fontSize: 11, fontWeight: 600, color: m.up ? "#22c55e" : "#ff3d2e", whiteSpace: "nowrap" }}>{m.delta}</span>
-                  <Sparkline up={m.up} color={m.up ? "#22c55e" : "#ff3d2e"} />
                 </div>
               </div>
             </div>
