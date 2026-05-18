@@ -1,21 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SCENES } from "./GameScenes";
 
 // ─── Asset URLs ───────────────────────────────────────────────────────────────
 const CEO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/ceo-art-PobN59gHN7XUMgGNPvnJRJ.webp";
 const CMO_IMG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/cmo-art-5aiSzDGWARQzz6a7JyHPZ4.webp";
-
-// ─── Sparkline ────────────────────────────────────────────────────────────────
-function Sparkline({ up, color }: { up: boolean; color: string }) {
-  const d = up
-    ? "M0,12 C6,10 12,7 18,5 C24,3 28,2 36,1"
-    : "M0,1 C6,3 12,6 18,8 C24,10 28,11 36,12";
-  return (
-    <svg width="36" height="13" viewBox="0 0 36 13" fill="none">
-      <path d={d} stroke={color} strokeWidth="1.8" strokeLinecap="round" fill="none" />
-    </svg>
-  );
-}
 
 // ─── Typewriter ───────────────────────────────────────────────────────────────
 function useTypewriter(text: string, speed = 14) {
@@ -33,21 +21,6 @@ function useTypewriter(text: string, speed = 14) {
     return () => clearInterval(t);
   }, [text]);
   return { out, done };
-}
-
-// ─── Countdown ────────────────────────────────────────────────────────────────
-function useCountdown(secs: number, active: boolean, onEnd: () => void) {
-  const [left, setLeft] = useState(secs);
-  const cb = useRef(onEnd);
-  cb.current = onEnd;
-  useEffect(() => { setLeft(secs); }, [secs]);
-  useEffect(() => {
-    if (!active) return;
-    if (left <= 0) { cb.current(); return; }
-    const t = setTimeout(() => setLeft(l => l - 1), 1000);
-    return () => clearTimeout(t);
-  }, [left, active]);
-  return left;
 }
 
 type Screen = "intro" | "game" | "end";
@@ -69,7 +42,6 @@ const GLOBAL_CSS = `
   @keyframes pulse   { 0%,100%{opacity:1} 50%{opacity:0.2} }
   @keyframes shake   { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)} }
   @keyframes scoreFloat { 0%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.5)} 100%{opacity:0;transform:translateX(-50%) translateY(-100px) scale(0.8)} }
-  @keyframes glow { 0%,100%{box-shadow:0 0 12px rgba(255,61,46,0.4)} 50%{box-shadow:0 0 28px rgba(255,61,46,0.8)} }
   @keyframes slideUp { from{opacity:0;transform:translateY(100%)} to{opacity:1;transform:translateY(0)} }
   @keyframes comboIn { 0%{transform:scale(0.5) rotate(-10deg);opacity:0} 60%{transform:scale(1.2) rotate(3deg)} 100%{transform:scale(1) rotate(0deg);opacity:1} }
   .card-btn { border:none;outline:none;cursor:pointer;text-align:left;transition:transform 0.18s,filter 0.18s,box-shadow 0.18s;position:relative; }
@@ -98,7 +70,6 @@ export default function GamePage() {
   const [combo, setCombo] = useState(0);
   const [chosen, setChosen] = useState<number | null>(null);
   const [showRes, setShowRes] = useState(false);
-  const [timerOn, setTimerOn] = useState(false);
   const [scoreAnim, setScoreAnim] = useState({ val: 0, show: false });
   const [hintsLeft, setHintsLeft] = useState(3);
   const [showHint, setShowHint] = useState(false);
@@ -120,13 +91,11 @@ export default function GamePage() {
   );
 
   useEffect(() => { setTypingDone(typeDone); }, [typeDone]);
-
   useEffect(() => { setTypingDone(false); }, [idx]);
 
-  function pick(i: number, forced = false) {
+  function pick(i: number) {
     if (chosen !== null) return;
     setChosen(i);
-    setTimerOn(false);
     const opt = scene.options[i];
     const isGood = opt.isOptimal ?? false;
     const newCombo = isGood ? combo + 1 : 0;
@@ -144,7 +113,7 @@ export default function GamePage() {
       if (newCombo >= 2) { setComboAnim(true); setTimeout(() => setComboAnim(false), 800); }
     } else {
       setCombo(0);
-      if (!forced) setLives(l => Math.max(0, l - 1));
+      setLives(l => Math.max(0, l - 1));
     }
     setShowHint(false);
     setTimeout(() => setShowRes(true), 200);
@@ -173,8 +142,6 @@ export default function GamePage() {
     setFormSent(true); setFormLoading(false);
   }
 
-
-
   const metrics = [
     { icon: "👥", iconBg: "#4a1010", label: "Пользователи", value: (12580 + score * 2).toLocaleString("ru"), delta: romi > 0 ? `+${Math.round(romi * 0.4)}%` : "-8%", up: romi > 0, color: "#ff6b5b" },
     { icon: "💰", iconBg: "#3a2800", label: "Выручка", value: `${((8400000 + Math.max(0, budget - 500000)) / 1000000).toFixed(1)} млн ₽`, delta: budget > 500000 ? `+${Math.round((budget - 500000) / 10000)}%` : "+12%", up: true, color: "#f5a623" },
@@ -192,17 +159,17 @@ export default function GamePage() {
       overflow: "hidden",
     }}>
       <style>{GLOBAL_CSS}</style>
-      <div style={{ maxWidth: 520, width: "100%", animation: "fadeUp 0.6s ease", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ maxWidth: 520, width: "100%", animation: "fadeUp 0.6s ease", display: "flex", flexDirection: "column", gap: 10 }}>
         {/* Logo */}
         <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "clamp(40px,8vw,68px)", fontWeight: 900, color: "#fff", lineHeight: 0.9, letterSpacing: -3 }}>
+          <div style={{ fontSize: "clamp(36px,7vw,60px)", fontWeight: 900, color: "#fff", lineHeight: 0.9, letterSpacing: -3 }}>
             ЗАПУСК<span style={{ fontSize: "0.18em", verticalAlign: "super", color: "#f5a623" }}>✦</span>
           </div>
-          <div style={{ fontSize: 10, color: "rgba(240,237,232,0.38)", letterSpacing: 4, marginTop: 6, textTransform: "uppercase" }}>Маркетинговый симулятор для EdTech</div>
+          <div style={{ fontSize: 10, color: "rgba(240,237,232,0.38)", letterSpacing: 4, marginTop: 5, textTransform: "uppercase" }}>Маркетинговый симулятор для EdTech</div>
         </div>
 
         {/* Characters preview */}
-        <div style={{ position: "relative", height: 200, borderRadius: 14, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
+        <div style={{ position: "relative", height: "clamp(140px,22vh,190px)", borderRadius: 14, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, #1c1208 0%, #110d06 100%)" }} />
           <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 35% 80%, rgba(180,100,20,0.3) 0%, transparent 55%), radial-gradient(ellipse at 70% 30%, rgba(100,50,10,0.22) 0%, transparent 50%)" }} />
           <div style={{ position: "absolute", left: 0, bottom: 0, width: "52%", height: "100%" }}>
@@ -211,43 +178,43 @@ export default function GamePage() {
           <div style={{ position: "absolute", right: 0, bottom: 0, width: "50%", height: "95%" }}>
             <img src={CMO_IMG} alt="CMO" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center" }} />
           </div>
-          <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4 }}>
+          <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3 }}>
             <div style={{ fontSize: 9, color: "#f5a623", fontWeight: 700, letterSpacing: 3, textTransform: "uppercase", background: "rgba(0,0,0,0.65)", padding: "3px 12px", borderRadius: 20 }}>CEO-Босс</div>
-            <div style={{ fontSize: 34, fontWeight: 900, color: "#ff3d2e", textShadow: "0 0 28px rgba(255,61,46,0.9)", background: "rgba(0,0,0,0.5)", padding: "2px 18px", borderRadius: 8, lineHeight: 1.2 }}>VS</div>
+            <div style={{ fontSize: 30, fontWeight: 900, color: "#ff3d2e", textShadow: "0 0 28px rgba(255,61,46,0.9)", background: "rgba(0,0,0,0.5)", padding: "2px 16px", borderRadius: 8, lineHeight: 1.2 }}>VS</div>
             <div style={{ fontSize: 9, color: "#ff3d2e", fontWeight: 700, letterSpacing: 3, textTransform: "uppercase", background: "rgba(0,0,0,0.65)", padding: "3px 12px", borderRadius: 20 }}>Вы — CMO</div>
           </div>
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 50, background: "linear-gradient(to top, #120d08, transparent)" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 40, background: "linear-gradient(to top, #120d08, transparent)" }} />
         </div>
 
         {/* Briefing */}
-        <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)", padding: "12px 16px" }}>
-          <div style={{ fontSize: 10, color: "#ff3d2e", fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 6 }}>Брифинг</div>
-          <p style={{ fontSize: 13, color: "#f0ede8", lineHeight: 1.6 }}>
-            Ты — CMO детской онлайн-школы.{" "}
-            <span style={{ color: "#ff3d2e", fontWeight: 700 }}>CAC сейчас 56 000 ₽ — это провал.</span>{" "}
+        <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)", padding: "10px 14px" }}>
+          <div style={{ fontSize: 10, color: "#ff3d2e", fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 5 }}>Брифинг</div>
+          <p style={{ fontSize: 12.5, color: "#f0ede8", lineHeight: 1.55 }}>
+            Ты — CMO онлайн-школы.{" "}
+            <span style={{ color: "#ff3d2e", fontWeight: 700 }}>CAC 38 000 ₽ — это провал.</span>{" "}
             <span style={{ color: "#f5a623", fontWeight: 700 }}>500К ₽ бюджета. 7 реальных ситуаций.</span>{" "}
-            Каждое решение — реальный кейс 2026 года.
+            Каждое решение — реальный кейс российского рынка 2026 года.
           </p>
         </div>
 
         {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 7 }}>
           {[
             { icon: "💰", val: "500К ₽", lbl: "Бюджет", c: "#f5a623" },
             { icon: "⚡", val: "7", lbl: "Сценариев", c: "#ff3d2e" },
             { icon: "❤️", val: "3", lbl: "Жизни", c: "#ff6b5b" },
             { icon: "💡", val: "3", lbl: "Подсказки", c: "#f5a623" },
           ].map(s => (
-            <div key={s.lbl} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.07)", padding: "10px 6px", textAlign: "center" }}>
-              <div style={{ fontSize: 18, marginBottom: 4 }}>{s.icon}</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: s.c, marginBottom: 2 }}>{s.val}</div>
-              <div style={{ fontSize: 10, color: "rgba(240,237,232,0.38)" }}>{s.lbl}</div>
+            <div key={s.lbl} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.07)", padding: "8px 5px", textAlign: "center" }}>
+              <div style={{ fontSize: 16, marginBottom: 3 }}>{s.icon}</div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: s.c, marginBottom: 2 }}>{s.val}</div>
+              <div style={{ fontSize: 9, color: "rgba(240,237,232,0.38)" }}>{s.lbl}</div>
             </div>
           ))}
         </div>
 
-        <button className="start-btn" onClick={() => setScreen("game")}>▶ Начать игру</button>
-        <div style={{ textAlign: "center", marginTop: 14, fontSize: 12, color: "rgba(240,237,232,0.28)" }}>
+        <button className="start-btn" onClick={() => setScreen("game")} style={{ padding: "15px", fontSize: 16 }}>▶ Начать игру</button>
+        <div style={{ textAlign: "center", fontSize: 11, color: "rgba(240,237,232,0.28)" }}>
           Powered by <span style={{ color: "#ff3d2e", fontWeight: 700 }}>Гипотеза Agency</span>
         </div>
       </div>
@@ -344,59 +311,52 @@ export default function GamePage() {
                   {scene.crisis ? "Кризис!" : "Горячая"}
                 </span>
               </div>
-              <p style={{ fontSize: 11.5, color: "rgba(240,237,232,0.78)", lineHeight: 1.7 }}>
-                {typeOut}
-                {!typingDone && <span style={{ animation: "pulse 0.6s steps(1) infinite", color: "#ff3d2e" }}>|</span>}
+              <p style={{ fontSize: 11.5, color: "rgba(240,237,232,0.72)", lineHeight: 1.65 }}>
+                {typeOut}{!typingDone && <span style={{ animation: "pulse 0.6s steps(1) infinite" }}>|</span>}
               </p>
             </div>
 
-            <div style={{ flex: 1 }} />
-
-            {/* Goal */}
-            <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.07)", padding: "12px 13px" }}>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 6, marginBottom: 8 }}>
-                <span style={{ fontSize: 14, marginTop: 1 }}>🎯</span>
-                <div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#ff3d2e" }}>Цель: </span>
-                  <span style={{ fontSize: 11, color: "#f0ede8" }}>Увеличить набор на 15% за 4 недели</span>
-                </div>
-              </div>
-              <div style={{ height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 3, overflow: "hidden" }}>
-                <div style={{ width: `${Math.min(100, (idx / SCENES.length) * 100)}%`, height: "100%", background: "#ff3d2e", borderRadius: 3, transition: "width 0.6s ease" }} />
-              </div>
+            {/* Metrics */}
+            <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)", padding: "10px 12px" }}>
+              <div style={{ fontSize: 10, color: "rgba(240,237,232,0.35)", fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 7 }}>Метрики</div>
+              <div style={{ fontSize: 11, color: "rgba(240,237,232,0.6)", lineHeight: 1.7 }}>{scene.metrics}</div>
             </div>
 
-            {/* Lives + combo */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{ display: "flex", gap: 4 }}>
-                {[0, 1, 2].map(i => (
-                  <span key={i} style={{ fontSize: 17, opacity: i < lives ? 1 : 0.1, transition: "opacity 0.3s" }}>❤️</span>
-                ))}
+            {/* Lives */}
+            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              <span style={{ fontSize: 10, color: "rgba(240,237,232,0.35)", letterSpacing: 1 }}>ЖИЗНИ</span>
+              {[0, 1, 2].map(i => (
+                <span key={i} style={{ fontSize: 16, opacity: i < lives ? 1 : 0.15 }}>❤️</span>
+              ))}
+            </div>
+
+            {/* Goal */}
+            <div style={{ background: "rgba(255,61,46,0.05)", borderRadius: 10, border: "1px solid rgba(255,61,46,0.12)", padding: "10px 12px" }}>
+              <div style={{ fontSize: 10, color: "#ff3d2e", fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 5 }}>
+                <span style={{ marginRight: 5 }}>🎯</span>Цель
               </div>
-              {combo >= 2 && (
-                <div style={{ fontSize: 11, fontWeight: 800, color: "#f5a623", padding: "3px 8px", background: "rgba(245,166,35,0.12)", borderRadius: 6, border: "1px solid rgba(245,166,35,0.28)" }}>
-                  ×{combo} 🔥
-                </div>
-              )}
+              <div style={{ fontSize: 11.5, color: "#f0ede8", lineHeight: 1.6 }}>
+                Снизить CAC до 30К ₽ за 4 недели
+              </div>
+              <div style={{ marginTop: 8, height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${Math.min(100, (week / SCENES.length) * 100)}%`, background: "#ff3d2e", borderRadius: 2, transition: "width 0.5s ease" }} />
+              </div>
             </div>
           </div>
 
-          {/* ── Characters (full bleed) ── */}
+          {/* ── Center: characters ── */}
           <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
-            {/* Warm cinematic background */}
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, #1c1208 0%, #130e07 50%, #0a0a0a 100%)" }} />
-            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 28% 85%, rgba(160,90,15,0.32) 0%, transparent 50%), radial-gradient(ellipse at 78% 20%, rgba(80,40,8,0.22) 0%, transparent 45%)" }} />
+            {/* Background */}
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, #1a1008 0%, #110d06 50%, #0d0a06 100%)" }} />
+            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 30% 90%, rgba(180,100,20,0.28) 0%, transparent 50%), radial-gradient(ellipse at 75% 20%, rgba(120,60,10,0.18) 0%, transparent 45%)" }} />
 
-
-
-            {/* CEO — left side */}
-            <div style={{ position: "absolute", left: 0, bottom: 0, width: "55%", height: "100%" }}>
-              <img src={CEO_IMG} alt="CEO" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center", display: "block" }} />
+            {/* CEO */}
+            <div style={{ position: "absolute", left: 0, bottom: 0, width: "52%", height: "100%" }}>
+              <img src={CEO_IMG} alt="CEO" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center" }} />
             </div>
-
-            {/* CMO — right side */}
-            <div style={{ position: "absolute", right: 0, bottom: 0, width: "50%", height: "96%" }}>
-              <img src={CMO_IMG} alt="CMO" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center", display: "block" }} />
+            {/* CMO */}
+            <div style={{ position: "absolute", right: 0, bottom: 0, width: "50%", height: "95%" }}>
+              <img src={CMO_IMG} alt="CMO" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center" }} />
             </div>
 
             {/* Bottom fade */}
@@ -574,13 +534,57 @@ export default function GamePage() {
 
   // ─── END SCREEN ────────────────────────────────────────────────────────────
   const ending = romi > 150
-    ? { headline: "Эксперт-запуск!", emoji: "🏆", color: "#22c55e", glowColor: "rgba(34,197,94,0.15)", rank: "🏆 Маркетинг-легенда", rankSub: "CEO удвоил бюджет. Тебя зовут на конференцию EdTech Russia 2026", insight: "Ты освоил ключевые инструменты детского EdTech: сегментацию родителей, OTO-воронки, Telegram-цепочки и защиту бюджета перед CEO.", ctaTitle: "Хочешь такой ROMI в реальности?", ctaText: "Разберём твою воронку бесплатно за 30 минут.", ctaBtn: "▶ Разобрать мою воронку", btnBg: "#22c55e", btnColor: "#fff" }
+    ? {
+        headline: "Эксперт-запуск!",
+        emoji: "🏆",
+        color: "#22c55e",
+        glowColor: "rgba(34,197,94,0.15)",
+        rank: "🏆 Маркетинг-легенда",
+        rankSub: "CEO удвоил бюджет. Тебя зовут на конференцию EdTech Russia 2026",
+        insight: "Ты освоил ключевые инструменты онлайн-образования: A/B тест офферов, post-webinar воронки, сегментацию лидов по возражениям и защиту бюджета перед CEO. Именно так работает Гипотеза Agency.",
+        ctaTitle: "Хочешь такой ROMI в реальности?",
+        ctaText: "Разберём твою воронку бесплатно за 30 минут. Покажем конкретные точки роста.",
+        ctaBtn: "▶ Разобрать мою воронку",
+        btnBg: "#22c55e", btnColor: "#fff",
+      }
     : romi >= 50
-    ? { headline: "Неплохой результат", emoji: "⭐", color: "#f5a623", glowColor: "rgba(245,166,35,0.15)", rank: "⭐⭐ Крепкий CMO", rankSub: "CEO доволен. Бюджет сохранён. Но конкуренты не спят", insight: "Ты принял несколько верных решений, но часть бюджета ушла впустую. Главный рост — в автоматизации воронки и сегментации лидов.", ctaTitle: "Хочешь вырасти до ROMI 200%+?", ctaText: "Покажем конкретные точки роста. Бесплатный аудит за 30 минут.", ctaBtn: "▶ Получить аудит воронки", btnBg: "#f5a623", btnColor: "#000" }
-    : { headline: "Провал запуска", emoji: "💀", color: "#ff3d2e", glowColor: "rgba(255,61,46,0.15)", rank: "💀 Стажёр маркетинга", rankSub: "Бюджет сожжён. CEO требует объяснений.", insight: "Главные ошибки: масштабирование без оптимизации воронки и ценовые войны. Нужна система, а не интуиция.", ctaTitle: "Хочешь окупаемый запуск?", ctaText: "Покажем как делать запуски с ROMI 200%+.", ctaBtn: "▶ Спасти мою воронку", btnBg: "#ff3d2e", btnColor: "#fff" };
+    ? {
+        headline: "Неплохой результат",
+        emoji: "⭐",
+        color: "#f5a623",
+        glowColor: "rgba(245,166,35,0.15)",
+        rank: "⭐⭐ Крепкий CMO",
+        rankSub: "CEO доволен. Бюджет сохранён. Но конкуренты не спят",
+        insight: "Ты принял несколько верных решений, но часть бюджета ушла впустую. Главный рост — в автоматизации воронки и сегментации лидов по типу возражения.",
+        ctaTitle: "Хочешь вырасти до ROMI 200%+?",
+        ctaText: "Покажем конкретные точки роста твоей воронки. Бесплатный аудит за 30 минут.",
+        ctaBtn: "▶ Получить аудит воронки",
+        btnBg: "#f5a623", btnColor: "#000",
+      }
+    : {
+        headline: "Провал запуска",
+        emoji: "💀",
+        color: "#ff3d2e",
+        glowColor: "rgba(255,61,46,0.15)",
+        rank: "💀 Стажёр маркетинга",
+        rankSub: "Бюджет сожжён. CEO требует объяснений.",
+        insight: "Главные ошибки: масштабирование без оптимизации воронки и ценовые войны. Нужна система, а не интуиция. Именно это мы строим в Гипотезе.",
+        ctaTitle: "Хочешь окупаемый запуск?",
+        ctaText: "Покажем как делать запуски с ROMI 200%+ без ценовых войн и слива бюджета.",
+        ctaBtn: "▶ Спасти мою воронку",
+        btnBg: "#ff3d2e", btnColor: "#fff",
+      };
 
   return (
-    <div style={{ minHeight: "100vh", background: `radial-gradient(ellipse at 50% 0%, ${ending.glowColor} 0%, transparent 50%), #0f0f0f`, display: "flex", flexDirection: "column", alignItems: "center", padding: "32px 16px", fontFamily: "'Inter','Segoe UI',system-ui,sans-serif", color: "#f0ede8", overflowY: "auto" }}>
+    <div style={{
+      minHeight: "100vh",
+      background: `radial-gradient(ellipse at 50% 0%, ${ending.glowColor} 0%, transparent 50%), #0f0f0f`,
+      display: "flex", flexDirection: "column", alignItems: "center",
+      padding: "32px 16px 48px",
+      fontFamily: "'Inter','Segoe UI',system-ui,sans-serif",
+      color: "#f0ede8",
+      overflowY: "auto",
+    }}>
       <style>{GLOBAL_CSS}</style>
       <div style={{ maxWidth: 580, width: "100%", animation: "fadeUp 0.6s ease" }}>
         {/* Header */}
@@ -620,7 +624,7 @@ export default function GamePage() {
 
         {/* CTA form */}
         {!formSent ? (
-          <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 14, border: `1.5px solid ${ending.color}44`, padding: "18px", marginBottom: 12 }}>
+          <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 14, border: `1.5px solid ${ending.color}44`, padding: "18px", marginBottom: 16 }}>
             <div style={{ fontSize: 17, fontWeight: 800, color: ending.color, marginBottom: 6 }}>{ending.ctaTitle}</div>
             <div style={{ fontSize: 13, color: "rgba(240,237,232,0.48)", marginBottom: 14, lineHeight: 1.75 }}>{ending.ctaText}</div>
             <form onSubmit={submitForm} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -633,7 +637,7 @@ export default function GamePage() {
             </form>
           </div>
         ) : (
-          <div style={{ background: "rgba(34,197,94,0.06)", borderRadius: 14, border: "1.5px solid rgba(34,197,94,0.22)", padding: "26px", marginBottom: 12, textAlign: "center" }}>
+          <div style={{ background: "rgba(34,197,94,0.06)", borderRadius: 14, border: "1.5px solid rgba(34,197,94,0.22)", padding: "26px", marginBottom: 16, textAlign: "center" }}>
             <div style={{ fontSize: 42, marginBottom: 10 }}>✅</div>
             <div style={{ fontSize: 20, fontWeight: 800, color: "#22c55e", marginBottom: 6 }}>Заявка принята!</div>
             <div style={{ fontSize: 14, color: "rgba(240,237,232,0.48)", lineHeight: 1.75 }}>Свяжемся в течение 2 часов. Подготовьте данные по вашей воронке.</div>
@@ -641,12 +645,12 @@ export default function GamePage() {
         )}
 
         {/* Actions */}
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
           <button onClick={restart} style={{ flex: 1, background: "#ff3d2e", color: "#fff", border: "none", borderRadius: 10, fontFamily: "inherit", fontWeight: 700, fontSize: 15, padding: "13px", cursor: "pointer", transition: "all 0.2s" }}>↺ Играть снова</button>
           <button onClick={() => window.location.href = "/"} style={{ flex: 1, background: "transparent", color: "#f0ede8", border: "1.5px solid rgba(255,255,255,0.12)", borderRadius: 10, fontFamily: "inherit", fontWeight: 700, fontSize: 15, padding: "13px", cursor: "pointer", transition: "all 0.2s" }}>← На главную</button>
         </div>
 
-        <div style={{ textAlign: "center", marginTop: 16, fontSize: 12, color: "rgba(240,237,232,0.25)" }}>
+        <div style={{ textAlign: "center", fontSize: 12, color: "rgba(240,237,232,0.25)" }}>
           Powered by <span style={{ color: "#ff3d2e", fontWeight: 700 }}>Гипотеза Agency</span>
         </div>
       </div>
