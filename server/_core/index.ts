@@ -214,7 +214,7 @@ async function startServer() {
 
   // Game leads endpoint
   const gameLeadsFile = "/tmp/game_leads.json";
-  function readGameLeads(): { leads: { name: string; phone: string; telegram?: string; romi: number; score: number; ts: string }[] } {
+  function readGameLeads(): { leads: { name: string; niche?: string; telegram?: string; phone: string; romi: number; score: number; ts: string }[] } {
     try {
       const raw = fs.readFileSync(gameLeadsFile, "utf8");
       return JSON.parse(raw);
@@ -224,10 +224,10 @@ async function startServer() {
   }
   app.post("/api/game-leads", (req, res) => {
     try {
-      const { name, phone, telegram, romi, score } = req.body as { name?: string; phone?: string; telegram?: string; romi?: number; score?: number };
-      if (!name || (!phone && !telegram)) return res.status(400).json({ error: "name and contact required" });
+      const { name, niche, phone, telegram, romi, score } = req.body as { name?: string; niche?: string; phone?: string; telegram?: string; romi?: number; score?: number };
+      if (!name) return res.status(400).json({ error: "name required" });
       const data = readGameLeads();
-      data.leads.push({ name, phone: phone || "", telegram: telegram || "", romi: romi || 0, score: score || 0, ts: new Date().toISOString() });
+      data.leads.push({ name, niche: niche || "", phone: phone || "", telegram: telegram || "", romi: romi || 0, score: score || 0, ts: new Date().toISOString() });
       fs.writeFileSync(gameLeadsFile, JSON.stringify(data, null, 2));
       // Telegram notification
       const TG_BOT_TOKEN = "8672812865:AAGt98zHZj_Q2r5DnSNXxMl_fNe_Ti9DPxw";
@@ -236,8 +236,9 @@ async function startServer() {
         "🎮 <b>Новый лид — CMO игра</b>",
         "",
         `• Имя: <b>${name}</b>`,
-        phone ? `• Телефон: <b>${phone}</b>` : null,
+        niche ? `• Ниша / продукт: <b>${niche}</b>` : null,
         telegram ? `• Telegram: <b>${telegram}</b>` : null,
+        phone ? `• Телефон: <b>${phone}</b>` : null,
         `• ROMI в игре: <b>${romi}%</b>`,
         `• Счёт: <b>${score}</b>`,
         "",
