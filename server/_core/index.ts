@@ -233,12 +233,14 @@ async function startServer() {
       const TG_BOT_TOKEN = "8148336028:AAFuOTIb-7YGDPmxBUqnzQwRCVTJjfQJGJg";
       const TG_CHAT_IDS = ["1342421992", "683646991"];
       const msg = [
-        "🎮 <b>Новый лид из игры ВЕБИНАР РАШ</b>",
+        "🎮 <b>Новый лид — CMO игра</b>",
         "",
         `• Имя: <b>${name}</b>`,
         `• Контакт: <b>${phone}</b>`,
         `• ROMI в игре: <b>${romi}%</b>`,
         `• Счёт: <b>${score}</b>`,
+        "",
+        `#CMO_игра #запуск`,
       ].join("\n");
       for (const chatId of TG_CHAT_IDS) {
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
