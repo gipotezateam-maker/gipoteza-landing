@@ -75,7 +75,7 @@ export default function GamePage() {
   const [showHint, setShowHint] = useState(false);
   const [showJournal, setShowJournal] = useState(false);
   const [journal, setJournal] = useState<Array<{ week: number; choice: string; good: boolean; pts: number }>>([]);
-  const [formData, setFormData] = useState({ name: "", telegram: "" });
+  const [formData, setFormData] = useState({ name: "", phone: "", telegram: "" });
   const [formSent, setFormSent] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [comboAnim, setComboAnim] = useState(false);
@@ -136,7 +136,7 @@ export default function GamePage() {
       await fetch("/api/game-leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: formData.name, phone: formData.telegram, score, romi }),
+        body: JSON.stringify({ name: formData.name, phone: formData.phone, telegram: formData.telegram, score, romi }),
       });
     } catch { /* ignore */ }
     setFormSent(true); setFormLoading(false);
@@ -637,7 +637,8 @@ export default function GamePage() {
             <div style={{ fontSize: 13, color: "rgba(240,237,232,0.48)", marginBottom: 14, lineHeight: 1.75 }}>{ending.ctaText}</div>
             <form onSubmit={submitForm} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <input className="form-input" placeholder="Имя" value={formData.name} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} required />
-              <input className="form-input" placeholder="Telegram (@username или +7...)" value={formData.telegram} onChange={e => setFormData(f => ({ ...f, telegram: e.target.value }))} required />
+              <input className="form-input" placeholder="Телефон" type="tel" value={formData.phone} onChange={e => setFormData(f => ({ ...f, phone: e.target.value }))} required />
+              <input className="form-input" placeholder="Telegram (@username)" value={formData.telegram} onChange={e => setFormData(f => ({ ...f, telegram: e.target.value }))} />
               <button type="submit" disabled={formLoading} style={{ background: ending.btnBg, color: ending.btnColor, border: "none", borderRadius: 10, fontFamily: "inherit", fontWeight: 800, fontSize: 16, padding: "14px", cursor: "pointer", marginTop: 2, opacity: formLoading ? 0.7 : 1, transition: "all 0.2s" }}>
                 {formLoading ? "Отправка..." : ending.ctaBtn}
               </button>
