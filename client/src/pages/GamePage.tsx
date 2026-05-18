@@ -117,11 +117,12 @@ export default function GamePage() {
     }
     setShowHint(false);
     try { (window as any).ym(107722529, 'reachGoal', `game_scene_${week}`, { choice: opt.label, good: isGood }); } catch{}
+    try { (window as any)._tmr.push({type:'reachGoal',id:'3766918',goal:`game_scene_${week}`}); } catch{}
     setTimeout(() => setShowRes(true), 200);
   }
 
   function next() {
-    if (isLast || lives <= 0) { setScreen("end"); try { (window as any).ym(107722529, 'reachGoal', 'game_finish', { score, romi }); } catch{} return; }
+    if (isLast || lives <= 0) { setScreen("end"); try { (window as any).ym(107722529, 'reachGoal', 'game_finish', { score, romi }); } catch{} try { (window as any)._tmr.push({type:'reachGoal',id:'3766918',goal:'game_finish'}); } catch{} return; }
     setIdx(i => i + 1); setChosen(null); setShowRes(false);
   }
 
@@ -141,6 +142,7 @@ export default function GamePage() {
       });
     } catch { /* ignore */ }
     try { (window as any).ym(107722529, 'reachGoal', 'game_lead_submit'); } catch{}
+    try { (window as any)._tmr.push({type:'reachGoal',id:'3766918',goal:'game_lead_submit'}); } catch{}
     setFormSent(true); setFormLoading(false);
   }
 
@@ -220,7 +222,7 @@ export default function GamePage() {
             ))}
           </div>
 
-          <button className="start-btn" onClick={() => { setScreen("game"); try { (window as any).ym(107722529, 'reachGoal', 'game_start'); } catch{} }}>Начать игру</button>
+          <button className="start-btn" onClick={() => { setScreen("game"); try { (window as any).ym(107722529, 'reachGoal', 'game_start'); } catch{} try { (window as any)._tmr.push({type:'reachGoal',id:'3766918',goal:'game_start'}); } catch{} }}>Начать игру</button>
           <div style={{ textAlign: "center", fontSize: 11, color: "rgba(240,237,232,0.25)" }}>
             Powered by <span style={{ color: "#ff3d2e", fontWeight: 700 }}>Гипотеза Agency</span>
           </div>
