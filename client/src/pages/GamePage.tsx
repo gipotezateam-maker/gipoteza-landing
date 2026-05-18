@@ -116,11 +116,12 @@ export default function GamePage() {
       setLives(l => Math.max(0, l - 1));
     }
     setShowHint(false);
+    try { (window as any).ym(107722529, 'reachGoal', `game_scene_${week}`, { choice: opt.label, good: isGood }); } catch{}
     setTimeout(() => setShowRes(true), 200);
   }
 
   function next() {
-    if (isLast || lives <= 0) { setScreen("end"); return; }
+    if (isLast || lives <= 0) { setScreen("end"); try { (window as any).ym(107722529, 'reachGoal', 'game_finish', { score, romi }); } catch{} return; }
     setIdx(i => i + 1); setChosen(null); setShowRes(false);
   }
 
@@ -139,6 +140,7 @@ export default function GamePage() {
         body: JSON.stringify({ name: formData.name, niche: formData.niche, telegram: formData.telegram, phone: formData.phone, score, romi }),
       });
     } catch { /* ignore */ }
+    try { (window as any).ym(107722529, 'reachGoal', 'game_lead_submit'); } catch{}
     setFormSent(true); setFormLoading(false);
   }
 
@@ -218,7 +220,7 @@ export default function GamePage() {
             ))}
           </div>
 
-          <button className="start-btn" onClick={() => setScreen("game")}>Начать игру</button>
+          <button className="start-btn" onClick={() => { setScreen("game"); try { (window as any).ym(107722529, 'reachGoal', 'game_start'); } catch{} }}>Начать игру</button>
           <div style={{ textAlign: "center", fontSize: 11, color: "rgba(240,237,232,0.25)" }}>
             Powered by <span style={{ color: "#ff3d2e", fontWeight: 700 }}>Гипотеза Agency</span>
           </div>
