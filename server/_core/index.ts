@@ -236,7 +236,7 @@ async function startServer() {
         "🎮 <b>Новый лид — CMO игра</b>",
         "",
         `• Имя: <b>${name}</b>`,
-        `• Контакт: <b>${phone}</b>`,
+        `• Telegram: <b>${phone}</b>`,
         `• ROMI в игре: <b>${romi}%</b>`,
         `• Счёт: <b>${score}</b>`,
         "",
