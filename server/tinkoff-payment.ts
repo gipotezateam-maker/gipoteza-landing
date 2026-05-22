@@ -3,9 +3,10 @@ import express from "express";
 
 const router = express.Router();
 
-// Т-Касса credentials (DEMO / TEST)
+// Т-Касса credentials — берём из env переменных
 const TERMINAL_KEY = process.env.TINKOFF_TERMINAL_KEY || "1769529840925DEMO";
 const SECRET_KEY = process.env.TINKOFF_SECRET_KEY || "_4ygoseBw8er34!P";
+const IS_TEST = !process.env.TINKOFF_TERMINAL_KEY || TERMINAL_KEY.includes("DEMO");
 const TINKOFF_API = "https://securepay.tinkoff.ru/v2";
 
 /**
@@ -89,7 +90,8 @@ router.post("/init", async (req, res) => {
     };
 
     if (data.Success && data.PaymentURL) {
-      res.json({ success: true, paymentUrl: data.PaymentURL });
+      console.log(`[Tinkoff] Payment initialized | OrderId: ${orderId} | Amount: ${amount} | Test: ${IS_TEST}`);
+      res.json({ success: true, paymentUrl: data.PaymentURL, isTest: IS_TEST });
     } else {
       console.error("Tinkoff init error:", data);
       res.status(400).json({ success: false, message: data.Message || "Ошибка инициализации платежа" });

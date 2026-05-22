@@ -10,6 +10,7 @@ import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { invokeLLM } from "./llm";
 import { parsePresentationFromText, generatePresentationPDF } from "../marketos-pdf";
+import tinkoffRouter from "../tinkoff-payment.js";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -266,6 +267,9 @@ async function startServer() {
       return res.status(500).json({ error: String(err) });
     }
   });
+
+  // Tinkoff payment API
+  app.use("/api/tinkoff", tinkoffRouter);
 
   // tRPC API
   app.use(
