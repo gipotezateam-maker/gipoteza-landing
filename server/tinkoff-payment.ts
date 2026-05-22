@@ -15,17 +15,15 @@ const TINKOFF_API = "https://securepay.tinkoff.ru/v2";
  */
 function generateToken(params: Record<string, string | number | boolean>): string {
   const withPassword = { ...params, Password: SECRET_KEY };
-  const sorted = Object.keys(withPassword)
-    .sort()
-    .reduce((acc: Record<string, string>, key) => {
+  // Явная сортировка ключей и конкатенация значений по отсортированным ключам
+  const sortedKeys = Object.keys(withPassword).sort();
+  const concatenated = sortedKeys
+    .filter(key => {
       const val = withPassword[key as keyof typeof withPassword];
-      if (typeof val !== "object" && typeof val !== "undefined") {
-        acc[key] = String(val);
-      }
-      return acc;
-    }, {});
-
-  const concatenated = Object.values(sorted).join("");
+      return typeof val !== "object" && typeof val !== "undefined";
+    })
+    .map(key => String(withPassword[key as keyof typeof withPassword]))
+    .join("");
   return crypto.createHash("sha256").update(concatenated).digest("hex");
 }
 
