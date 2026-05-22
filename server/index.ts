@@ -2,6 +2,7 @@ import express from "express";
 import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
+import tinkoffRouter from "./tinkoff-payment.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,6 +17,8 @@ async function startServer() {
       ? path.resolve(__dirname, "public")
       : path.resolve(__dirname, "..", "dist", "public");
 
+  app.use(express.json());
+  app.use("/api/tinkoff", tinkoffRouter);
   app.use(express.static(staticPath));
 
   // Handle client-side routing - serve index.html for all routes
