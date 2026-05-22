@@ -9,13 +9,14 @@ const SECRET_KEY = process.env.TINKOFF_SECRET_KEY || "_4ygoseBw8er34!P";
 const IS_TEST = !process.env.TINKOFF_TERMINAL_KEY || TERMINAL_KEY.includes("DEMO");
 const TINKOFF_API = "https://securepay.tinkoff.ru/v2";
 
+
+
 /**
  * Генерирует подпись для запроса Т-Кассы
  * Алгоритм: сортируем ключи, конкатенируем значения, SHA-256
  */
 function generateToken(params: Record<string, string | number | boolean>): string {
   const withPassword = { ...params, Password: SECRET_KEY };
-  // Явная сортировка ключей и конкатенация значений по отсортированным ключам
   const sortedKeys = Object.keys(withPassword).sort();
   const concatenated = sortedKeys
     .filter(key => {
@@ -26,6 +27,8 @@ function generateToken(params: Record<string, string | number | boolean>): strin
     .join("");
   return crypto.createHash("sha256").update(concatenated).digest("hex");
 }
+
+
 
 // POST /api/tinkoff/init — инициализация платежа
 router.post("/init", async (req, res) => {
@@ -96,6 +99,44 @@ router.post("/init", async (req, res) => {
   } catch (err) {
     console.error("Tinkoff payment error:", err);
     res.status(500).json({ success: false, message: "Внутренняя ошибка сервера" });
+  }
+});
+
+// POST /api/tinkoff/webhook — вебхук от Т-Кассы (уведомления о статусе платежа)
+router.post("/webhook", express.urlencoded({ extended: true }), async (req, res) => {
+  try {
+    const notification = req.body as Record<string, string>;
+    const { Status, OrderId, Amount, Email, Phone, Token: notifToken } = notification;
+
+    console.log(`[Tinkoff Webhook] Status: ${Status} | OrderId: ${OrderId} | Amount: ${Amount}`);
+
+    // Верифицируем токен уведомления
+    const { Token: _token, ...paramsWithoutToken } = notification;
+    const expectedToken = generateToken(
+      Object.fromEntries(
+        Object.entries(paramsWithoutToken).map(([k, v]) => [k, v])
+      ) as Record<string, string>
+    );
+
+    if (notifToken !== expectedToken) {
+      console.warn("[Tinkoff Webhook] Invalid token, ignoring");
+      // Всё равно отвечаем OK чтобы Т-Касса не повторяла запрос
+      res.status(200).send("OK");
+      return;
+    }
+
+    // Обрабатываем успешный платёж
+    if (Status === "CONFIRMED" || Status === "AUTHORIZED") {
+      const amountRub = Math.round(Number(Amount) / 100);
+      console.log(`[Tinkoff Webhook] Payment confirmed | OrderId: ${OrderId} | Amount: ${amountRub} ₽ | Email: ${Email || "—"}`);
+    }
+
+    // Обязательный ответ для Т-Кассы — 200 OK заглавными буквами
+    res.status(200).send("OK");
+  } catch (err) {
+    console.error("[Tinkoff Webhook] Error:", err);
+    // Даже при ошибке отвечаем OK чтобы Т-Касса не спамила повторными запросами
+    res.status(200).send("OK");
   }
 });
 
