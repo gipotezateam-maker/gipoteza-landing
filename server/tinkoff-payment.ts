@@ -35,44 +35,43 @@ router.post("/init", async (req, res) => {
     const orderId = customOrderId || `order_${Date.now()}`;
     const amount = 99000; // 990 руб в копейках
 
-    const params: Record<string, string | number> = {
+    // Базовые поля — только они участвуют в подписи токена
+    const baseParams: Record<string, string | number> = {
       TerminalKey: TERMINAL_KEY,
       Amount: amount,
       OrderId: orderId,
       Description: "Мини-курс «Запуск»: маркетинговый симулятор для EdTech",
-      SuccessURL: `${req.protocol}://${req.get("host")}/course?status=success`,
-      FailURL: `${req.protocol}://${req.get("host")}/course?status=fail`,
+      SuccessURL: `https://gipoteza-agency.ru/course?status=success`,
+      FailURL: `https://gipoteza-agency.ru/course?status=fail`,
     };
 
-    // Добавляем данные покупателя если есть
-    if (email) params.Email = email;
-    if (phone) params.Phone = phone;
-    if (name) params.Name = name;
+    // Токен считается ТОЛЬКО из базовых полей (без Email/Phone/Name/Receipt)
+    const token = generateToken(baseParams);
 
-    const token = generateToken(params);
-
-    const body = {
-      ...params,
+    const body: Record<string, unknown> = {
+      ...baseParams,
       Token: token,
-      ...(email || phone || name
-        ? {
-            Receipt: {
-              Email: email || "",
-              Phone: phone || "",
-              Taxation: "usn_income",
-              Items: [
-                {
-                  Name: "Мини-курс «Запуск»",
-                  Price: amount,
-                  Quantity: 1,
-                  Amount: amount,
-                  Tax: "none",
-                },
-              ],
-            },
-          }
-        : {}),
     };
+
+    // Email, Phone, Receipt добавляем ПОСЛЕ токена — они не влияют на подпись
+    if (email) body.Email = email;
+    if (phone) body.Phone = phone;
+    if (email || phone) {
+      body.Receipt = {
+        Email: email || "",
+        Phone: phone || "",
+        Taxation: "usn_income",
+        Items: [
+          {
+            Name: "Мини-курс «Запуск»",
+            Price: amount,
+            Quantity: 1,
+            Amount: amount,
+            Tax: "none",
+          },
+        ],
+      };
+    }
 
     const response = await fetch(`${TINKOFF_API}/Init`, {
       method: "POST",
