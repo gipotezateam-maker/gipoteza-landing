@@ -102,9 +102,16 @@ router.post("/init", async (req, res) => {
   }
 });
 
+// GET /api/tinkoff/webhook — ping/health check (Т-Касса может проверять доступность URL)
+router.get("/webhook", (req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("OK");
+});
+
 // POST /api/tinkoff/webhook — вебхук от Т-Кассы (уведомления о статусе платежа)
 // Т-Касса отправляет POST с Content-Type: application/json
-router.post("/webhook", async (req, res) => {
+// Ответ: HTTP 200, тело "OK" (заглавными, без тегов)
+router.post("/webhook", (req, res) => {
   try {
     const notification = req.body;
     const { Status, OrderId, Amount, PaymentId } = notification || {};
@@ -118,15 +125,26 @@ router.post("/webhook", async (req, res) => {
       console.log(`[Tinkoff Webhook] Payment SUCCESS | OrderId: ${OrderId} | Amount: ${amountRub} ₽`);
     }
 
+    // Обрабатываем отклонённый платёж
+    if (Status === "REJECTED") {
+      console.log(`[Tinkoff Webhook] Payment REJECTED | OrderId: ${OrderId}`);
+    }
+
+    // Обрабатываем возврат
+    if (Status === "REFUNDED") {
+      console.log(`[Tinkoff Webhook] Payment REFUNDED | OrderId: ${OrderId}`);
+    }
+
     // Обязательный ответ для Т-Кассы:
     // HTTP CODE = 200, тело = OK (заглавными, без тегов, plain text)
-    res.set("Content-Type", "text/plain");
-    res.status(200).send("OK");
+    // Используем writeHead + end чтобы Express не добавлял charset
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("OK");
   } catch (err) {
     console.error("[Tinkoff Webhook] Error:", err);
-    // Даже при ошибке отвечаем OK
-    res.set("Content-Type", "text/plain");
-    res.status(200).send("OK");
+    // Даже при ошибке отвечаем OK чтобы Т-Касса не повторяла запрос
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("OK");
   }
 });
 
