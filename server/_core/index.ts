@@ -11,6 +11,7 @@ import { serveStatic, setupVite } from "./vite";
 import { invokeLLM } from "./llm";
 import { parsePresentationFromText, generatePresentationPDF } from "../marketos-pdf";
 import tinkoffRouter from "../tinkoff-payment.js";
+import courseRouter from "../course.js";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -270,6 +271,9 @@ async function startServer() {
 
   // Tinkoff payment API
   app.use("/api/tinkoff", tinkoffRouter);
+
+  // Course API
+  app.use("/api/course", courseRouter);
 
   // tRPC API
   app.use(

@@ -26,3 +26,28 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 // TODO: Add your tables here
+
+// ─── Course tables ───────────────────────────────────────────────────────────
+
+export const courseStudents = mysqlTable("course_students", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  name: varchar("name", { length: 255 }),
+  accessToken: varchar("accessToken", { length: 128 }).notNull().unique(),
+  isPaid: int("isPaid").default(0).notNull(), // 0 = free (lessons 1-3), 1 = paid (all)
+  paymentId: varchar("paymentId", { length: 128 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const courseProgress = mysqlTable("course_progress", {
+  id: int("id").autoincrement().primaryKey(),
+  studentId: int("studentId").notNull(),
+  lessonId: int("lessonId").notNull(), // 1-10
+  completed: int("completed").default(0).notNull(),
+  taskCompleted: int("taskCompleted").default(0).notNull(),
+  completedAt: timestamp("completedAt"),
+});
+
+export type CourseStudent = typeof courseStudents.$inferSelect;
+export type InsertCourseStudent = typeof courseStudents.$inferInsert;
+export type CourseProgress = typeof courseProgress.$inferSelect;

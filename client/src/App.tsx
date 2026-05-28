@@ -14,6 +14,9 @@ import MarketosPage from "./pages/MarketosPage";
 import MarketosAdmin from "./pages/MarketosAdmin";
 import GamePage from "@/pages/GamePage";
 import CoursePage from "@/pages/CoursePage";
+import LearnPage from "@/pages/LearnPage";
+import LearnLessonPage from "@/pages/LearnLessonPage";
+import LearnPayPage from "@/pages/LearnPayPage";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -28,6 +31,9 @@ function Router() {
       <Route path={"/marketos-admin"} component={MarketosAdmin} />
       <Route path={"/game"} component={GamePage} />
       <Route path={"/course"} component={CoursePage} />
+      <Route path={"/learn"} component={LearnPage} />
+      <Route path={"/learn/lesson/:id"} component={LearnLessonPage} />
+      <Route path={"/learn/pay"} component={LearnPayPage} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
