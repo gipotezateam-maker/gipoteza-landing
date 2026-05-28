@@ -103,39 +103,29 @@ router.post("/init", async (req, res) => {
 });
 
 // POST /api/tinkoff/webhook — вебхук от Т-Кассы (уведомления о статусе платежа)
-router.post("/webhook", express.urlencoded({ extended: true }), async (req, res) => {
+// Т-Касса отправляет POST с Content-Type: application/json
+router.post("/webhook", async (req, res) => {
   try {
-    const notification = req.body as Record<string, string>;
-    const { Status, OrderId, Amount, Email, Phone, Token: notifToken } = notification;
+    const notification = req.body;
+    const { Status, OrderId, Amount, PaymentId } = notification || {};
 
-    console.log(`[Tinkoff Webhook] Status: ${Status} | OrderId: ${OrderId} | Amount: ${Amount}`);
-
-    // Верифицируем токен уведомления
-    const { Token: _token, ...paramsWithoutToken } = notification;
-    const expectedToken = generateToken(
-      Object.fromEntries(
-        Object.entries(paramsWithoutToken).map(([k, v]) => [k, v])
-      ) as Record<string, string>
-    );
-
-    if (notifToken !== expectedToken) {
-      console.warn("[Tinkoff Webhook] Invalid token, ignoring");
-      // Всё равно отвечаем OK чтобы Т-Касса не повторяла запрос
-      res.status(200).send("OK");
-      return;
-    }
+    console.log(`[Tinkoff Webhook] Received | Status: ${Status} | OrderId: ${OrderId} | Amount: ${Amount} | PaymentId: ${PaymentId}`);
+    console.log(`[Tinkoff Webhook] Full body:`, JSON.stringify(notification));
 
     // Обрабатываем успешный платёж
     if (Status === "CONFIRMED" || Status === "AUTHORIZED") {
       const amountRub = Math.round(Number(Amount) / 100);
-      console.log(`[Tinkoff Webhook] Payment confirmed | OrderId: ${OrderId} | Amount: ${amountRub} ₽ | Email: ${Email || "—"}`);
+      console.log(`[Tinkoff Webhook] Payment SUCCESS | OrderId: ${OrderId} | Amount: ${amountRub} ₽`);
     }
 
-    // Обязательный ответ для Т-Кассы — 200 OK заглавными буквами
+    // Обязательный ответ для Т-Кассы:
+    // HTTP CODE = 200, тело = OK (заглавными, без тегов, plain text)
+    res.set("Content-Type", "text/plain");
     res.status(200).send("OK");
   } catch (err) {
     console.error("[Tinkoff Webhook] Error:", err);
-    // Даже при ошибке отвечаем OK чтобы Т-Касса не спамила повторными запросами
+    // Даже при ошибке отвечаем OK
+    res.set("Content-Type", "text/plain");
     res.status(200).send("OK");
   }
 });
