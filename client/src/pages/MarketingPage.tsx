@@ -97,7 +97,7 @@ function RegisterForm() {
       const data = await res.json();
       if (data.success) {
         localStorage.setItem("course_token", data.token);
-        setLocation("/learn");
+        setLocation("/marketing/thanks");
       } else {
         setError(data.message || "Ошибка регистрации");
       }

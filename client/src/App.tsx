@@ -18,6 +18,7 @@ import LearnPage from "@/pages/LearnPage";
 import LearnLessonPage from "@/pages/LearnLessonPage";
 import LearnPayPage from "@/pages/LearnPayPage";
 import MarketingPage from "@/pages/MarketingPage";
+import MarketingThanksPage from "@/pages/MarketingThanksPage";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -36,6 +37,7 @@ function Router() {
       <Route path={"/learn/lesson/:id"} component={LearnLessonPage} />
       <Route path={"/learn/pay"} component={LearnPayPage} />
       <Route path={"/marketing"} component={MarketingPage} />
+      <Route path={"/marketing/thanks"} component={MarketingThanksPage} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
