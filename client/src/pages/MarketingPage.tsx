@@ -175,31 +175,35 @@ export default function MarketingPage() {
               </div>
             </FadeUp>
             <FadeUp delay={0.1}>
-              {/* Крупный сапог + текст рядом */}
-              <div style={{ display: "flex", alignItems: "flex-end", gap: 24, marginBottom: 16 }}>
-                {/* SVG сапог */}
-                <div style={{ flexShrink: 0 }}>
-                  <svg viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: 120, height: "auto" }}>
-                    {/* Звёздочка */}
-                    <path d="M28 8 L33 24 L50 24 L37 34 L42 50 L28 40 L14 50 L19 34 L6 24 L23 24 Z" fill="#B5F23D" />
-                    {/* Голенище */}
-                    <path d="M52 28 L52 148 L38 148 L38 162 Q38 178 54 178 L144 178 Q156 178 156 166 L156 154 Q156 142 144 142 L118 142 L118 28 Z" fill="#ff3d2e" />
-                    {/* Блик */}
-                    <rect x="62" y="36" width="16" height="100" rx="8" fill="rgba(255,255,255,0.12)" />
-                    {/* Подошва */}
-                    <rect x="32" y="176" width="126" height="14" rx="7" fill="#cc2d20" />
-                    {/* Тень */}
-                    <ellipse cx="95" cy="195" rx="60" ry="6" fill="rgba(255,61,46,0.2)" />
-                  </svg>
-                </div>
-                {/* Текст */}
-                <div>
-                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(30px, 4.5vw, 54px)", fontWeight: 900, lineHeight: 1.0, color: "#F5F5F0", marginBottom: 4 }}>Маркето-</div>
-                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(30px, 4.5vw, 54px)", fontWeight: 900, lineHeight: 1.0, color: "#F5F5F0", marginBottom: 4 }}>логов</div>
-                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(30px, 4.5vw, 54px)", fontWeight: 900, lineHeight: 1.0, color: "#F5F5F0", marginBottom: 4 }}>много.</div>
-                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(30px, 4.5vw, 54px)", fontWeight: 900, lineHeight: 1.0, color: "#ff3d2e" }}>Настоящих — нет.</div>
-                </div>
+              {/* Слово МАРКЕТОЛОГИ из сапогов */}
+              <div style={{ marginBottom: 20 }}>
+                <svg viewBox="0 0 520 110" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", maxWidth: 520, height: "auto" }}>
+                  {/* Каждый сапог = одна буква слова МАРКЕТОЛОГИ (11 букв) */}
+                  {/* Шаг между сапогами: 47px */}
+                  {[0,1,2,3,4,5,6,7,8,9,10].map((i) => {
+                    const x = i * 47;
+                    const isRed = i === 0; // Первый сапог красный
+                    const col = isRed ? "#ff3d2e" : "#F5F5F0";
+                    const sole = isRed ? "#cc2d20" : "#bbb";
+                    return (
+                      <g key={i} transform={`translate(${x}, 5)`}>
+                        {/* Голенище */}
+                        <path d={`M10 0 L10 62 L4 62 L4 70 Q4 80 12 80 L38 80 Q44 80 44 74 L44 68 Q44 62 38 62 L24 62 L24 0 Z`} fill={col} />
+                        {/* Блик */}
+                        <rect x="13" y="4" width="5" height="52" rx="2.5" fill="rgba(255,255,255,0.13)" />
+                        {/* Подошва */}
+                        <rect x="1" y="78" width="44" height="7" rx="3.5" fill={sole} />
+                      </g>
+                    );
+                  })}
+                  {/* Звёздочка справа */}
+                  <path d="M500 0 L504 12 L517 12 L507 19 L511 31 L500 24 L489 31 L493 19 L483 12 L496 12 Z" fill="#B5F23D" />
+                </svg>
               </div>
+              {/* Надпись под сапогами */}
+              <h1 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 4vw, 52px)", lineHeight: 1.05, marginBottom: 24, fontWeight: 900 }}>
+                <span style={{ color: "#ff3d2e" }}>Настоящих — нет.</span>
+              </h1>
             </FadeUp>
             <FadeUp delay={0.2}>
               <p style={{ fontSize: 18, lineHeight: 1.7, color: "#bbb", marginBottom: 32, maxWidth: 520 }}>
@@ -231,8 +235,8 @@ export default function MarketingPage() {
                 <div style={{ fontSize: 12, color: "#ff3d2e", textTransform: "uppercase", letterSpacing: 1 }}>Фаундер Гипотезы</div>
               </div>
             </div>
-            <div style={{ flex: 1, borderRadius: 16, overflow: "hidden", background: "#1a1a1a", marginTop: 40, position: "relative" }}>
-              <img src={PHOTO_ALEXEY} alt="Алексей — фаундер Гипотезы" style={{ width: "100%", height: 420, objectFit: "cover", objectPosition: "40% 8%", display: "block" }} />
+            <div style={{ flex: 1, borderRadius: 16, overflow: "hidden", background: "#1a1a1a", marginTop: 40, position: "relative", height: 420, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <img src={PHOTO_ALEXEY} alt="Алексей — фаундер Гипотезы" style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "center top", display: "block", background: "#1a1a1a" }} />
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(0,0,0,0.8))", padding: "40px 20px 20px" }}>
                 <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: 18, fontWeight: 700, color: "#fff" }}>Алексей</div>
                 <div style={{ fontSize: 12, color: "#ff3d2e", textTransform: "uppercase", letterSpacing: 1 }}>Фаундер Гипотезы</div>
