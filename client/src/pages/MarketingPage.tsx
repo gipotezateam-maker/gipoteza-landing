@@ -112,7 +112,7 @@ export default function MarketingPage() {
     { id: 6, title: "Контент-маркетинг с AI: от идеи до публикации за 30 минут", tags: ["AI", "Практика"], free: false },
     { id: 7, title: "Трафик и аналитика: что считать и как принимать решения", tags: ["Практика"], free: false },
     { id: 8, title: "Продуктовый маркетинг: как думать как стратег", tags: ["Стратегия"], free: false },
-    { id: 9, title: "Веб-кодинг для маркетолога: лендинги без разработчика", tags: ["AI", "Практика"], free: false },
+    { id: 9, title: "Вайбкодинг для маркетолога: лендинги без разработчика", tags: ["AI", "Практика"], free: false },
     { id: 10, title: "Как стать незаменимым: карьерная стратегия маркетолога AI-first", tags: ["Стратегия", "AI"], free: false },
   ];
 
@@ -157,12 +157,12 @@ export default function MarketingPage() {
               </div>
             </FadeUp>
           </div>
-          <FadeUp delay={0.2} style={{ display: "flex", gap: 16, justifyContent: "center" }}>
-            <div style={{ width: "48%", aspectRatio: "3/4", borderRadius: 16, overflow: "hidden", background: "#1a1a1a" }}>
-              <img src={PHOTO_DENIS} alt="Денис — фаундер Гипотезы" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
+          <FadeUp delay={0.2} style={{ display: "flex", gap: 16, justifyContent: "center", alignItems: "flex-start" }}>
+            <div style={{ flex: 1, borderRadius: 16, overflow: "hidden", background: "#1a1a1a" }}>
+              <img src={PHOTO_DENIS} alt="Денис — фаундер Гипотезы" style={{ width: "100%", height: 420, objectFit: "cover", objectPosition: "center top", display: "block" }} />
             </div>
-            <div style={{ width: "48%", aspectRatio: "3/4", borderRadius: 16, overflow: "hidden", background: "#1a1a1a", marginTop: 40 }}>
-              <img src={PHOTO_ALEXEY} alt="Алексей — фаундер Гипотезы" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
+            <div style={{ flex: 1, borderRadius: 16, overflow: "hidden", background: "#1a1a1a", marginTop: 40 }}>
+              <img src={PHOTO_ALEXEY} alt="Алексей — фаундер Гипотезы" style={{ width: "100%", height: 420, objectFit: "cover", objectPosition: "center top", display: "block" }} />
             </div>
           </FadeUp>
         </div>
@@ -294,7 +294,7 @@ export default function MarketingPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
             {[
               { num: "01", title: "Системное мышление", desc: "Как строить маркетинг, а не просто запускать рекламу. Стратегия, воронки, метрики — всё в одной голове." },
-              { num: "02", title: "AI-first подход", desc: "Нейросети, автоматизация, веб-кодинг — как инструменты каждого дня, а не страшилки из новостей." },
+              { num: "02", title: "AI-first подход", desc: "Нейросети, автоматизация, вайбкодинг — как инструменты каждого дня, а не страшилки из новостей." },
               { num: "03", title: "Продуктовый маркетинг", desc: "Как думать стратегически, считать деньги и принимать решения на основе данных — а не на ощущениях." },
             ].map((item, i) => (
               <FadeUp key={i} delay={i * 0.1}>
@@ -377,54 +377,39 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ===== ЭКРАН 7 — КАЛЬКУЛЯТОР ЗАРПЛАТЫ ===== */}
+      {/* ===== ЭКРАН 7 — СРАВНЕНИЕ ===== */}
       <section style={{ padding: "100px 5%", background: "#0a0a0a" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <FadeUp>
-            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 60, lineHeight: 1.2 }}>
-              Маркетолог vs.<br /><span style={{ color: "#ff3d2e" }}>Маркетолог AI-first</span>
+            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 16, lineHeight: 1.2 }}>
+              Два пути.<br /><span style={{ color: "#ff3d2e" }}>Один выбор.</span>
             </h2>
+            <p style={{ fontSize: 18, color: "#888", marginBottom: 60 }}>Этот курс — мост из левого столбца в правый.</p>
           </FadeUp>
           <FadeUp delay={0.1}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-              <button
-                onClick={() => setSalaryView("regular")}
-                style={{
-                  background: salaryView === "regular" ? "#1a1a1a" : "#111",
-                  border: salaryView === "regular" ? "2px solid #ff3d2e" : "2px solid #333",
-                  borderRadius: 12, padding: 32, cursor: "pointer", textAlign: "left", color: "#fff"
-                }}
-              >
-                <div style={{ fontSize: 13, color: "#888", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Обычный маркетолог</div>
-                <div style={{ fontSize: 36, fontWeight: 700, fontFamily: "Unbounded, sans-serif", marginBottom: 20 }}>80 000 руб</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  <span style={{ color: "#888", fontSize: 15 }}>Настраивает таргет руками</span>
-                  <span style={{ color: "#888", fontSize: 15 }}>Пишет тексты по шаблонам</span>
-                  <span style={{ color: "#888", fontSize: 15 }}>Не считает юнит-экономику</span>
-                  <span style={{ color: "#f44", fontSize: 15, marginTop: 8 }}>Заменяем нейросетью</span>
+            <div style={{ background: "#111", borderRadius: 16, overflow: "hidden", border: "1px solid #222" }}>
+              {/* Заголовки */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", background: "#1a1a1a" }}>
+                <div style={{ padding: "20px 24px", fontSize: 13, color: "#666", textTransform: "uppercase", letterSpacing: 1 }}>Навык</div>
+                <div style={{ padding: "20px 24px", fontSize: 13, color: "#888", textTransform: "uppercase", letterSpacing: 1, borderLeft: "1px solid #222" }}>Обычный маркетолог<br /><span style={{ fontSize: 20, fontWeight: 700, color: "#666", fontFamily: "Unbounded, sans-serif" }}>80 000₽</span></div>
+                <div style={{ padding: "20px 24px", fontSize: 13, color: "#ff3d2e", textTransform: "uppercase", letterSpacing: 1, borderLeft: "1px solid #222" }}>Маркетолог AI-first<br /><span style={{ fontSize: 20, fontWeight: 700, color: "#ff3d2e", fontFamily: "Unbounded, sans-serif" }}>200 000₽</span></div>
+              </div>
+              {/* Строки */}
+              {[
+                { skill: "Стратегия", regular: "Выполняет задачи", ai: "Строит систему" },
+                { skill: "AI-инструменты", regular: "Не использует", ai: "Работает каждый день" },
+                { skill: "Вайбкодинг", regular: "Зависит от разработчика", ai: "Делает сам за 30 мин" },
+                { skill: "Юнит-экономика", regular: "Не считает", ai: "Считает CAC, LTV, ROMI" },
+                { skill: "Контент", regular: "Пишет руками по шаблону", ai: "AI + стратегия + дистрибуция" },
+                { skill: "Будущее", regular: "Заменяется нейросетью", ai: "Управляет нейросетью" },
+              ].map((row, i) => (
+                <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderTop: "1px solid #222" }}>
+                  <div style={{ padding: "16px 24px", fontSize: 15, color: "#aaa", fontWeight: 500 }}>{row.skill}</div>
+                  <div style={{ padding: "16px 24px", fontSize: 15, color: "#666", borderLeft: "1px solid #222" }}>{row.regular}</div>
+                  <div style={{ padding: "16px 24px", fontSize: 15, color: i === 5 ? "#4f4" : "#eee", borderLeft: "1px solid #222", background: "rgba(255,61,46,0.03)" }}>{row.ai}</div>
                 </div>
-              </button>
-              <button
-                onClick={() => setSalaryView("ai")}
-                style={{
-                  background: salaryView === "ai" ? "#1a1a1a" : "#111",
-                  border: salaryView === "ai" ? "2px solid #ff3d2e" : "2px solid #333",
-                  borderRadius: 12, padding: 32, cursor: "pointer", textAlign: "left", color: "#fff"
-                }}
-              >
-                <div style={{ fontSize: 13, color: "#888", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Маркетолог AI-first</div>
-                <div style={{ fontSize: 36, fontWeight: 700, fontFamily: "Unbounded, sans-serif", color: "#ff3d2e", marginBottom: 20 }}>200 000 руб</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  <span style={{ color: "#ccc", fontSize: 15 }}>Мыслит системно и стратегически</span>
-                  <span style={{ color: "#ccc", fontSize: 15 }}>Использует AI как инструмент</span>
-                  <span style={{ color: "#ccc", fontSize: 15 }}>Считает деньги, а не лайки</span>
-                  <span style={{ color: "#4f4", fontSize: 15, marginTop: 8 }}>Незаменим</span>
-                </div>
-              </button>
+              ))}
             </div>
-            <p style={{ textAlign: "center", marginTop: 32, fontSize: 18, color: "#888" }}>
-              Этот курс — мост из левого столбца в правый.
-            </p>
           </FadeUp>
         </div>
       </section>
