@@ -117,7 +117,7 @@ export default function MarketingPage() {
   ];
 
   // Фото из оригинального сайта gipoteza-agency.ru
-  const PHOTO_DENIS = "/manus-storage/denis_a7150bb9.jpg";
+  const PHOTO_DENIS = "/manus-storage/denis_new_adb80923.webp";
   const PHOTO_ALEXEY = "/manus-storage/alexey_8a55e1aa.jpg";
 
   return (
@@ -141,7 +141,7 @@ export default function MarketingPage() {
             </FadeUp>
             <FadeUp delay={0.2}>
               <p style={{ fontSize: 18, lineHeight: 1.7, color: "#bbb", marginBottom: 32, maxWidth: 520 }}>
-                Бесплатный курс для тех, кто хочет мыслить системно, работать с AI и строить маркетинг как стратег — а не как исполнитель задач из 2020 года.
+                Мы — агентство, которое каждый день сталкивается с новым рынком. Запускаем воронки, считаем деньги, работаем с AI. Мы сапожники в сапогах — и этот курс про то, как мы это делаем.
               </p>
             </FadeUp>
             <FadeUp delay={0.3}>
@@ -159,10 +159,10 @@ export default function MarketingPage() {
           </div>
           <FadeUp delay={0.2} style={{ display: "flex", gap: 16, justifyContent: "center" }}>
             <div style={{ width: "48%", aspectRatio: "3/4", borderRadius: 16, overflow: "hidden", background: "#1a1a1a" }}>
-              <img src={PHOTO_DENIS} alt="Денис — фаундер Гипотезы" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src={PHOTO_DENIS} alt="Денис — фаундер Гипотезы" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
             </div>
             <div style={{ width: "48%", aspectRatio: "3/4", borderRadius: 16, overflow: "hidden", background: "#1a1a1a", marginTop: 40 }}>
-              <img src={PHOTO_ALEXEY} alt="Алексей — трафик и AI" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src={PHOTO_ALEXEY} alt="Алексей — фаундер Гипотезы" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
             </div>
           </FadeUp>
         </div>
@@ -176,18 +176,60 @@ export default function MarketingPage() {
               Рынок изменился.<br /><span style={{ color: "#ff3d2e" }}>Ты — ещё нет.</span>
             </h2>
           </FadeUp>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
-            {[
-              "AI уже делает работу обычного маркетолога. Таргет, тексты, аналитика — нейросеть справляется быстрее и дешевле.",
-              "Маркетологов на рынке — тысячи. Тех, кто понимает систему и мыслит стратегически — десятки.",
-              "Обычный маркетолог — 80 000 руб/мес. Продуктовый маркетолог AI-first — 200 000 руб. Разница — в голове, а не в опыте.",
-            ].map((text, i) => (
-              <FadeUp key={i} delay={i * 0.1}>
-                <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 32, borderLeft: "3px solid #ff3d2e", height: "100%" }}>
-                  <p style={{ fontSize: 17, lineHeight: 1.7, color: "#ddd", margin: 0 }}>{text}</p>
-                </div>
-              </FadeUp>
-            ))}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
+
+            {/* Карточка 1 — конкуренция с графиком */}
+            <FadeUp delay={0}>
+              <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 32, borderLeft: "3px solid #ff3d2e", height: "100%" }}>
+                <div style={{ fontSize: 48, fontWeight: 800, fontFamily: "Unbounded, sans-serif", color: "#ff3d2e", lineHeight: 1, marginBottom: 8 }}>300</div>
+                <p style={{ fontSize: 17, lineHeight: 1.7, color: "#ddd", marginBottom: 24 }}>откликов на одну вакансию маркетолога. Берут тех, кто умеет думать системно и работать с AI.</p>
+                {/* SVG бар-чарт */}
+                <svg width="100%" height="80" viewBox="0 0 280 80" style={{ display: "block" }}>
+                  <text x="0" y="72" fontSize="11" fill="#666">2023</text>
+                  <rect x="40" y="60" width="20" height="12" fill="#444" rx="2" />
+                  <text x="64" y="72" fontSize="11" fill="#aaa">4</text>
+                  <text x="100" y="72" fontSize="11" fill="#666">2025</text>
+                  <rect x="140" y="8" width="20" height="64" fill="#ff3d2e" rx="2" />
+                  <text x="164" y="72" fontSize="11" fill="#ff3d2e" fontWeight="700">300</text>
+                </svg>
+                <p style={{ fontSize: 12, color: "#555", margin: 0, marginTop: 8 }}>Источник: hh.ru, 2025</p>
+              </div>
+            </FadeUp>
+
+            {/* Карточка 2 — AI в командах */}
+            <FadeUp delay={0.1}>
+              <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 32, borderLeft: "3px solid #ff3d2e", height: "100%" }}>
+                <div style={{ fontSize: 48, fontWeight: 800, fontFamily: "Unbounded, sans-serif", color: "#ff3d2e", lineHeight: 1, marginBottom: 8 }}>93%</div>
+                <p style={{ fontSize: 17, lineHeight: 1.7, color: "#ddd", marginBottom: 24 }}>команд уже используют AI в работе. Компании доплачивают 10–20% тем, кто умеет с ним работать.</p>
+                {/* SVG прогресс-бар */}
+                <svg width="100%" height="40" viewBox="0 0 280 40">
+                  <rect x="0" y="10" width="280" height="16" fill="#333" rx="8" />
+                  <rect x="0" y="10" width="260" height="16" fill="#ff3d2e" rx="8" />
+                  <text x="0" y="38" fontSize="11" fill="#666">Используют AI</text>
+                  <text x="220" y="38" fontSize="11" fill="#ff3d2e" fontWeight="700">93%</text>
+                </svg>
+                <p style={{ fontSize: 12, color: "#555", margin: 0, marginTop: 8 }}>Источник: Sostav.ru, январь 2026</p>
+              </div>
+            </FadeUp>
+
+            {/* Карточка 3 — зарплаты */}
+            <FadeUp delay={0.2}>
+              <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 32, borderLeft: "3px solid #ff3d2e", height: "100%" }}>
+                <p style={{ fontSize: 15, color: "#888", marginBottom: 16 }}>Зарплата маркетолога в 2025:</p>
+                {/* SVG горизонтальные бары */}
+                <svg width="100%" height="80" viewBox="0 0 280 80">
+                  <text x="0" y="14" fontSize="12" fill="#888">Без AI</text>
+                  <rect x="60" y="2" width="80" height="16" fill="#444" rx="4" />
+                  <text x="146" y="14" fontSize="12" fill="#aaa">до 80 000₽</text>
+                  <text x="0" y="52" fontSize="12" fill="#fff">AI-first</text>
+                  <rect x="60" y="40" width="180" height="16" fill="#ff3d2e" rx="4" />
+                  <text x="246" y="52" fontSize="12" fill="#ff3d2e" fontWeight="700">150 000₽+</text>
+                </svg>
+                <p style={{ fontSize: 17, lineHeight: 1.7, color: "#ddd", marginBottom: 0, marginTop: 16 }}>Разница — в подходе, не в опыте.</p>
+                <p style={{ fontSize: 12, color: "#555", margin: 0, marginTop: 8 }}>Источник: Go-to-Market Academy + hh.ru, 2025</p>
+              </div>
+            </FadeUp>
+
           </div>
         </div>
       </section>
@@ -224,9 +266,9 @@ export default function MarketingPage() {
                 </div>
                 <div style={{ padding: 32 }}>
                   <h3 style={{ fontFamily: "Unbounded, sans-serif", fontSize: 24, marginBottom: 8 }}>Алексей</h3>
-                  <p style={{ color: "#ff3d2e", fontSize: 13, marginBottom: 16, textTransform: "uppercase", letterSpacing: 1 }}>Трафик и AI</p>
+                  <p style={{ color: "#ff3d2e", fontSize: 13, marginBottom: 16, textTransform: "uppercase", letterSpacing: 1 }}>Фаундер Гипотезы</p>
                   <p style={{ color: "#bbb", fontSize: 16, lineHeight: 1.7 }}>
-                    Считает юнит-экономику, настраивает AI-инструменты, масштабирует то, что работает. Знает, как превратить данные в деньги.
+                    Фаундер Гипотезы. Настраивает AI-инструменты, считает юнит-экономику, масштабирует то, что работает. Знает, как превратить данные в деньги.
                   </p>
                 </div>
               </div>
