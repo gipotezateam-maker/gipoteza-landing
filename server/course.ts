@@ -8,6 +8,51 @@ const router = Router();
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_IDS = ["1023689076", "5898622042"];
+const UNISENDER_API_KEY = process.env.UNISENDER_API_KEY;
+const UNISENDER_LIST_ID = "1"; // "Мой первый список"
+
+async function addToUnisender(email: string, name: string | null, token: string) {
+  if (!UNISENDER_API_KEY) return;
+  try {
+    // Добавляем контакт в список
+    const subscribeParams = new URLSearchParams({
+      api_key: UNISENDER_API_KEY,
+      format: "json",
+      list_ids: UNISENDER_LIST_ID,
+      "fields[email]": email,
+    });
+    if (name) subscribeParams.set("fields[Name]", name);
+
+    await fetch(`https://api.unisender.com/ru/api/subscribe?${subscribeParams.toString()}`, { method: "GET" });
+
+    // Отправляем приветственное письмо
+    const courseUrl = `https://gipoteza-agency.ru/learn?token=${token}`;
+    const htmlBody = `
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #f5f5f0; padding: 40px 32px; border-radius: 12px;">
+  <div style="font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: #888; margin-bottom: 16px;">Агентство Гипотеза</div>
+  <h1 style="font-size: 32px; font-weight: 900; margin: 0 0 8px; color: #f5f5f0;">Трушный<br><span style="color: #ff3d2e;">Маркетинг</span></h1>
+  <p style="color: #aaa; font-size: 16px; margin: 0 0 32px;">Привет${name ? ", " + name : ""}! Ты зарегистрировался на курс.</p>
+  <p style="color: #ccc; font-size: 15px; line-height: 1.6; margin: 0 0 32px;">Первые 3 урока уже открыты — заходи и начинай прямо сейчас.</p>
+  <a href="${courseUrl}" style="display: inline-block; background: #ff3d2e; color: #fff; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 700; font-size: 16px; letter-spacing: 0.5px;">Открыть курс →</a>
+  <p style="color: #555; font-size: 13px; margin: 32px 0 0;">Если кнопка не работает, скопируй ссылку: ${courseUrl}</p>
+</div>`;
+
+    const emailParams = new URLSearchParams({
+      api_key: UNISENDER_API_KEY,
+      format: "json",
+      email: email,
+      sender_name: "Гипотеза — Трушный Маркетинг",
+      sender_email: "noreply@gipoteza-agency.ru",
+      subject: "Твой доступ к курсу Трушный Маркетинг",
+      body: htmlBody,
+      list_id: UNISENDER_LIST_ID,
+    });
+
+    await fetch(`https://api.unisender.com/ru/api/sendEmail?${emailParams.toString()}`, { method: "GET" });
+  } catch (e) {
+    console.error("Unisender error:", e);
+  }
+}
 
 async function sendTelegram(msg: string) {
   if (!TELEGRAM_BOT_TOKEN) return;
@@ -54,6 +99,9 @@ router.post("/register", async (req, res) => {
     await sendTelegram(
       `📚 <b>Новая регистрация на курс</b>\n👤 ${name || "—"}\n📧 ${email}`
     );
+
+    // Добавляем в Unisender и отправляем приветственное письмо
+    addToUnisender(email.toLowerCase().trim(), name?.trim() || null, token).catch(() => {});
 
     return res.json({ success: true, token, isNew: true });
   } catch (e: any) {
