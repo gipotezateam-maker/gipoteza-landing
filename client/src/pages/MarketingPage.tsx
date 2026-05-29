@@ -175,39 +175,31 @@ export default function MarketingPage() {
               </div>
             </FadeUp>
             <FadeUp delay={0.1}>
-              {/* SVG-иллюстрация: много серых сапог + один красный */}
-              <div style={{ marginBottom: 20 }}>
-                <svg viewBox="0 0 500 90" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", maxWidth: 500, height: "auto" }}>
-                  {/* Много маленьких серых сапог */}
-                  {[0,1,2,3,4,5,6].map((i) => (
-                    <g key={i} transform={`translate(${i * 46 + 4}, 8)`} opacity="0.3">
-                      {/* Голенище */}
-                      <rect x="10" y="0" width="18" height="38" rx="3" fill="#888" />
-                      {/* Подъём */}
-                      <path d="M10 34 Q10 46 22 46 L34 46 Q38 46 38 42 L38 38 Q38 34 34 34 Z" fill="#888" />
-                      {/* Подошва */}
-                      <rect x="6" y="44" width="34" height="6" rx="3" fill="#666" />
-                    </g>
-                  ))}
-                  {/* Один большой красный сапог */}
-                  <g transform="translate(360, 0)">
-                    {/* Голенище */}
-                    <rect x="14" y="2" width="28" height="52" rx="5" fill="#ff3d2e" />
-                    {/* Блик */}
-                    <rect x="18" y="6" width="8" height="40" rx="4" fill="rgba(255,255,255,0.15)" />
-                    {/* Подъём */}
-                    <path d="M14 50 Q14 70 30 70 L52 70 Q60 70 60 62 L60 56 Q60 50 52 50 Z" fill="#ff3d2e" />
-                    {/* Подошва */}
-                    <rect x="8" y="68" width="56" height="8" rx="4" fill="#cc2d20" />
+              {/* Крупный сапог + текст рядом */}
+              <div style={{ display: "flex", alignItems: "flex-end", gap: 24, marginBottom: 16 }}>
+                {/* SVG сапог */}
+                <div style={{ flexShrink: 0 }}>
+                  <svg viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: 120, height: "auto" }}>
                     {/* Звёздочка */}
-                    <path d="M88 0 L92 12 L105 12 L95 19 L99 31 L88 24 L77 31 L81 19 L71 12 L84 12 Z" fill="#B5F23D" />
-                  </g>
-                </svg>
+                    <path d="M28 8 L33 24 L50 24 L37 34 L42 50 L28 40 L14 50 L19 34 L6 24 L23 24 Z" fill="#B5F23D" />
+                    {/* Голенище */}
+                    <path d="M52 28 L52 148 L38 148 L38 162 Q38 178 54 178 L144 178 Q156 178 156 166 L156 154 Q156 142 144 142 L118 142 L118 28 Z" fill="#ff3d2e" />
+                    {/* Блик */}
+                    <rect x="62" y="36" width="16" height="100" rx="8" fill="rgba(255,255,255,0.12)" />
+                    {/* Подошва */}
+                    <rect x="32" y="176" width="126" height="14" rx="7" fill="#cc2d20" />
+                    {/* Тень */}
+                    <ellipse cx="95" cy="195" rx="60" ry="6" fill="rgba(255,61,46,0.2)" />
+                  </svg>
+                </div>
+                {/* Текст */}
+                <div>
+                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(30px, 4.5vw, 54px)", fontWeight: 900, lineHeight: 1.0, color: "#F5F5F0", marginBottom: 4 }}>Маркето-</div>
+                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(30px, 4.5vw, 54px)", fontWeight: 900, lineHeight: 1.0, color: "#F5F5F0", marginBottom: 4 }}>логов</div>
+                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(30px, 4.5vw, 54px)", fontWeight: 900, lineHeight: 1.0, color: "#F5F5F0", marginBottom: 4 }}>много.</div>
+                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(30px, 4.5vw, 54px)", fontWeight: 900, lineHeight: 1.0, color: "#ff3d2e" }}>Настоящих — нет.</div>
+                </div>
               </div>
-              <h1 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 4vw, 52px)", lineHeight: 1.05, marginBottom: 24, fontWeight: 900 }}>
-                Маркетологов много.<br />
-                <span style={{ color: "#ff3d2e" }}>Настоящих — нет.</span>
-              </h1>
             </FadeUp>
             <FadeUp delay={0.2}>
               <p style={{ fontSize: 18, lineHeight: 1.7, color: "#bbb", marginBottom: 32, maxWidth: 520 }}>
