@@ -200,9 +200,9 @@ export default function MarketingPage() {
                   <path d="M500 0 L504 12 L517 12 L507 19 L511 31 L500 24 L489 31 L493 19 L483 12 L496 12 Z" fill="#B5F23D" />
                 </svg>
               </div>
-              {/* Надпись под сапогами */}
-              <h1 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 4vw, 52px)", lineHeight: 1.05, marginBottom: 24, fontWeight: 900 }}>
-                <span style={{ color: "#ff3d2e" }}>Настоящих — нет.</span>
+              {/* Надпись МАРКЕТОЛОГИ */}
+              <h1 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(32px, 5vw, 64px)", lineHeight: 1.0, marginBottom: 24, fontWeight: 900, letterSpacing: "0.04em" }}>
+                <span style={{ color: "#F5F5F0" }}>МАРКЕТО</span><span style={{ color: "#ff3d2e" }}>ЛОГИ</span>
               </h1>
             </FadeUp>
             <FadeUp delay={0.2}>
