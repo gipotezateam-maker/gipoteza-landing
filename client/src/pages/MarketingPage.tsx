@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useAnimation } from "framer-motion";
 import { useLocation } from "wouter";
 
 function FadeUp({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
@@ -12,6 +12,34 @@ function FadeUp({ children, delay = 0, style = {} }: { children: React.ReactNode
       style={style}>
       {children}
     </motion.div>
+  );
+}
+
+// SVG сапог — логотип курса
+function BootIcon({ size = 40, color = "#ff3d2e" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Голенище */}
+      <path d="M18 8 L18 38 L14 38 L14 44 Q14 52 22 52 L50 52 Q54 52 54 48 L54 44 Q54 40 50 40 L30 40 L30 8 Z" fill={color} />
+      {/* Подошва */}
+      <rect x="12" y="50" width="42" height="6" rx="3" fill={color} opacity="0.7" />
+      {/* Блик */}
+      <path d="M22 12 L26 12 L26 34 L22 34 Z" fill="rgba(255,255,255,0.15)" />
+    </svg>
+  );
+}
+
+// Декоративная звёздочка (как на главной)
+function Star({ size = 20, color = "#B5F23D", rotate = 0 }: { size?: number; color?: string; rotate?: number }) {
+  return (
+    <span style={{
+      display: "inline-block",
+      background: color,
+      clipPath: "polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)",
+      width: size, height: size,
+      transform: `rotate(${rotate}deg)`,
+      flexShrink: 0
+    }} />
   );
 }
 
@@ -36,6 +64,10 @@ function Nav() {
             ГИПОТ<span style={{ color: "#ff3d2e" }}>Е</span>ЗА
           </span>
         </a>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <BootIcon size={22} />
+          <span style={{ fontFamily: "Unbounded, sans-serif", fontSize: 12, fontWeight: 700, color: "#ff3d2e", letterSpacing: "0.05em", textTransform: "uppercase" }}>Трушный Маркетинг</span>
+        </div>
         <a href="#register" style={{ background: "#ff3d2e", color: "#fff", fontSize: 14, fontWeight: 600, padding: "10px 20px", borderRadius: 6, textDecoration: "none" }}>
           Начать бесплатно
         </a>
@@ -64,7 +96,7 @@ function RegisterForm() {
       });
       const data = await res.json();
       if (data.success) {
-        localStorage.setItem("courseToken", data.token);
+        localStorage.setItem("course_token", data.token);
         setLocation("/learn");
       } else {
         setError(data.message || "Ошибка регистрации");
@@ -129,6 +161,15 @@ export default function MarketingPage() {
         <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%", display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 60, alignItems: "center" }}>
           <div>
             <FadeUp>
+              {/* Логотип курса — крупно */}
+              <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 32 }}>
+                <BootIcon size={52} />
+                <div>
+                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 900, color: "#ff3d2e", letterSpacing: "0.02em", lineHeight: 1 }}>ТРУШНЫЙ</div>
+                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "0.02em", lineHeight: 1 }}>МАРКЕТИНГ</div>
+                </div>
+                <Star size={28} color="#B5F23D" rotate={15} />
+              </div>
               <div style={{ fontSize: 13, letterSpacing: 2, textTransform: "uppercase", color: "#888", marginBottom: 24 }}>
                 Курс от агентства Гипотеза
               </div>
@@ -157,12 +198,24 @@ export default function MarketingPage() {
               </div>
             </FadeUp>
           </div>
-          <FadeUp delay={0.2} style={{ display: "flex", gap: 16, justifyContent: "center", alignItems: "flex-start" }}>
-            <div style={{ flex: 1, borderRadius: 16, overflow: "hidden", background: "#1a1a1a" }}>
-              <img src={PHOTO_DENIS} alt="Денис — фаундер Гипотезы" style={{ width: "100%", height: 420, objectFit: "cover", objectPosition: "center top", display: "block" }} />
+          <FadeUp delay={0.2} style={{ display: "flex", gap: 16, justifyContent: "center", alignItems: "flex-start", position: "relative" }}>
+            {/* Декоративная звёздочка */}
+            <div style={{ position: "absolute", top: -20, right: -10, zIndex: 2 }}>
+              <Star size={36} color="#B5F23D" rotate={20} />
             </div>
-            <div style={{ flex: 1, borderRadius: 16, overflow: "hidden", background: "#1a1a1a", marginTop: 40 }}>
-              <img src={PHOTO_ALEXEY} alt="Алексей — фаундер Гипотезы" style={{ width: "100%", height: 420, objectFit: "cover", objectPosition: "center top", display: "block" }} />
+            <div style={{ flex: 1, borderRadius: 16, overflow: "hidden", background: "#1a1a1a", position: "relative" }}>
+              <img src={PHOTO_DENIS} alt="Денис — фаундер Гипотезы" style={{ width: "100%", height: 420, objectFit: "cover", objectPosition: "50% 20%", display: "block" }} />
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(0,0,0,0.8))", padding: "40px 20px 20px" }}>
+                <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: 18, fontWeight: 700, color: "#fff" }}>Денис</div>
+                <div style={{ fontSize: 12, color: "#ff3d2e", textTransform: "uppercase", letterSpacing: 1 }}>Фаундер Гипотезы</div>
+              </div>
+            </div>
+            <div style={{ flex: 1, borderRadius: 16, overflow: "hidden", background: "#1a1a1a", marginTop: 40, position: "relative" }}>
+              <img src={PHOTO_ALEXEY} alt="Алексей — фаундер Гипотезы" style={{ width: "100%", height: 420, objectFit: "cover", objectPosition: "50% 15%", display: "block" }} />
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(0,0,0,0.8))", padding: "40px 20px 20px" }}>
+                <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: 18, fontWeight: 700, color: "#fff" }}>Алексей</div>
+                <div style={{ fontSize: 12, color: "#ff3d2e", textTransform: "uppercase", letterSpacing: 1 }}>Фаундер Гипотезы</div>
+              </div>
             </div>
           </FadeUp>
         </div>
@@ -172,9 +225,12 @@ export default function MarketingPage() {
       <section style={{ padding: "100px 5%", background: "#111" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <FadeUp>
-            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 60, lineHeight: 1.2 }}>
-              Рынок изменился.<br /><span style={{ color: "#ff3d2e" }}>Ты — ещё нет.</span>
-            </h2>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
+              <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", lineHeight: 1.2, margin: 0 }}>
+                Рынок изменился.<br /><span style={{ color: "#ff3d2e" }}>Ты — ещё нет.</span>
+              </h2>
+              <Star size={32} color="#ff3d2e" rotate={-10} />
+            </div>
           </FadeUp>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
 
@@ -238,9 +294,12 @@ export default function MarketingPage() {
       <section style={{ padding: "100px 5%", background: "#0a0a0a" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <FadeUp>
-            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 12, lineHeight: 1.2 }}>
-              Нас учат те, кто сам это делает.
-            </h2>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+              <BootIcon size={44} />
+              <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", lineHeight: 1.2, margin: 0 }}>
+                Нас учат те, кто сам это делает.
+              </h2>
+            </div>
             <p style={{ fontSize: 18, color: "#888", marginBottom: 60 }}>Каждый день. Не из учебника — из рабочего процесса.</p>
           </FadeUp>
 
@@ -287,9 +346,12 @@ export default function MarketingPage() {
       <section style={{ padding: "100px 5%", background: "#111" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <FadeUp>
-            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 60, lineHeight: 1.2 }}>
-              Не «знания».<br /><span style={{ color: "#ff3d2e" }}>Систему.</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 60 }}>
+              <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", lineHeight: 1.2, margin: 0 }}>
+                Не «знания».<br /><span style={{ color: "#ff3d2e" }}>Систему.</span>
             </h2>
+              <Star size={28} color="#B5F23D" rotate={5} />
+            </div>
           </FadeUp>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
             {[
@@ -463,12 +525,19 @@ export default function MarketingPage() {
       </section>
 
       {/* ===== ЭКРАН 10 — CTA ===== */}
-      <section id="register" style={{ padding: "100px 5%", background: "#111" }}>
+      <section id="register" style={{ padding: "100px 5%", background: "#111", position: "relative", overflow: "hidden" }}>
+        {/* Декоративные звёздочки в CTA */}
+        <div style={{ position: "absolute", top: 40, left: "10%", opacity: 0.4 }}><Star size={48} color="#B5F23D" rotate={20} /></div>
+        <div style={{ position: "absolute", top: 80, right: "8%", opacity: 0.3 }}><Star size={32} color="#ff3d2e" rotate={-15} /></div>
+        <div style={{ position: "absolute", bottom: 60, left: "5%", opacity: 0.2 }}><Star size={24} color="#B5F23D" rotate={30} /></div>
         <div style={{ maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
           <FadeUp>
-            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 16, lineHeight: 1.2 }}>
-              Хватит читать. Начни.
-            </h2>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <BootIcon size={48} />
+              <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", lineHeight: 1.2, margin: 0 }}>
+                Хватит читать.<br />Начни.
+              </h2>
+            </div>
             <p style={{ fontSize: 24, marginBottom: 40, color: "#888" }}>
               <span style={{ textDecoration: "line-through", color: "#666" }}>5 000 руб</span>{" "}
               <span style={{ color: "#ff3d2e", fontWeight: 700 }}>Бесплатно</span>
