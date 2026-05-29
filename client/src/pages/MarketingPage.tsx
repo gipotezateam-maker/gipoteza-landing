@@ -175,35 +175,29 @@ export default function MarketingPage() {
               </div>
             </FadeUp>
             <FadeUp delay={0.1}>
-              {/* Слово МАРКЕТОЛОГИ из сапогов */}
-              <div style={{ marginBottom: 20 }}>
-                <svg viewBox="0 0 520 110" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", maxWidth: 520, height: "auto" }}>
-                  {/* Каждый сапог = одна буква слова МАРКЕТОЛОГИ (11 букв) */}
-                  {/* Шаг между сапогами: 47px */}
-                  {[0,1,2,3,4,5,6,7,8,9,10].map((i) => {
-                    const x = i * 47;
-                    const isRed = i === 0; // Первый сапог красный
-                    const col = isRed ? "#ff3d2e" : "#F5F5F0";
-                    const sole = isRed ? "#cc2d20" : "#bbb";
-                    return (
-                      <g key={i} transform={`translate(${x}, 5)`}>
-                        {/* Голенище */}
-                        <path d={`M10 0 L10 62 L4 62 L4 70 Q4 80 12 80 L38 80 Q44 80 44 74 L44 68 Q44 62 38 62 L24 62 L24 0 Z`} fill={col} />
-                        {/* Блик */}
-                        <rect x="13" y="4" width="5" height="52" rx="2.5" fill="rgba(255,255,255,0.13)" />
-                        {/* Подошва */}
-                        <rect x="1" y="78" width="44" height="7" rx="3.5" fill={sole} />
-                      </g>
-                    );
-                  })}
-                  {/* Звёздочка справа */}
-                  <path d="M500 0 L504 12 L517 12 L507 19 L511 31 L500 24 L489 31 L493 19 L483 12 L496 12 Z" fill="#B5F23D" />
-                </svg>
+              {/* Надпись Маркетологи с сапогами + два больших сапога */}
+              <div style={{ display: "flex", alignItems: "center", gap: 32, marginBottom: 24 }}>
+                <h1 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(36px, 5.5vw, 72px)", lineHeight: 1.0, fontWeight: 900, margin: 0, letterSpacing: "0.02em" }}>
+                  <span style={{ color: "#F5F5F0" }}>Маркетологи</span><br />
+                  <span style={{ color: "#ff3d2e" }}>с сапогами</span>
+                </h1>
+                {/* Два больших сапога */}
+                <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                  <svg viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: 70, height: "auto" }}>
+                    <path d="M26 0 L26 80 L16 80 L16 92 Q16 106 28 106 L68 106 Q76 106 76 98 L76 90 Q76 82 68 82 L52 82 L52 0 Z" fill="#ff3d2e" />
+                    <rect x="30" y="6" width="8" height="68" rx="4" fill="rgba(255,255,255,0.12)" />
+                    <rect x="12" y="104" width="66" height="10" rx="5" fill="#cc2d20" />
+                    <ellipse cx="45" cy="117" rx="30" ry="4" fill="rgba(255,61,46,0.2)" />
+                  </svg>
+                  <svg viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: 70, height: "auto" }}>
+                    <path d="M26 0 L26 80 L16 80 L16 92 Q16 106 28 106 L68 106 Q76 106 76 98 L76 90 Q76 82 68 82 L52 82 L52 0 Z" fill="#F5F5F0" />
+                    <rect x="30" y="6" width="8" height="68" rx="4" fill="rgba(0,0,0,0.06)" />
+                    <rect x="12" y="104" width="66" height="10" rx="5" fill="#bbb" />
+                    <ellipse cx="45" cy="117" rx="30" ry="4" fill="rgba(200,200,200,0.15)" />
+                  </svg>
+                  <Star size={28} color="#B5F23D" rotate={15} />
+                </div>
               </div>
-              {/* Надпись МАРКЕТОЛОГИ */}
-              <h1 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(32px, 5vw, 64px)", lineHeight: 1.0, marginBottom: 24, fontWeight: 900, letterSpacing: "0.04em" }}>
-                <span style={{ color: "#F5F5F0" }}>МАРКЕТО</span><span style={{ color: "#ff3d2e" }}>ЛОГИ</span>
-              </h1>
             </FadeUp>
             <FadeUp delay={0.2}>
               <p style={{ fontSize: 18, lineHeight: 1.7, color: "#bbb", marginBottom: 32, maxWidth: 520 }}>
