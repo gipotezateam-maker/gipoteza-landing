@@ -1,29 +1,20 @@
-/**
- * /marketing — Продающая страница курса для маркетологов агентств
- * JTBD-структура: Oneliner → Aha-момент → Ценность → Узнаёшь себя? → Как выполним → Точка Б → Барьеры → Конкуренты → CTA
- * Стиль: Magic Camp — чёрный фон, Unbounded, красный акцент #FF2D20, лаймовый #B5F23D
- */
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { useLocation } from "wouter";
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
-function FadeUp({ children, delay = 0, className = "", style = {} }: {
-  children: React.ReactNode; delay?: number; className?: string; style?: React.CSSProperties;
-}) {
-  const ref = useRef(null);
+function FadeUp({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
+  const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   return (
     <motion.div ref={ref} initial={{ opacity: 0, y: 40 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
-      className={className} style={style}>
+      style={style}>
       {children}
     </motion.div>
   );
 }
 
-// ─── Nav ────────────────────────────────────────────────────────────────────
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -32,109 +23,27 @@ function Nav() {
     return () => window.removeEventListener("scroll", h);
   }, []);
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-      style={{ background: scrolled ? "rgba(10,10,10,0.95)" : "transparent", backdropFilter: scrolled ? "blur(8px)" : "none", borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
-      <div className="container flex items-center justify-between h-16">
-        <a href="/" className="flex items-center gap-2">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <circle cx="14" cy="14" r="7" stroke="#F5F5F0" strokeWidth="1.5" fill="none"/>
-            <ellipse cx="14" cy="14" rx="13" ry="5" stroke="#F5F5F0" strokeWidth="1.5" fill="none"/>
-            <circle cx="14" cy="14" r="2" fill="#FF2D20"/>
-          </svg>
-          <span style={{ fontFamily: "Unbounded, sans-serif", fontSize: "1.1rem", fontWeight: 900, letterSpacing: "0.06em", color: "#F5F5F0" }}>
-            ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА
+    <nav style={{
+      position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
+      background: scrolled ? "rgba(10,10,10,0.95)" : "transparent",
+      backdropFilter: scrolled ? "blur(8px)" : "none",
+      borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none",
+      transition: "all 0.3s"
+    }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 5%", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
+        <a href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
+          <span style={{ fontFamily: "Unbounded, sans-serif", fontSize: 18, fontWeight: 900, letterSpacing: "0.06em", color: "#F5F5F0" }}>
+            ГИПОТ<span style={{ color: "#ff3d2e" }}>Е</span>ЗА
           </span>
         </a>
-        <a href="#register"
-          style={{ background: "#FF2D20", color: "#fff", fontFamily: "Inter, sans-serif", fontSize: "0.85rem", fontWeight: 600, padding: "0.5rem 1.25rem", borderRadius: "6px", textDecoration: "none" }}>
-          Начать бесплатно →
+        <a href="#register" style={{ background: "#ff3d2e", color: "#fff", fontSize: 14, fontWeight: 600, padding: "10px 20px", borderRadius: 6, textDecoration: "none" }}>
+          Начать бесплатно
         </a>
       </div>
     </nav>
   );
 }
 
-// ─── CAC Calculator (Aha-момент) ─────────────────────────────────────────────
-function CACCalculator() {
-  const [budget, setBudget] = useState("");
-  const [clients, setClients] = useState("");
-  const [ltv, setLtv] = useState("");
-  const [result, setResult] = useState<{ cac: number; ratio: number; verdict: string; color: string } | null>(null);
-
-  const calc = () => {
-    const b = parseFloat(budget.replace(/\s/g, ""));
-    const c = parseFloat(clients);
-    const l = parseFloat(ltv.replace(/\s/g, ""));
-    if (!b || !c || !l || c === 0) return;
-    const cac = b / c;
-    const ratio = l / cac;
-    let verdict = "";
-    let color = "";
-    if (ratio >= 10) { verdict = "🚀 Отлично! Бизнес масштабируется"; color = "#22c55e"; }
-    else if (ratio >= 3) { verdict = "✅ Норма. Есть куда расти"; color = "#86efac"; }
-    else if (ratio >= 1) { verdict = "⚠️ Опасно. Маркетинг почти не окупается"; color = "#f59e0b"; }
-    else { verdict = "🔴 Критично. Вы тратите больше, чем зарабатываете"; color = "#ef4444"; }
-    setResult({ cac, ratio, verdict, color });
-  };
-
-  return (
-    <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", padding: "2rem" }}>
-      <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "1rem", fontWeight: 700, color: "#F5F5F0", marginBottom: "0.5rem" }}>
-        Посчитайте свой CAC прямо сейчас
-      </div>
-      <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.85rem", color: "rgba(245,245,240,0.5)", marginBottom: "1.5rem" }}>
-        Если CAC {">"} LTV / 3 — ваш маркетинг убыточен. Большинство агентств об этом не знают.
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-        {[
-          { label: "Бюджет на маркетинг, ₽", val: budget, set: setBudget, ph: "50 000" },
-          { label: "Новых клиентов за месяц", val: clients, set: setClients, ph: "5" },
-          { label: "LTV клиента, ₽", val: ltv, set: setLtv, ph: "150 000" },
-        ].map(f => (
-          <div key={f.label}>
-            <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.75rem", color: "rgba(245,245,240,0.5)", marginBottom: "0.4rem" }}>{f.label}</div>
-            <input value={f.val} onChange={e => f.set(e.target.value)}
-              placeholder={f.ph}
-              style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "0.6rem 0.8rem", color: "#F5F5F0", fontFamily: "Inter, sans-serif", fontSize: "0.9rem", outline: "none" }} />
-          </div>
-        ))}
-      </div>
-      <button onClick={calc}
-        style={{ background: "#FF2D20", color: "#fff", border: "none", borderRadius: "8px", padding: "0.75rem 2rem", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.9rem", cursor: "pointer" }}>
-        Рассчитать →
-      </button>
-      {result && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          style={{ marginTop: "1.5rem", padding: "1.25rem", background: "rgba(255,255,255,0.03)", borderRadius: "12px", border: `1px solid ${result.color}33` }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-            <div>
-              <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.75rem", color: "rgba(245,245,240,0.5)", marginBottom: "0.25rem" }}>CAC</div>
-              <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "1.4rem", fontWeight: 700, color: "#FF2D20" }}>
-                {Math.round(result.cac).toLocaleString("ru")} ₽
-              </div>
-            </div>
-            <div>
-              <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.75rem", color: "rgba(245,245,240,0.5)", marginBottom: "0.25rem" }}>LTV / CAC</div>
-              <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "1.4rem", fontWeight: 700, color: result.color }}>
-                {result.ratio.toFixed(1)}×
-              </div>
-            </div>
-          </div>
-          <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.95rem", color: result.color, fontWeight: 600 }}>
-            {result.verdict}
-          </div>
-          {result.ratio < 3 && (
-            <div style={{ marginTop: "0.75rem", fontFamily: "Inter, sans-serif", fontSize: "0.85rem", color: "rgba(245,245,240,0.6)" }}>
-              Урок 3 курса — «Юнит-экономика» — объясняет как это исправить. Бесплатно. ↓
-            </div>
-          )}
-        </motion.div>
-      )}
-    </div>
-  );
-}
-
-// ─── Register Form ────────────────────────────────────────────────────────────
 function RegisterForm() {
   const [, setLocation] = useLocation();
   const [name, setName] = useState("");
@@ -167,170 +76,335 @@ function RegisterForm() {
     }
   };
 
+  const inputStyle: React.CSSProperties = {
+    width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: 10, padding: "14px 16px", color: "#F5F5F0", fontSize: 16, outline: "none", boxSizing: "border-box"
+  };
+
   return (
-    <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-      <input value={name} onChange={e => setName(e.target.value)} placeholder="Ваше имя"
-        style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "10px", padding: "0.85rem 1rem", color: "#F5F5F0", fontFamily: "Inter, sans-serif", fontSize: "0.95rem", outline: "none" }} />
-      <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" type="email" required
-        style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "10px", padding: "0.85rem 1rem", color: "#F5F5F0", fontFamily: "Inter, sans-serif", fontSize: "0.95rem", outline: "none" }} />
-      {error && <div style={{ color: "#ef4444", fontFamily: "Inter, sans-serif", fontSize: "0.85rem" }}>{error}</div>}
-      <button type="submit" disabled={loading}
-        style={{ background: loading ? "rgba(255,45,32,0.5)" : "#FF2D20", color: "#fff", border: "none", borderRadius: "10px", padding: "1rem", fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1rem", cursor: loading ? "default" : "pointer", transition: "background 0.2s" }}>
-        {loading ? "Загрузка..." : "Получить доступ к курсу →"}
+    <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <input value={name} onChange={e => setName(e.target.value)} placeholder="Ваше имя" style={inputStyle} />
+      <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" type="email" required style={inputStyle} />
+      {error && <div style={{ color: "#ef4444", fontSize: 14 }}>{error}</div>}
+      <button type="submit" disabled={loading} style={{
+        background: loading ? "rgba(255,61,46,0.5)" : "#ff3d2e", color: "#fff", border: "none",
+        borderRadius: 10, padding: 16, fontWeight: 700, fontSize: 16, cursor: loading ? "default" : "pointer"
+      }}>
+        {loading ? "Загрузка..." : "Получить доступ к курсу"}
       </button>
-      <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.78rem", color: "rgba(245,245,240,0.35)", textAlign: "center" }}>
-        Без спама. Только ссылка на курс и приветствие от Дениса.
+      <div style={{ fontSize: 13, color: "rgba(245,245,240,0.35)", textAlign: "center" }}>
+        Без карты. Доступ сразу после регистрации.
       </div>
     </form>
   );
 }
 
-// ─── Main ────────────────────────────────────────────────────────────────────
 export default function MarketingPage() {
+  const [salaryView, setSalaryView] = useState<"regular" | "ai">("regular");
+  const [openLesson, setOpenLesson] = useState<number | null>(null);
+
+  const lessons = [
+    { id: 1, title: "Маркетинг в 2026: что изменилось и почему старые методы не работают", tags: ["AI", "Стратегия"], free: true },
+    { id: 2, title: "Как мыслить системно: от задач к стратегии", tags: ["Стратегия"], free: true },
+    { id: 3, title: "Юнит-экономика: считай деньги, а не лайки", tags: ["Практика"], free: true },
+    { id: 4, title: "AI-инструменты маркетолога: что использовать каждый день", tags: ["AI", "Практика"], free: false },
+    { id: 5, title: "Воронки продаж: как строить систему, а не разовые акции", tags: ["Стратегия", "Практика"], free: false },
+    { id: 6, title: "Контент-маркетинг с AI: от идеи до публикации за 30 минут", tags: ["AI", "Практика"], free: false },
+    { id: 7, title: "Трафик и аналитика: что считать и как принимать решения", tags: ["Практика"], free: false },
+    { id: 8, title: "Продуктовый маркетинг: как думать как стратег", tags: ["Стратегия"], free: false },
+    { id: 9, title: "Веб-кодинг для маркетолога: лендинги без разработчика", tags: ["AI", "Практика"], free: false },
+    { id: 10, title: "Как стать незаменимым: карьерная стратегия маркетолога AI-first", tags: ["Стратегия", "AI"], free: false },
+  ];
+
+  // Фото из оригинального сайта gipoteza-agency.ru
+  const PHOTO_DENIS = "/manus-storage/denis_a7150bb9.jpg";
+  const PHOTO_ALEXEY = "/manus-storage/alexey_8a55e1aa.jpg";
+
   return (
-    <div style={{ background: "#0a0a0a", minHeight: "100vh", color: "#F5F5F0" }}>
+    <div style={{ background: "#0a0a0a", minHeight: "100vh", color: "#F5F5F0", fontFamily: "Inter, sans-serif" }}>
       <Nav />
 
-      {/* ── HERO ── */}
-      <section style={{ paddingTop: "120px", paddingBottom: "80px" }}>
-        <div className="container">
-          <FadeUp>
-            <div style={{ display: "inline-block", background: "rgba(181,242,61,0.12)", border: "1px solid rgba(181,242,61,0.3)", borderRadius: "999px", padding: "0.35rem 1rem", fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "#B5F23D", marginBottom: "1.5rem" }}>
-              Курс от агентства Гипотеза · Для маркетологов агентств
-            </div>
-          </FadeUp>
-          <FadeUp delay={0.1}>
-            <h1 style={{ fontFamily: "Unbounded, sans-serif", fontWeight: 900, fontSize: "clamp(2.2rem, 6vw, 4.5rem)", lineHeight: 1.05, letterSpacing: "-0.02em", marginBottom: "1.5rem", maxWidth: "900px" }}>
-              Маркетинг агентства —<br />
-              <span style={{ color: "#FF2D20" }}>от теории к деньгам</span>
-            </h1>
-          </FadeUp>
-          <FadeUp delay={0.2}>
-            <p style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(1rem, 2vw, 1.2rem)", color: "rgba(245,245,240,0.65)", maxWidth: "600px", lineHeight: 1.6, marginBottom: "2.5rem" }}>
-              Курс от команды, которая сама делает вебинарные воронки. Мы не теоретики — мы сапожники с сапогами. И теперь учим этому вас.
-            </p>
-          </FadeUp>
-          <FadeUp delay={0.3}>
-            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
-              <a href="#register"
-                style={{ background: "#FF2D20", color: "#fff", padding: "1rem 2rem", borderRadius: "10px", fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1rem", textDecoration: "none", display: "inline-block" }}>
-                Начать бесплатно →
+      {/* ===== ЭКРАН 1 — HERO ===== */}
+      <section style={{ minHeight: "100vh", display: "flex", alignItems: "center", padding: "120px 5% 80px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%", display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 60, alignItems: "center" }}>
+          <div>
+            <FadeUp>
+              <div style={{ fontSize: 13, letterSpacing: 2, textTransform: "uppercase", color: "#888", marginBottom: 24 }}>
+                Курс от агентства Гипотеза
+              </div>
+            </FadeUp>
+            <FadeUp delay={0.1}>
+              <h1 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(32px, 4.5vw, 56px)", lineHeight: 1.1, marginBottom: 24, fontWeight: 800 }}>
+                Маркетологов много.<br />
+                <span style={{ color: "#ff3d2e" }}>Настоящих — нет.</span>
+              </h1>
+            </FadeUp>
+            <FadeUp delay={0.2}>
+              <p style={{ fontSize: 18, lineHeight: 1.7, color: "#bbb", marginBottom: 32, maxWidth: 520 }}>
+                Бесплатный курс для тех, кто хочет мыслить системно, работать с AI и строить маркетинг как стратег — а не как исполнитель задач из 2020 года.
+              </p>
+            </FadeUp>
+            <FadeUp delay={0.3}>
+              <a href="#register" style={{ display: "inline-block", background: "#ff3d2e", color: "#fff", padding: "16px 40px", fontSize: 16, fontWeight: 600, textDecoration: "none", borderRadius: 6 }}>
+                Начать бесплатно
               </a>
-              <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.85rem", color: "rgba(245,245,240,0.45)" }}>
-                Первые 3 урока — бесплатно. Без карты.
+            </FadeUp>
+            <FadeUp delay={0.4}>
+              <div style={{ display: "flex", gap: 40, marginTop: 40 }}>
+                <div><span style={{ fontSize: 32, fontWeight: 700, fontFamily: "Unbounded, sans-serif" }}>5</span><br /><span style={{ fontSize: 13, color: "#888" }}>лет на рынке</span></div>
+                <div><span style={{ fontSize: 32, fontWeight: 700, fontFamily: "Unbounded, sans-serif" }}>40+</span><br /><span style={{ fontSize: 13, color: "#888" }}>воронок запущено</span></div>
+                <div><span style={{ fontSize: 32, fontWeight: 700, fontFamily: "Unbounded, sans-serif" }}>160%</span><br /><span style={{ fontSize: 13, color: "#888" }}>средний ROMI</span></div>
               </div>
+            </FadeUp>
+          </div>
+          <FadeUp delay={0.2} style={{ display: "flex", gap: 16, justifyContent: "center" }}>
+            <div style={{ width: "48%", aspectRatio: "3/4", borderRadius: 16, overflow: "hidden", background: "#1a1a1a" }}>
+              <img src={PHOTO_DENIS} alt="Денис — фаундер Гипотезы" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
-          </FadeUp>
-
-          {/* Stats */}
-          <FadeUp delay={0.4}>
-            <div style={{ display: "flex", gap: "2.5rem", marginTop: "3.5rem", flexWrap: "wrap" }}>
-              {[
-                { n: "40+", l: "вебинарных воронок" },
-                { n: "5 лет", l: "на рынке" },
-                { n: "160%", l: "средний ROMI" },
-                { n: "10", l: "уроков · 3 бесплатно" },
-              ].map(s => (
-                <div key={s.n}>
-                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "1.6rem", fontWeight: 900, color: "#FF2D20" }}>{s.n}</div>
-                  <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "rgba(245,245,240,0.45)", marginTop: "0.2rem" }}>{s.l}</div>
-                </div>
-              ))}
+            <div style={{ width: "48%", aspectRatio: "3/4", borderRadius: 16, overflow: "hidden", background: "#1a1a1a", marginTop: 40 }}>
+              <img src={PHOTO_ALEXEY} alt="Алексей — трафик и AI" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
           </FadeUp>
         </div>
       </section>
 
-      {/* ── AHA-МОМЕНТ: КАЛЬКУЛЯТОР ── */}
-      <section style={{ paddingBottom: "80px" }}>
-        <div className="container" style={{ maxWidth: "800px" }}>
+      {/* ===== ЭКРАН 2 — ВЫЗОВ РЫНКА ===== */}
+      <section style={{ padding: "100px 5%", background: "#111" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <FadeUp>
-            <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "0.75rem", fontWeight: 700, color: "#FF2D20", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "1rem" }}>
-              Aha-момент
-            </div>
-            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontWeight: 900, fontSize: "clamp(1.4rem, 3vw, 2rem)", marginBottom: "0.75rem" }}>
-              Знаете свой CAC?
+            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 60, lineHeight: 1.2 }}>
+              Рынок изменился.<br /><span style={{ color: "#ff3d2e" }}>Ты — ещё нет.</span>
             </h2>
-            <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", color: "rgba(245,245,240,0.6)", marginBottom: "2rem", lineHeight: 1.6 }}>
-              Большинство маркетологов агентств не знают свой CAC. Они знают CAC клиентов — но не свой. Посчитайте прямо сейчас.
+          </FadeUp>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
+            {[
+              "AI уже делает работу обычного маркетолога. Таргет, тексты, аналитика — нейросеть справляется быстрее и дешевле.",
+              "Маркетологов на рынке — тысячи. Тех, кто понимает систему и мыслит стратегически — десятки.",
+              "Обычный маркетолог — 80 000 руб/мес. Продуктовый маркетолог AI-first — 200 000 руб. Разница — в голове, а не в опыте.",
+            ].map((text, i) => (
+              <FadeUp key={i} delay={i * 0.1}>
+                <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 32, borderLeft: "3px solid #ff3d2e", height: "100%" }}>
+                  <p style={{ fontSize: 17, lineHeight: 1.7, color: "#ddd", margin: 0 }}>{text}</p>
+                </div>
+              </FadeUp>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== ЭКРАН 3 — САПОЖНИКИ С САПОГАМИ ===== */}
+      <section style={{ padding: "100px 5%", background: "#0a0a0a" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <FadeUp>
+            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 12, lineHeight: 1.2 }}>
+              Нас учат те, кто сам это делает.
+            </h2>
+            <p style={{ fontSize: 18, color: "#888", marginBottom: 60 }}>Каждый день. Не из учебника — из рабочего процесса.</p>
+          </FadeUp>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
+            <FadeUp delay={0.1}>
+              <div style={{ background: "#141414", borderRadius: 16, overflow: "hidden" }}>
+                <div style={{ aspectRatio: "4/3", overflow: "hidden", background: "#1a1a1a" }}>
+                  <img src={PHOTO_DENIS} alt="Денис" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+                <div style={{ padding: 32 }}>
+                  <h3 style={{ fontFamily: "Unbounded, sans-serif", fontSize: 24, marginBottom: 8 }}>Денис</h3>
+                  <p style={{ color: "#ff3d2e", fontSize: 13, marginBottom: 16, textTransform: "uppercase", letterSpacing: 1 }}>Фаундер Гипотезы</p>
+                  <p style={{ color: "#bbb", fontSize: 16, lineHeight: 1.7 }}>
+                    5 лет строит воронки. 40+ запусков. 160% средний ROMI. Не рассказывает как надо — показывает как делает. Каждый день.
+                  </p>
+                </div>
+              </div>
+            </FadeUp>
+            <FadeUp delay={0.2}>
+              <div style={{ background: "#141414", borderRadius: 16, overflow: "hidden" }}>
+                <div style={{ aspectRatio: "4/3", overflow: "hidden", background: "#1a1a1a" }}>
+                  <img src={PHOTO_ALEXEY} alt="Алексей" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+                <div style={{ padding: 32 }}>
+                  <h3 style={{ fontFamily: "Unbounded, sans-serif", fontSize: 24, marginBottom: 8 }}>Алексей</h3>
+                  <p style={{ color: "#ff3d2e", fontSize: 13, marginBottom: 16, textTransform: "uppercase", letterSpacing: 1 }}>Трафик и AI</p>
+                  <p style={{ color: "#bbb", fontSize: 16, lineHeight: 1.7 }}>
+                    Считает юнит-экономику, настраивает AI-инструменты, масштабирует то, что работает. Знает, как превратить данные в деньги.
+                  </p>
+                </div>
+              </div>
+            </FadeUp>
+          </div>
+
+          <FadeUp delay={0.3}>
+            <p style={{ textAlign: "center", marginTop: 48, fontSize: 18, color: "#777", fontStyle: "italic" }}>
+              Мы не преподаватели. Мы — агентство. Этот курс — наш рабочий процесс, открытый для тебя.
             </p>
           </FadeUp>
-          <FadeUp delay={0.1}>
-            <CACCalculator />
-          </FadeUp>
         </div>
       </section>
 
-      {/* ── САПОЖНИКИ С САПОГАМИ ── */}
-      <section style={{ paddingBottom: "80px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "80px" }}>
-        <div className="container" style={{ maxWidth: "900px" }}>
+      {/* ===== ЭКРАН 4 — ЧТО ТЫ ПОЛУЧИШЬ ===== */}
+      <section style={{ padding: "100px 5%", background: "#111" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <FadeUp>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center" }}>
-              <div>
-                <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "0.75rem", fontWeight: 700, color: "#B5F23D", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "1rem" }}>
-                  Мы сами делаем то, чему учим
+            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 60, lineHeight: 1.2 }}>
+              Не «знания».<br /><span style={{ color: "#ff3d2e" }}>Систему.</span>
+            </h2>
+          </FadeUp>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
+            {[
+              { num: "01", title: "Системное мышление", desc: "Как строить маркетинг, а не просто запускать рекламу. Стратегия, воронки, метрики — всё в одной голове." },
+              { num: "02", title: "AI-first подход", desc: "Нейросети, автоматизация, веб-кодинг — как инструменты каждого дня, а не страшилки из новостей." },
+              { num: "03", title: "Продуктовый маркетинг", desc: "Как думать стратегически, считать деньги и принимать решения на основе данных — а не на ощущениях." },
+            ].map((item, i) => (
+              <FadeUp key={i} delay={i * 0.1}>
+                <div style={{ padding: 32, background: "#0a0a0a", borderRadius: 12 }}>
+                  <div style={{ fontSize: 48, fontWeight: 700, color: "#ff3d2e", fontFamily: "Unbounded, sans-serif", marginBottom: 16 }}>{item.num}</div>
+                  <h3 style={{ fontSize: 20, marginBottom: 12, fontWeight: 600 }}>{item.title}</h3>
+                  <p style={{ color: "#999", lineHeight: 1.7, margin: 0 }}>{item.desc}</p>
                 </div>
-                <h2 style={{ fontFamily: "Unbounded, sans-serif", fontWeight: 900, fontSize: "clamp(1.4rem, 3vw, 2rem)", marginBottom: "1.25rem", lineHeight: 1.2 }}>
-                  Сапожники<br /><span style={{ color: "#FF2D20" }}>с сапогами</span>
-                </h2>
-                <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.95rem", color: "rgba(245,245,240,0.65)", lineHeight: 1.7, marginBottom: "1.25rem" }}>
-                  Гипотеза — агентство вебинарных воронок. 5 лет, 40+ запусков, клиенты от EdTech до крупных брендов.
-                </p>
-                <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.95rem", color: "rgba(245,245,240,0.65)", lineHeight: 1.7 }}>
-                  Мы не теоретики. Мы каждый день делаем то, о чём рассказываем в курсе: придумываем воронки, считаем юнит-экономику, пишем лендинги, квалифицируем лиды.
-                </p>
-                <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.95rem", color: "#F5F5F0", lineHeight: 1.7, marginTop: "1rem", fontStyle: "italic" }}>
-                  Этот курс — не «как надо». Это «как делаем мы».
-                </p>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                {[
-                  {
-                    photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/denis_68167dc3.jpg",
-                    name: "Денис",
-                    role: "Фаундер · 5 лет в вебинарных запусках",
-                  },
-                  {
-                    photo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663424748900/eknd3zddgH462fMJnj9dCN/alexey_68167dc3.jpg",
-                    name: "Алексей",
-                    role: "Трафик и аналитика · 40+ воронок",
-                  },
-                ].map(m => (
-                  <div key={m.name} style={{ display: "flex", alignItems: "center", gap: "1rem", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "1rem" }}>
-                    <img src={m.photo} alt={m.name}
-                      style={{ width: "52px", height: "52px", borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
-                      onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                    <div>
-                      <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "0.9rem", fontWeight: 700, color: "#F5F5F0" }}>{m.name}</div>
-                      <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "rgba(245,245,240,0.5)", marginTop: "0.2rem" }}>{m.role}</div>
+              </FadeUp>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== ЭКРАН 5 — КОМУ ПОДОЙДЁТ ===== */}
+      <section style={{ padding: "100px 5%", background: "#0a0a0a" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <FadeUp>
+            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 60, lineHeight: 1.2 }}>
+              Если ты тут — значит, ты уже понял<br />что <span style={{ color: "#ff3d2e" }}>что-то не так.</span>
+            </h2>
+          </FadeUp>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
+            {[
+              { title: "Хочешь войти в маркетинг", desc: "Но не хочешь учиться по учебникам 2015 года. Хочешь сразу в 2026 — с AI, с системой, с пониманием как это работает сейчас." },
+              { title: "Уже работаешь маркетологом", desc: "Но чувствуешь, что делаешь руками то, что скоро будет делать нейросеть. Хочешь вырасти из исполнителя в стратега." },
+              { title: "Руководишь или основал бизнес", desc: "Хочешь понимать маркетинг системно, а не зависеть от подрядчиков, которые «что-то там настраивают»." },
+            ].map((item, i) => (
+              <FadeUp key={i} delay={i * 0.1}>
+                <div style={{ background: "#141414", borderRadius: 12, padding: 32, height: "100%" }}>
+                  <h3 style={{ fontSize: 20, marginBottom: 16, fontWeight: 600 }}>{item.title}</h3>
+                  <p style={{ color: "#999", lineHeight: 1.7, margin: 0 }}>{item.desc}</p>
+                </div>
+              </FadeUp>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== ЭКРАН 6 — ПРОГРАММА ===== */}
+      <section style={{ padding: "100px 5%", background: "#111" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <FadeUp>
+            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 60, lineHeight: 1.2 }}>
+              10 уроков
+            </h2>
+          </FadeUp>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            {lessons.map((lesson) => (
+              <FadeUp key={lesson.id} delay={lesson.id * 0.03}>
+                <div style={{ background: "#1a1a1a", borderRadius: 8, overflow: "hidden" }}>
+                  <button
+                    onClick={() => setOpenLesson(openLesson === lesson.id ? null : lesson.id)}
+                    style={{
+                      width: "100%", padding: "20px 24px", background: "none", border: "none", color: "#fff",
+                      display: "flex", alignItems: "center", gap: 16, cursor: "pointer", textAlign: "left"
+                    }}
+                  >
+                    <span style={{ fontSize: 14, color: "#ff3d2e", fontWeight: 700, minWidth: 28 }}>{String(lesson.id).padStart(2, "0")}</span>
+                    <span style={{ flex: 1, fontSize: 16, fontWeight: 500 }}>{lesson.title}</span>
+                    <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                      {lesson.tags.map((tag) => (
+                        <span key={tag} style={{ fontSize: 11, padding: "3px 8px", background: "#333", borderRadius: 4, color: "#aaa" }}>{tag}</span>
+                      ))}
+                      <span style={{ fontSize: 11, padding: "3px 8px", background: lesson.free ? "#1a3a1a" : "#3a1a1a", borderRadius: 4, color: lesson.free ? "#4f4" : "#f44" }}>
+                        {lesson.free ? "Бесплатно" : "Платно"}
+                      </span>
                     </div>
-                  </div>
-                ))}
-              </div>
+                    <span style={{ fontSize: 20, color: "#666", marginLeft: 8 }}>{openLesson === lesson.id ? "\u2212" : "+"}</span>
+                  </button>
+                  {openLesson === lesson.id && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ padding: "0 24px 20px 68px", color: "#888", fontSize: 15, lineHeight: 1.7 }}>
+                      Практический урок с AI-инструментами. Разбираем реальные кейсы агентства Гипотеза. Домашнее задание с обратной связью.
+                    </motion.div>
+                  )}
+                </div>
+              </FadeUp>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== ЭКРАН 7 — КАЛЬКУЛЯТОР ЗАРПЛАТЫ ===== */}
+      <section style={{ padding: "100px 5%", background: "#0a0a0a" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <FadeUp>
+            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 60, lineHeight: 1.2 }}>
+              Маркетолог vs.<br /><span style={{ color: "#ff3d2e" }}>Маркетолог AI-first</span>
+            </h2>
+          </FadeUp>
+          <FadeUp delay={0.1}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+              <button
+                onClick={() => setSalaryView("regular")}
+                style={{
+                  background: salaryView === "regular" ? "#1a1a1a" : "#111",
+                  border: salaryView === "regular" ? "2px solid #ff3d2e" : "2px solid #333",
+                  borderRadius: 12, padding: 32, cursor: "pointer", textAlign: "left", color: "#fff"
+                }}
+              >
+                <div style={{ fontSize: 13, color: "#888", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Обычный маркетолог</div>
+                <div style={{ fontSize: 36, fontWeight: 700, fontFamily: "Unbounded, sans-serif", marginBottom: 20 }}>80 000 руб</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <span style={{ color: "#888", fontSize: 15 }}>Настраивает таргет руками</span>
+                  <span style={{ color: "#888", fontSize: 15 }}>Пишет тексты по шаблонам</span>
+                  <span style={{ color: "#888", fontSize: 15 }}>Не считает юнит-экономику</span>
+                  <span style={{ color: "#f44", fontSize: 15, marginTop: 8 }}>Заменяем нейросетью</span>
+                </div>
+              </button>
+              <button
+                onClick={() => setSalaryView("ai")}
+                style={{
+                  background: salaryView === "ai" ? "#1a1a1a" : "#111",
+                  border: salaryView === "ai" ? "2px solid #ff3d2e" : "2px solid #333",
+                  borderRadius: 12, padding: 32, cursor: "pointer", textAlign: "left", color: "#fff"
+                }}
+              >
+                <div style={{ fontSize: 13, color: "#888", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Маркетолог AI-first</div>
+                <div style={{ fontSize: 36, fontWeight: 700, fontFamily: "Unbounded, sans-serif", color: "#ff3d2e", marginBottom: 20 }}>200 000 руб</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <span style={{ color: "#ccc", fontSize: 15 }}>Мыслит системно и стратегически</span>
+                  <span style={{ color: "#ccc", fontSize: 15 }}>Использует AI как инструмент</span>
+                  <span style={{ color: "#ccc", fontSize: 15 }}>Считает деньги, а не лайки</span>
+                  <span style={{ color: "#4f4", fontSize: 15, marginTop: 8 }}>Незаменим</span>
+                </div>
+              </button>
             </div>
+            <p style={{ textAlign: "center", marginTop: 32, fontSize: 18, color: "#888" }}>
+              Этот курс — мост из левого столбца в правый.
+            </p>
           </FadeUp>
         </div>
       </section>
 
-      {/* ── УЗНАЁШЬ СЕБЯ? ── */}
-      <section style={{ paddingBottom: "80px", paddingTop: "80px", background: "rgba(255,45,32,0.04)", borderTop: "1px solid rgba(255,45,32,0.1)", borderBottom: "1px solid rgba(255,45,32,0.1)" }}>
-        <div className="container" style={{ maxWidth: "800px" }}>
+      {/* ===== ЭКРАН 8 — УЗНАЁШЬ СЕБЯ? ===== */}
+      <section style={{ padding: "100px 5%", background: "#111" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
           <FadeUp>
-            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontWeight: 900, fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)", marginBottom: "2rem", lineHeight: 1.2 }}>
+            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 60, lineHeight: 1.2 }}>
               Узнаёшь себя?
             </h2>
           </FadeUp>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
             {[
-              { emoji: "😤", text: "Ты запускаешь рекламу, тратишь бюджет — а новых клиентов нет. Или есть, но дорогие." },
-              { emoji: "😳", text: "Ты умеешь делать маркетинг для клиентов, но свой агентский маркетинг — полный хаос." },
-              { emoji: "🤷", text: "Не знаешь свой CAC, LTV, ROMI. Маркетинг на ощущениях, а не на цифрах." },
-              { emoji: "😶", text: "Клиент спрашивает «а как вы сами продвигаетесь?» — уводишь тему." },
-            ].map((item, i) => (
-              <FadeUp key={i} delay={i * 0.08}>
-                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "1.25rem" }}>
-                  <div style={{ fontSize: "1.75rem", marginBottom: "0.75rem" }}>{item.emoji}</div>
-                  <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.9rem", color: "rgba(245,245,240,0.7)", lineHeight: 1.6 }}>{item.text}</p>
+              "Знаешь инструменты — но не понимаешь зачем",
+              "AI где-то рядом — но ты не знаешь как его использовать в работе",
+              "Рынок меняется каждый месяц — а ты учился по курсу 2020 года",
+              "Делаешь маркетинг на ощущениях. Без системы. Без стратегии.",
+            ].map((pain, i) => (
+              <FadeUp key={i} delay={i * 0.1}>
+                <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 28, borderLeft: "3px solid #ff3d2e" }}>
+                  <p style={{ fontSize: 17, lineHeight: 1.6, color: "#ddd", margin: 0 }}>{pain}</p>
                 </div>
               </FadeUp>
             ))}
@@ -338,160 +412,50 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── ЦЕННОСТЬ ── */}
-      <section style={{ paddingBottom: "80px", paddingTop: "80px" }}>
-        <div className="container" style={{ maxWidth: "900px" }}>
+      {/* ===== ЭКРАН 9 — ТОЧКА Б ===== */}
+      <section style={{ padding: "100px 5%", background: "#0a0a0a" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
           <FadeUp>
-            <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "0.75rem", fontWeight: 700, color: "#FF2D20", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "1rem" }}>
-              Что вы получите
-            </div>
-            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontWeight: 900, fontSize: "clamp(1.4rem, 3vw, 2rem)", marginBottom: "2.5rem" }}>
-              10 уроков. Каждый — практика.
+            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 60, lineHeight: 1.2 }}>
+              После курса
             </h2>
           </FadeUp>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
             {[
-              { num: "01", title: "Маркетинг: что это на самом деле", desc: "Котлер, Огилви, Бернбах — что они поняли раньше всех. После этого урока смотришь на маркетинг иначе. Навсегда.", tag: "Бесплатно", xp: "+100 XP" },
-              { num: "02", title: "Контент и копирайтинг", desc: "Почему «продающий текст» — оксюморон. Как писать так, чтобы люди читали, а не закрывали.", tag: "Бесплатно", xp: "+120 XP" },
-              { num: "03", title: "Юнит-экономика: CAC, LTV, ROMI", desc: "С калькулятором. После урока знаешь свои цифры — не примерно, а точно.", tag: "Бесплатно", xp: "+150 XP" },
-              { num: "04", title: "Как стоить дорого", desc: "Психология клиента, позиционирование, ценообразование. Почему одни берут 300к, другие — 30к за ту же работу.", tag: "Платно", xp: "+150 XP" },
-              { num: "05", title: "Продающий лендинг с нуля", desc: "Структура, смыслы, CTA. Анатомия страницы с конверсией 8%+. С конструктором первого экрана.", tag: "Платно", xp: "+200 XP" },
-              { num: "07", title: "Вебинарная воронка от А до Я", desc: "Та самая схема Гипотезы. От холодного трафика до оплаты за 7 дней. Впервые — открыто.", tag: "Платно", xp: "+250 XP" },
-            ].map((l, i) => (
-              <FadeUp key={l.num} delay={i * 0.06}>
-                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "1.25rem", height: "100%" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
-                    <span style={{ fontFamily: "Unbounded, sans-serif", fontSize: "1.5rem", fontWeight: 900, color: "rgba(255,255,255,0.12)" }}>{l.num}</span>
-                    <div style={{ display: "flex", gap: "0.4rem" }}>
-                      <span style={{ background: l.tag === "Бесплатно" ? "rgba(181,242,61,0.15)" : "rgba(255,45,32,0.12)", color: l.tag === "Бесплатно" ? "#B5F23D" : "#FF2D20", borderRadius: "999px", padding: "0.2rem 0.6rem", fontFamily: "Inter, sans-serif", fontSize: "0.72rem", fontWeight: 600 }}>{l.tag}</span>
-                      <span style={{ background: "rgba(255,255,255,0.06)", color: "rgba(245,245,240,0.5)", borderRadius: "999px", padding: "0.2rem 0.6rem", fontFamily: "Inter, sans-serif", fontSize: "0.72rem" }}>{l.xp}</span>
-                    </div>
-                  </div>
-                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "0.85rem", fontWeight: 700, color: "#F5F5F0", marginBottom: "0.5rem", lineHeight: 1.3 }}>{l.title}</div>
-                  <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", color: "rgba(245,245,240,0.55)", lineHeight: 1.6 }}>{l.desc}</p>
-                </div>
+              "Мыслишь как стратег, а не как исполнитель",
+              "AI — твой инструмент, а не угроза",
+              "Понимаешь систему — от стратегии до денег",
+            ].map((line, i) => (
+              <FadeUp key={i} delay={i * 0.15}>
+                <p style={{ fontSize: 22, color: "#eee", lineHeight: 1.5, margin: 0 }}>{line}</p>
+                {i < 2 && <div style={{ height: 1, background: "#333", width: "60%", margin: "16px auto 0" }} />}
               </FadeUp>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── ТОЧКА Б ── */}
-      <section style={{ paddingBottom: "80px", paddingTop: "80px", background: "rgba(255,255,255,0.02)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-        <div className="container" style={{ maxWidth: "800px" }}>
+      {/* ===== ЭКРАН 10 — CTA ===== */}
+      <section id="register" style={{ padding: "100px 5%", background: "#111" }}>
+        <div style={{ maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
           <FadeUp>
-            <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "0.75rem", fontWeight: 700, color: "#B5F23D", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "1rem" }}>
-              Точка Б
-            </div>
-            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontWeight: 900, fontSize: "clamp(1.4rem, 3vw, 2rem)", marginBottom: "2rem", lineHeight: 1.2 }}>
-              После курса вы:
+            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "clamp(28px, 3.5vw, 44px)", marginBottom: 16, lineHeight: 1.2 }}>
+              Хватит читать. Начни.
             </h2>
-          </FadeUp>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            {[
-              { emoji: "🧘", title: "Знаете откуда придут следующие 5 клиентов", desc: "Не надеетесь — знаете. Есть система: воронка, квалификация, дожим, повторные продажи." },
-              { emoji: "📊", title: "Говорите на языке цифр", desc: "CAC, LTV, ROMI — не аббревиатуры, а инструменты. Вы знаете свои цифры и умеете их улучшать." },
-              { emoji: "💪", title: "Применяете к себе то, что продаёте клиентам", desc: "Сапожники с сапогами. Ваш маркетинг работает так же, как маркетинг ваших лучших клиентов." },
-            ].map((item, i) => (
-              <FadeUp key={i} delay={i * 0.08}>
-                <div style={{ display: "flex", gap: "1.25rem", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "1.25rem", alignItems: "flex-start" }}>
-                  <div style={{ fontSize: "2rem", flexShrink: 0 }}>{item.emoji}</div>
-                  <div>
-                    <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "0.9rem", fontWeight: 700, color: "#F5F5F0", marginBottom: "0.4rem" }}>{item.title}</div>
-                    <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.85rem", color: "rgba(245,245,240,0.6)", lineHeight: 1.6 }}>{item.desc}</p>
-                  </div>
-                </div>
-              </FadeUp>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── БАРЬЕРЫ ── */}
-      <section style={{ paddingBottom: "80px", paddingTop: "80px" }}>
-        <div className="container" style={{ maxWidth: "800px" }}>
-          <FadeUp>
-            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontWeight: 900, fontSize: "clamp(1.4rem, 3vw, 2rem)", marginBottom: "2rem" }}>
-              «Но у меня есть возражение...»
-            </h2>
-          </FadeUp>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            {[
-              { q: "«Я и так всё это знаю»", a: "Возможно. Но знать и делать — разные вещи. Урок 3 бесплатный — пройди и проверь, знаешь ли ты свой CAC." },
-              { q: "«Нет времени»", a: "Уроки по 15–30 минут. Без воды. Мы сами не любим длинные курсы — поэтому сделали короткие." },
-              { q: "«5000₽ — дорого»", a: "Один новый клиент агентства стоит 30–150к. Если курс помогает привлечь хотя бы одного — он окупился в 6–30 раз." },
-            ].map((item, i) => (
-              <FadeUp key={i} delay={i * 0.08}>
-                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "1.25rem" }}>
-                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "0.85rem", fontWeight: 700, color: "#FF2D20", marginBottom: "0.6rem" }}>{item.q}</div>
-                  <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.9rem", color: "rgba(245,245,240,0.7)", lineHeight: 1.6 }}>{item.a}</p>
-                </div>
-              </FadeUp>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── КОНКУРЕНТЫ ── */}
-      <section style={{ paddingBottom: "80px", paddingTop: "80px", background: "rgba(255,255,255,0.02)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-        <div className="container" style={{ maxWidth: "900px" }}>
-          <FadeUp>
-            <h2 style={{ fontFamily: "Unbounded, sans-serif", fontWeight: 900, fontSize: "clamp(1.4rem, 3vw, 2rem)", marginBottom: "2rem" }}>
-              Почему не другие варианты?
-            </h2>
-          </FadeUp>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
-            {[
-              { vs: "YouTube / статьи", why: "Информация без системы. Разница между «читал рецепт» и «готовил 5 лет»." },
-              { vs: "Skillbox / Нетология", why: "3–6 месяцев, 50–150к, общая программа. Мы — 10 уроков, 5000₽, только про агентский маркетинг." },
-              { vs: "Нанять маркетолога", why: "Хороший стоит 80–150к/мес. Сначала пойми систему сам — будешь знать кого искать." },
-            ].map((item, i) => (
-              <FadeUp key={i} delay={i * 0.08}>
-                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "1.25rem" }}>
-                  <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.75rem", color: "rgba(245,245,240,0.4)", marginBottom: "0.5rem" }}>Вместо</div>
-                  <div style={{ fontFamily: "Unbounded, sans-serif", fontSize: "0.85rem", fontWeight: 700, color: "rgba(245,245,240,0.7)", marginBottom: "0.75rem", textDecoration: "line-through" }}>{item.vs}</div>
-                  <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.85rem", color: "rgba(245,245,240,0.6)", lineHeight: 1.6 }}>{item.why}</p>
-                </div>
-              </FadeUp>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── REGISTER CTA ── */}
-      <section id="register" style={{ paddingBottom: "100px", paddingTop: "80px" }}>
-        <div className="container" style={{ maxWidth: "520px" }}>
-          <FadeUp>
-            <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-              <div style={{ display: "inline-block", background: "rgba(181,242,61,0.12)", border: "1px solid rgba(181,242,61,0.3)", borderRadius: "999px", padding: "0.35rem 1rem", fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "#B5F23D", marginBottom: "1rem" }}>
-                Первые 3 урока — бесплатно
-              </div>
-              <h2 style={{ fontFamily: "Unbounded, sans-serif", fontWeight: 900, fontSize: "clamp(1.5rem, 3.5vw, 2.2rem)", lineHeight: 1.2, marginBottom: "0.75rem" }}>
-                Начни прямо сейчас
-              </h2>
-              <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.95rem", color: "rgba(245,245,240,0.55)", lineHeight: 1.6 }}>
-                Введи email — получи доступ к курсу. Урок 3 с калькулятором юнит-экономики — бесплатно.
-              </p>
-            </div>
+            <p style={{ fontSize: 24, marginBottom: 40, color: "#888" }}>
+              <span style={{ textDecoration: "line-through", color: "#666" }}>5 000 руб</span>{" "}
+              <span style={{ color: "#ff3d2e", fontWeight: 700 }}>Бесплатно</span>
+            </p>
           </FadeUp>
           <FadeUp delay={0.1}>
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", padding: "2rem" }}>
-              <RegisterForm />
-            </div>
+            <RegisterForm />
           </FadeUp>
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
-      <footer style={{ borderTop: "1px solid rgba(255,255,255,0.06)", padding: "2rem 0" }}>
-        <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-          <span style={{ fontFamily: "Unbounded, sans-serif", fontSize: "0.9rem", fontWeight: 900, color: "#F5F5F0" }}>
-            ГИПОТ<span style={{ color: "#FF2D20" }}>Е</span>ЗА
-          </span>
-          <span style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "rgba(245,245,240,0.35)" }}>
-            © 2025 Гипотеза. Агентство вебинарных воронок.
-          </span>
-        </div>
+      {/* Footer */}
+      <footer style={{ padding: "40px 5%", borderTop: "1px solid #1a1a1a", textAlign: "center" }}>
+        <p style={{ color: "#555", fontSize: 14 }}>Агентство Гипотеза, 2026</p>
       </footer>
     </div>
   );
