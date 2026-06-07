@@ -661,7 +661,9 @@ export default function GamePage() {
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
           <button onClick={restart} style={{ flex: 1, background: "#ff3d2e", color: "#fff", border: "none", borderRadius: 10, fontFamily: "inherit", fontWeight: 700, fontSize: 15, padding: "13px", cursor: "pointer", transition: "all 0.2s" }}>Играть снова</button>
           <button onClick={() => window.location.href = "/"} style={{ flex: 1, background: "transparent", color: "#f0ede8", border: "1.5px solid rgba(255,255,255,0.12)", borderRadius: 10, fontFamily: "inherit", fontWeight: 700, fontSize: 15, padding: "13px", cursor: "pointer", transition: "all 0.2s" }}>На главную</button>
-        </div>
+        <button onClick={() => { import("@vkontakte/vk-bridge").then(m => m.default.send("VKWebAppJoinGroup", { group_id: 211775903 })); }} style={{ flex: 1, background: "#4a76a8", color: "#fff", border: "none", borderRadius: 10, fontFamily: "inherit", fontWeight: 700, fontSize: 15, padding: "13px", cursor: "pointer", transition: "all 0.2s" }}>
+  Подписаться на Гипотезу</button>
+         </div>
 
         <div style={{ textAlign: "center", fontSize: 12, color: "rgba(240,237,232,0.25)" }}>
           Powered by <span style={{ color: "#ff3d2e", fontWeight: 700 }}>Гипотеза Agency</span>
