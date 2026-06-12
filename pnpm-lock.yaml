@@ -118,6 +118,9 @@ importers:
       '@types/pdfkit':
         specifier: ^0.17.5
         version: 0.17.5
+      '@vkontakte/vk-bridge':
+        specifier: ^2.9.0
+        version: 2.15.12
       axios:
         specifier: ^1.12.0
         version: 1.12.2
@@ -2547,6 +2550,9 @@ packages:
 
   '@vitest/utils@2.1.9':
     resolution: {integrity: sha512-v0psaMSkNJ3A2NMrUEHFRzJtDPFn+/VWZ5WxImB21T9fjucJRmS7xCS3ppEnARb9y11OAzaD+P2Ps+b+BGX5iQ==}
+
+  '@vkontakte/vk-bridge@2.15.12':
+    resolution: {integrity: sha512-FbWCQQfiIudFMbGhRi+QepmcWhnPHVMl4lYbv0BLm7buaNndvEnxCeqVXsywT8Qv1Aoje3RJknkTn8ZjT1y4OQ==}
 
   accepts@1.3.8:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
@@ -7034,6 +7040,8 @@ snapshots:
       '@vitest/pretty-format': 2.1.9
       loupe: 3.2.1
       tinyrainbow: 1.2.0
+
+  '@vkontakte/vk-bridge@2.15.12': {}
 
   accepts@1.3.8:
     dependencies:

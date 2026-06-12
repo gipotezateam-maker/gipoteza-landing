@@ -80,6 +80,15 @@ export default function GamePage() {
   const [formLoading, setFormLoading] = useState(false);
   const [comboAnim, setComboAnim] = useState(false);
   const [typingDone, setTypingDone] = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth <= 430 : false
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 430);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const scene = SCENES[Math.min(idx, SCENES.length - 1)];
   const week = idx + 1;
@@ -238,82 +247,89 @@ export default function GamePage() {
 
     return (
       <div className="game-screen" style={{
-        width: "100vw", height: "100vh",
+        width: "100vw",
+        height: isMobile ? "auto" : "100vh",
+        minHeight: "100vh",
         display: "flex", flexDirection: "column",
         background: "#111",
         fontFamily: "'Inter','Segoe UI',system-ui,sans-serif",
         color: "#f0ede8",
-        overflow: "hidden",
+        overflowX: "hidden",
+        overflowY: isMobile ? "auto" : "hidden",
         userSelect: "none",
       }}>
         <style>{GLOBAL_CSS}</style>
 
         {/* Score float */}
         {scoreAnim.show && (
-          <div style={{ position: "fixed", top: "20%", left: "50%", zIndex: 9999, fontSize: 44, fontWeight: 900, color: scoreAnim.val > 0 ? "#22c55e" : "#ff3d2e", animation: "scoreFloat 1.6s ease-out forwards", pointerEvents: "none", textShadow: `0 0 32px ${scoreAnim.val > 0 ? "#22c55e" : "#ff3d2e"}`, whiteSpace: "nowrap" }}>
+          <div style={{ position: "fixed", top: "20%", left: "50%", zIndex: 9999, fontSize: isMobile ? 34 : 44, fontWeight: 900, color: scoreAnim.val > 0 ? "#22c55e" : "#ff3d2e", animation: "scoreFloat 1.6s ease-out forwards", pointerEvents: "none", textShadow: `0 0 32px ${scoreAnim.val > 0 ? "#22c55e" : "#ff3d2e"}`, whiteSpace: "nowrap" }}>
             {scoreAnim.val > 0 ? `+${scoreAnim.val}` : scoreAnim.val}
           </div>
         )}
 
         {/* Combo */}
         {comboAnim && (
-          <div style={{ position: "fixed", top: "30%", left: "50%", zIndex: 9999, fontSize: 32, fontWeight: 900, color: "#f5a623", animation: "comboIn 0.8s ease-out forwards", pointerEvents: "none", textShadow: "0 0 24px #f5a623", whiteSpace: "nowrap", transform: "translateX(-50%)" }}>
+          <div style={{ position: "fixed", top: "30%", left: "50%", zIndex: 9999, fontSize: isMobile ? 24 : 32, fontWeight: 900, color: "#f5a623", animation: "comboIn 0.8s ease-out forwards", pointerEvents: "none", textShadow: "0 0 24px #f5a623", whiteSpace: "nowrap", transform: "translateX(-50%)" }}>
             🔥 COMBO ×{combo + 1}
           </div>
         )}
 
         {/* ══ TOP BAR ══════════════════════════════════════════════════════════ */}
-        <div style={{ height: 76, flexShrink: 0, background: "#1a1a1a", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "stretch" }}>
+        <div style={{ height: isMobile ? 54 : 76, flexShrink: 0, background: "#1a1a1a", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "stretch" }}>
           {/* Logo */}
-          <div style={{ width: 210, flexShrink: 0, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 20px", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
-            <div style={{ fontSize: 22, fontWeight: 900, color: "#fff", letterSpacing: -0.5, lineHeight: 1 }}>
-              ЗАПУСК<span style={{ color: "#f5a623", fontSize: 11, verticalAlign: "super" }}>✦</span>
+          <div style={{ width: isMobile ? "auto" : 210, flexShrink: 0, display: "flex", flexDirection: "column", justifyContent: "center", padding: isMobile ? "0 10px" : "0 20px", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ fontSize: isMobile ? 15 : 22, fontWeight: 900, color: "#fff", letterSpacing: -0.5, lineHeight: 1 }}>
+              ЗАПУСК<span style={{ color: "#f5a623", fontSize: isMobile ? 8 : 11, verticalAlign: "super" }}>✦</span>
             </div>
-            <div style={{ fontSize: 10, color: "rgba(240,237,232,0.35)", marginTop: 4, lineHeight: 1.4 }}>
-              Маркетинговый симулятор<br />для EdTech
-            </div>
+            {!isMobile && (
+              <div style={{ fontSize: 10, color: "rgba(240,237,232,0.35)", marginTop: 4, lineHeight: 1.4 }}>
+                Маркетинговый симулятор<br />для EdTech
+              </div>
+            )}
           </div>
 
-          {/* Metrics */}
-          {metrics.map((m) => (
-            <div key={m.label} style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, padding: "0 16px", borderRight: "1px solid rgba(255,255,255,0.06)", minWidth: 0 }}>
+          {/* Metrics — on mobile show only the 2 most important */}
+          {(isMobile ? metrics.slice(0, 2) : metrics).map((m) => (
+            <div key={m.label} style={{ flex: 1, display: "flex", alignItems: "center", gap: isMobile ? 0 : 10, padding: isMobile ? "0 8px" : "0 16px", borderRight: "1px solid rgba(255,255,255,0.06)", minWidth: 0 }}>
               {m.icon && (
                 <div style={{ width: 38, height: 38, borderRadius: "50%", background: m.iconBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>
                   {m.icon}
                 </div>
               )}
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 10, color: "rgba(240,237,232,0.4)", lineHeight: 1, marginBottom: 4, whiteSpace: "nowrap" }}>{m.label}</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "nowrap" }}>
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#fff", lineHeight: 1, whiteSpace: "nowrap" }}>{m.value}</span>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: m.up ? "#22c55e" : "#ff3d2e", whiteSpace: "nowrap" }}>{m.delta}</span>
+                <div style={{ fontSize: isMobile ? 9 : 10, color: "rgba(240,237,232,0.4)", lineHeight: 1, marginBottom: isMobile ? 3 : 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{m.label}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 3 : 6, flexWrap: "nowrap" }}>
+                  <span style={{ fontSize: isMobile ? 13 : 18, fontWeight: 700, color: "#fff", lineHeight: 1, whiteSpace: "nowrap" }}>{m.value}</span>
+                  <span style={{ fontSize: isMobile ? 9 : 11, fontWeight: 600, color: m.up ? "#22c55e" : "#ff3d2e", whiteSpace: "nowrap" }}>{m.delta}</span>
                 </div>
               </div>
             </div>
           ))}
 
           {/* Week */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 18px", borderRight: "1px solid rgba(255,255,255,0.06)", flexShrink: 0 }}>
-            <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#1a2a3a", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "rgba(240,237,232,0.5)" }}>Нед</div>
+          <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 0 : 10, padding: isMobile ? "0 8px" : "0 18px", borderRight: "1px solid rgba(255,255,255,0.06)", flexShrink: 0 }}>
+            {!isMobile && (
+              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#1a2a3a", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "rgba(240,237,232,0.5)" }}>Нед</div>
+            )}
             <div>
-              <div style={{ fontSize: 10, color: "rgba(240,237,232,0.4)", lineHeight: 1, marginBottom: 4 }}>Неделя</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "#fff", lineHeight: 1 }}>{week} / {SCENES.length}</div>
+              <div style={{ fontSize: isMobile ? 9 : 10, color: "rgba(240,237,232,0.4)", lineHeight: 1, marginBottom: isMobile ? 2 : 4 }}>Неделя</div>
+              <div style={{ fontSize: isMobile ? 13 : 18, fontWeight: 700, color: "#fff", lineHeight: 1 }}>{week} / {SCENES.length}</div>
             </div>
           </div>
 
           {/* Hamburger */}
-          <div style={{ width: 68, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <button onClick={() => setShowJournal(v => !v)} style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(255,255,255,0.07)", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5 }}>
-              {[0, 1, 2].map(i => <div key={i} style={{ width: 16, height: 2, background: "#fff", borderRadius: 1 }} />)}
+          <div style={{ width: isMobile ? 44 : 68, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <button onClick={() => setShowJournal(v => !v)} style={{ width: isMobile ? 34 : 42, height: isMobile ? 34 : 42, borderRadius: "50%", background: "rgba(255,255,255,0.07)", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: isMobile ? 4 : 5 }}>
+              {[0, 1, 2].map(i => <div key={i} style={{ width: isMobile ? 13 : 16, height: 2, background: "#fff", borderRadius: 1 }} />)}
             </button>
           </div>
         </div>
 
         {/* ══ MAIN AREA ════════════════════════════════════════════════════════ */}
-        <div style={{ flex: 1, display: "flex", overflow: "hidden", position: "relative", minHeight: 0 }}>
+        <div style={{ flex: isMobile ? "none" : 1, display: "flex", flexDirection: isMobile ? "column" : "row", overflow: isMobile ? "visible" : "hidden", position: "relative", minHeight: 0 }}>
 
           {/* ── Left sidebar ── */}
-          <div style={{ width: 210, flexShrink: 0, background: "rgba(8,8,8,0.85)", borderRight: "1px solid rgba(255,255,255,0.05)", padding: "14px 13px", display: "flex", flexDirection: "column", gap: 10, zIndex: 20, overflowY: "auto" }}>
+          <div style={{ width: isMobile ? "100%" : 210, flexShrink: 0, order: isMobile ? 2 : 0, background: "rgba(8,8,8,0.85)", borderRight: isMobile ? "none" : "1px solid rgba(255,255,255,0.05)", padding: isMobile ? "12px 12px" : "14px 13px", display: "flex", flexDirection: "column", gap: isMobile ? 8 : 10, zIndex: 20, overflowY: isMobile ? "visible" : "auto" }}>
             {/* Situation */}
             <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.07)", padding: "12px 13px" }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: "#ff3d2e", marginBottom: 7 }}>Ситуация</div>
@@ -323,7 +339,7 @@ export default function GamePage() {
                   {scene.crisis ? "Кризис!" : "Горячая"}
                 </span>
               </div>
-              <p style={{ fontSize: 11.5, color: "rgba(240,237,232,0.72)", lineHeight: 1.65 }}>
+              <p style={{ fontSize: isMobile ? 13 : 11.5, color: "rgba(240,237,232,0.72)", lineHeight: 1.65 }}>
                 {typeOut}{!typingDone && <span style={{ animation: "pulse 0.6s steps(1) infinite" }}>|</span>}
               </p>
             </div>
@@ -356,8 +372,18 @@ export default function GamePage() {
             </div>
           </div>
 
+          {/* CEO speech bubble — mobile: separate block ABOVE characters (not overlaying faces) */}
+          {isMobile && typingDone && chosen === null && (
+            <div style={{ order: 0, width: "100%", position: "static", background: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,100,100,0.3)", borderRadius: 12, padding: "10px 14px", marginBottom: 4, animation: "fadeDown 0.4s ease", zIndex: 25 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#ff3d2e", marginBottom: 4 }}>CEO</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", lineHeight: 1.4, whiteSpace: "pre-line" }}>
+                Мы теряем позиции!{"\n"}Нужно срочно что-то{"\n"}менять. Твои действия?
+              </div>
+            </div>
+          )}
+
           {/* ── Center: characters ── */}
-          <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+          <div style={{ flex: isMobile ? "none" : 1, width: isMobile ? "100%" : "auto", height: isMobile ? 200 : "auto", order: isMobile ? 1 : 0, position: "relative", overflow: "hidden" }}>
             {/* Background */}
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, #1a1008 0%, #110d06 50%, #0d0a06 100%)" }} />
             <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 30% 90%, rgba(180,100,20,0.28) 0%, transparent 50%), radial-gradient(ellipse at 75% 20%, rgba(120,60,10,0.18) 0%, transparent 45%)" }} />
@@ -374,8 +400,8 @@ export default function GamePage() {
             {/* Bottom fade */}
             <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 90, background: "linear-gradient(to top, #0a0a0a, transparent)", pointerEvents: "none" }} />
 
-            {/* CEO speech bubble */}
-            {typingDone && chosen === null && (
+            {/* CEO speech bubble — desktop: overlay on characters */}
+            {!isMobile && typingDone && chosen === null && (
               <div style={{ position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)", width: "min(420px, 54%)", background: "rgba(14,11,8,0.95)", backdropFilter: "blur(14px)", borderRadius: 14, border: "1px solid rgba(255,255,255,0.1)", padding: "16px 20px", boxShadow: "0 12px 56px rgba(0,0,0,0.75)", animation: "fadeDown 0.4s ease", zIndex: 25 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: "#ff3d2e", marginBottom: 8 }}>CEO</div>
                 <div style={{ fontSize: "clamp(15px,1.8vw,21px)", fontWeight: 600, color: "#fff", lineHeight: 1.45, whiteSpace: "pre-line" }}>
@@ -385,25 +411,29 @@ export default function GamePage() {
             )}
 
             {/* CEO badge */}
-            <div style={{ position: "absolute", bottom: 14, left: "5%", background: "rgba(10,8,6,0.92)", backdropFilter: "blur(8px)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.09)", padding: "8px 14px", zIndex: 25, animation: "fadeIn 0.5s ease" }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#f5a623", marginBottom: 3 }}>CEO</div>
-              <div style={{ fontSize: 11, color: "rgba(240,237,232,0.48)", display: "flex", alignItems: "center", gap: 5 }}>
-                <span>⚡</span><span>Хочет быстрых результатов</span>
-              </div>
+            <div style={{ position: "absolute", bottom: isMobile ? 8 : 14, left: isMobile ? "3%" : "5%", background: "rgba(10,8,6,0.92)", backdropFilter: "blur(8px)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.09)", padding: isMobile ? "5px 9px" : "8px 14px", zIndex: 25, animation: "fadeIn 0.5s ease" }}>
+              <div style={{ fontSize: isMobile ? 11 : 14, fontWeight: 700, color: "#f5a623", marginBottom: isMobile ? 0 : 3 }}>CEO</div>
+              {!isMobile && (
+                <div style={{ fontSize: 11, color: "rgba(240,237,232,0.48)", display: "flex", alignItems: "center", gap: 5 }}>
+                  <span>⚡</span><span>Хочет быстрых результатов</span>
+                </div>
+              )}
             </div>
 
             {/* CMO badge */}
-            <div style={{ position: "absolute", bottom: 14, right: "2%", background: "rgba(10,8,6,0.92)", backdropFilter: "blur(8px)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.09)", padding: "8px 14px", zIndex: 25, animation: "fadeIn 0.5s ease" }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 3 }}>СМО (Вы)</div>
-              <div style={{ fontSize: 11, color: "rgba(240,237,232,0.48)", display: "flex", alignItems: "center", gap: 5 }}>
-                <span>🧠</span><span>Думает на 3 шага вперёд</span>
-              </div>
+            <div style={{ position: "absolute", bottom: isMobile ? 8 : 14, right: isMobile ? "3%" : "2%", background: "rgba(10,8,6,0.92)", backdropFilter: "blur(8px)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.09)", padding: isMobile ? "5px 9px" : "8px 14px", zIndex: 25, animation: "fadeIn 0.5s ease" }}>
+              <div style={{ fontSize: isMobile ? 11 : 14, fontWeight: 700, color: "#fff", marginBottom: isMobile ? 0 : 3 }}>СМО (Вы)</div>
+              {!isMobile && (
+                <div style={{ fontSize: 11, color: "rgba(240,237,232,0.48)", display: "flex", alignItems: "center", gap: 5 }}>
+                  <span>🧠</span><span>Думает на 3 шага вперёд</span>
+                </div>
+              )}
             </div>
           </div>
 
           {/* ── Result panel ── */}
           {showRes && chosenOpt && (
-            <div style={{ width: 270, flexShrink: 0, background: "rgba(8,8,8,0.97)", borderLeft: "1px solid rgba(255,255,255,0.06)", padding: "14px 13px", display: "flex", flexDirection: "column", gap: 10, overflowY: "auto", zIndex: 20, animation: "slideUp 0.35s ease" }}>
+            <div style={{ width: isMobile ? "100%" : 270, flexShrink: 0, order: isMobile ? 3 : 0, background: "rgba(8,8,8,0.97)", borderLeft: isMobile ? "none" : "1px solid rgba(255,255,255,0.06)", borderTop: isMobile ? "1px solid rgba(255,255,255,0.06)" : "none", padding: isMobile ? "12px 12px" : "14px 13px", display: "flex", flexDirection: "column", gap: isMobile ? 8 : 10, overflowY: isMobile ? "visible" : "auto", zIndex: 20, animation: "slideUp 0.35s ease" }}>
               <div style={{ borderRadius: 10, padding: "12px 13px", background: isGood ? "rgba(34,197,94,0.07)" : "rgba(255,61,46,0.07)", border: `1.5px solid ${isGood ? "rgba(34,197,94,0.3)" : "rgba(255,61,46,0.3)"}` }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 7 }}>
                   <span style={{ fontSize: 16 }}>{isGood ? "✅" : "❌"}</span>
@@ -444,12 +474,12 @@ export default function GamePage() {
         {!showRes && typingDone && (
           <div style={{ background: "#0f0f0f", borderTop: "1px solid rgba(255,255,255,0.06)", flexShrink: 0, zIndex: 50, animation: "slideUp 0.4s ease" }}>
             {/* Question */}
-            <div style={{ textAlign: "center", fontSize: 15, fontWeight: 600, color: "#f0ede8", padding: "10px 16px 8px" }}>
+            <div style={{ textAlign: "center", fontSize: isMobile ? 14 : 15, fontWeight: 600, color: "#f0ede8", padding: isMobile ? "10px 12px 6px" : "10px 16px 8px" }}>
               Какой шаг вы сделаете?
             </div>
 
-            {/* 4 cards */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0 }}>
+            {/* 4 cards — single column (vertical scroll) on mobile */}
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(4,1fr)", gap: 0 }}>
               {scene.options.map((opt, i) => {
                 const cs = CARD_COLORS[i % CARD_COLORS.length];
                 const isChosen = chosen === i;
@@ -462,32 +492,60 @@ export default function GamePage() {
                     onClick={() => pick(i)}
                     style={{
                       background: cs.bg,
-                      padding: "14px 16px 44px",
+                      padding: isMobile ? "10px 12px" : "14px 16px 44px",
                       color: "#f0ede8",
                       borderRadius: 0,
-                      borderRight: i < 3 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                      borderRight: !isMobile && i < 3 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                      borderBottom: isMobile && i < scene.options.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
                       fontFamily: "inherit",
+                      ...(isMobile ? { display: "flex", flexDirection: "row", alignItems: "center" } : {}),
                     }}
                   >
-                    {/* Number + big icon */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: 7, background: cs.numBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, color: cs.accent, flexShrink: 0 }}>
-                        {i + 1}
-                      </div>
-                      <span style={{ fontSize: 30 }}>{opt.icon}</span>
-                    </div>
-                    {/* Title */}
-                    <div style={{ fontSize: 15, fontWeight: 700, color: cs.accent, marginBottom: 6, lineHeight: 1.3 }}>
-                      {opt.label}
-                    </div>
-                    {/* Description */}
-                    <div style={{ fontSize: 11.5, color: "rgba(240,237,232,0.58)", lineHeight: 1.6 }}>
-                      {opt.detail.length > 75 ? opt.detail.slice(0, 75) + "…" : opt.detail}
-                    </div>
-                    {/* Arrow */}
-                    <div style={{ position: "absolute", bottom: 12, right: 12, width: 30, height: 30, borderRadius: "50%", background: cs.numBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: cs.accent, fontWeight: 700 }}>
-                      →
-                    </div>
+                    {isMobile ? (
+                      <>
+                        {/* Number */}
+                        <div style={{ width: 18, height: 18, borderRadius: 5, background: cs.numBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: cs.accent, flexShrink: 0 }}>
+                          {i + 1}
+                        </div>
+                        {/* Emoji */}
+                        <span style={{ fontSize: 18, marginLeft: 8, marginRight: 8, flexShrink: 0 }}>{opt.icon}</span>
+                        {/* Title + description */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: cs.accent, marginBottom: 1, lineHeight: 1.3 }}>
+                            {opt.label}
+                          </div>
+                          <div style={{ fontSize: 11, color: "#f0ede8", opacity: 0.8, lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                            {opt.detail}
+                          </div>
+                        </div>
+                        {/* Arrow */}
+                        <div style={{ width: 24, height: 24, borderRadius: "50%", background: cs.numBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: cs.accent, fontWeight: 700, flexShrink: 0, marginLeft: 8 }}>
+                          →
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        {/* Number + big icon */}
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                          <div style={{ width: 28, height: 28, borderRadius: 7, background: cs.numBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, color: cs.accent, flexShrink: 0 }}>
+                            {i + 1}
+                          </div>
+                          <span style={{ fontSize: 30 }}>{opt.icon}</span>
+                        </div>
+                        {/* Title */}
+                        <div style={{ fontSize: 15, fontWeight: 700, color: cs.accent, marginBottom: 6, lineHeight: 1.3 }}>
+                          {opt.label}
+                        </div>
+                        {/* Description */}
+                        <div style={{ fontSize: 11.5, color: "rgba(240,237,232,0.58)", lineHeight: 1.6 }}>
+                          {opt.detail.length > 75 ? opt.detail.slice(0, 75) + "…" : opt.detail}
+                        </div>
+                        {/* Arrow */}
+                        <div style={{ position: "absolute", bottom: 12, right: 12, width: 30, height: 30, borderRadius: "50%", background: cs.numBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: cs.accent, fontWeight: 700 }}>
+                          →
+                        </div>
+                      </>
+                    )}
                   </button>
                 );
               })}
@@ -500,7 +558,7 @@ export default function GamePage() {
               </button>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 {showHint && (
-                  <div style={{ background: "rgba(245,166,35,0.08)", border: "1px solid rgba(245,166,35,0.22)", borderRadius: 8, padding: "6px 11px", fontSize: 12, color: "#f5a623", maxWidth: 240, animation: "fadeIn 0.3s ease" }}>
+                  <div style={{ background: "rgba(245,166,35,0.08)", border: "1px solid rgba(245,166,35,0.22)", borderRadius: 8, padding: "6px 11px", fontSize: isMobile ? 11 : 12, color: "#f5a623", maxWidth: isMobile ? 150 : 240, animation: "fadeIn 0.3s ease" }}>
                     💡 {scene.insight.slice(0, 85)}…
                   </div>
                 )}
@@ -659,10 +717,8 @@ export default function GamePage() {
 
         {/* Actions */}
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
-          <button onClick={restart} style={{ flex: 1, background: "#ff3d2e", color: "#fff", border: "none", borderRadius: 10, fontFamily: "inherit", fontWeight: 700, fontSize: 15, padding: "13px", cursor: "pointer", transition: "all 0.2s" }}>Играть снова</button>
-          <button onClick={() => window.location.href = "/"} style={{ flex: 1, background: "transparent", color: "#f0ede8", border: "1.5px solid rgba(255,255,255,0.12)", borderRadius: 10, fontFamily: "inherit", fontWeight: 700, fontSize: 15, padding: "13px", cursor: "pointer", transition: "all 0.2s" }}>На главную</button>
-        <button onClick={() => { import("@vkontakte/vk-bridge").then(m => m.default.send("VKWebAppJoinGroup", { group_id: 211775903 })); }} style={{ flex: 1, background: "#4a76a8", color: "#fff", border: "none", borderRadius: 10, fontFamily: "inherit", fontWeight: 700, fontSize: 15, padding: "13px", cursor: "pointer", transition: "all 0.2s" }}>
-  Подписаться на Гипотезу</button>
+          <button onClick={() => window.open("https://vk.com/gipoteza_agency", "_blank")} style={{ flex: 1, background: "#4a76a8", color: "#fff", border: "none", borderRadius: 10, fontFamily: "inherit", fontWeight: 700, fontSize: 15, padding: "13px", cursor: "pointer", transition: "all 0.2s" }}>
+            Подписаться на Гипотезу</button>
          </div>
 
         <div style={{ textAlign: "center", fontSize: 12, color: "rgba(240,237,232,0.25)" }}>
