@@ -217,27 +217,40 @@ export default function ExpertPage() {
           alt=""
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
         />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,10,10,0.25) 0%, rgba(10,10,10,0.6) 50%, #0A0A0A 100%)" }} />
-        <div style={{ position: "relative", padding: "0 1.25rem 3.5rem", width: "100%", maxWidth: "760px", margin: "0 auto", boxSizing: "border-box" }}>
-          <FadeUp>
-            <p style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "#FF2D20", letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: "1.25rem" }}>
-              ДЛЯ ЭКСПЕРТОВ, НАСТАВНИКОВ И БЛОГЕРОВ
-            </p>
-            <h1 className="font-display" style={{ fontSize: "clamp(2rem, 8vw, 3.8rem)", fontWeight: 900, lineHeight: 1.0, letterSpacing: "-0.02em", marginBottom: "1.25rem" }}>
-              Экспертиза есть. Системных <span style={{ color: "#FF2D20" }}>продаж</span> — нет.
-            </h1>
-            <p style={{ fontFamily: "Inter", fontSize: "clamp(0.9rem, 3.5vw, 1.05rem)", color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: "520px", marginBottom: "2rem" }}>
-              Упакуем ваши знания в продающую воронку под ключ: оффер, продукт, вебинар, дожим. Вы в кадре — деньги в системе.
-            </p>
-            <button
-              onClick={scrollToForm}
-              className="font-display"
-              style={{ background: "#FF2D20", color: "#fff", border: "none", padding: "1rem 2rem", fontSize: "0.9rem", fontWeight: 700, letterSpacing: "0.07em", cursor: "pointer", width: "100%", maxWidth: "360px" }}
-            >
-              Получить бесплатный разбор →
-            </button>
-          </FadeUp>
+        {/* Горизонтальный градиент: тёмная левая полоса, правая открыта */}
+        <div className="hero-grad-h" style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, #0A0A0A 0%, rgba(10,10,10,0.85) 38%, rgba(10,10,10,0.15) 70%, transparent 100%)" }} />
+        {/* Вертикальный градиент: низ закрыт */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 50%, #0A0A0A 100%)" }} />
+
+        <div style={{ position: "relative", padding: "0 1.25rem 3.5rem", width: "100%", boxSizing: "border-box" }}>
+          <div style={{ maxWidth: "620px" }}>
+            <FadeUp>
+              <p style={{ fontFamily: "Inter", fontSize: "0.65rem", color: "#FF2D20", letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: "1.25rem" }}>
+                ДЛЯ ЭКСПЕРТОВ, НАСТАВНИКОВ И БЛОГЕРОВ
+              </p>
+              <h1 className="font-display hero-h1" style={{ fontSize: "clamp(1.75rem, 5.5vw, 3.8rem)", fontWeight: 900, lineHeight: 1.0, letterSpacing: "-0.02em", marginBottom: "1.25rem" }}>
+                Экспертиза есть. Системных <span style={{ color: "#FF2D20" }}>продаж</span> — нет.
+              </h1>
+              <p style={{ fontFamily: "Inter", fontSize: "clamp(0.9rem, 3vw, 1.05rem)", color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: "480px", marginBottom: "2rem" }}>
+                Упакуем ваши знания в продающую воронку под ключ: оффер, продукт, вебинар, дожим. Вы в кадре — деньги в системе.
+              </p>
+              <button
+                onClick={scrollToForm}
+                className="font-display"
+                style={{ background: "#FF2D20", color: "#fff", border: "none", padding: "1rem 2rem", fontSize: "0.9rem", fontWeight: 700, letterSpacing: "0.07em", cursor: "pointer", width: "100%", maxWidth: "340px" }}
+              >
+                Получить бесплатный разбор →
+              </button>
+            </FadeUp>
+          </div>
         </div>
+
+        <style>{`
+          @media (max-width: 900px) {
+            .hero-grad-h { background: rgba(10,10,10,0.7) !important; }
+            .hero-h1 { font-size: clamp(1.6rem, 7vw, 2.4rem) !important; }
+          }
+        `}</style>
       </section>
 
       {/* ── Это про вас, если ── */}
@@ -310,7 +323,7 @@ export default function ExpertPage() {
 
           <div
             className="expert-cases-grid"
-            style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0", background: "rgba(255,255,255,0.06)" }}
+            style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0" }}
           >
             {[
               {
@@ -343,8 +356,7 @@ export default function ExpertPage() {
                   style={{
                     background: "#0D0D0D", padding: "2rem 1.5rem", cursor: "pointer", transition: "background 0.2s",
                     height: "100%", boxSizing: "border-box",
-                    borderRight: i % 2 === 0 ? "1px solid rgba(255,255,255,0.06)" : "none",
-                    borderBottom: i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                    borderRight: i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none",
                   }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = "#111")}
                   onMouseLeave={(e) => (e.currentTarget.style.background = "#0D0D0D")}
@@ -353,13 +365,13 @@ export default function ExpertPage() {
                     <span className="pill">{c.tag}</span>
                     <span style={{ fontFamily: "Inter", fontSize: "0.75rem", color: "rgba(255,255,255,0.25)" }}>{c.idx}</span>
                   </div>
-                  <div className="font-display" style={{ fontSize: "1.15rem", fontWeight: 900, color: "#F5F5F0", lineHeight: 1.15, marginBottom: "0.75rem" }}>
+                  <div className="font-display" style={{ fontSize: "1.05rem", fontWeight: 900, color: "#F5F5F0", lineHeight: 1.15, marginBottom: "0.75rem" }}>
                     {c.client}
                   </div>
-                  <div style={{ fontFamily: "Inter", fontSize: "0.82rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.6, marginBottom: "1.25rem" }}>
+                  <div style={{ fontFamily: "Inter", fontSize: "0.8rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.6, marginBottom: "1.25rem" }}>
                     {c.desc}
                   </div>
-                  <div className="font-display" style={{ fontSize: "1.6rem", fontWeight: 900, color: "#FF2D20", lineHeight: 1.1, marginBottom: "1.25rem" }}>
+                  <div className="font-display" style={{ fontSize: "1.8rem", fontWeight: 900, color: "#FF2D20", lineHeight: 1.0, marginBottom: "1.25rem" }}>
                     {c.result}
                   </div>
                   <Link
@@ -391,10 +403,13 @@ export default function ExpertPage() {
         </div>
 
         <style>{`
-          @media (max-width: 540px) {
+          @media (max-width: 700px) {
             .expert-cases-grid {
               grid-template-columns: 1fr !important;
-              background: transparent !important;
+            }
+            .expert-cases-grid > div > div {
+              border-right: none !important;
+              border-bottom: 1px solid rgba(255,255,255,0.06) !important;
             }
           }
         `}</style>
