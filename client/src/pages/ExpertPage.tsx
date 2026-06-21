@@ -211,11 +211,12 @@ export default function ExpertPage() {
       </header>
 
       {/* ── Hero ── */}
-      <section style={{ position: "relative", minHeight: "92svh", display: "flex", alignItems: "flex-end" }}>
+      <section className="hero-section" style={{ position: "relative", minHeight: "92svh", display: "flex", alignItems: "flex-end" }}>
         <img
           src="/expert/hero.png"
           alt=""
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
+          className="hero-img"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
         />
         {/* Горизонтальный градиент: тёмная левая полоса, правая открыта */}
         <div className="hero-grad-h" style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, #0A0A0A 0%, rgba(10,10,10,0.85) 38%, rgba(10,10,10,0.15) 70%, transparent 100%)" }} />
@@ -247,6 +248,8 @@ export default function ExpertPage() {
 
         <style>{`
           @media (max-width: 900px) {
+            .hero-section { min-height: 88vh !important; }
+            .hero-img { object-position: 72% 20% !important; }
             .hero-grad-h { background: rgba(10,10,10,0.7) !important; }
             .hero-h1 { font-size: clamp(1.6rem, 7vw, 2.4rem) !important; }
           }
