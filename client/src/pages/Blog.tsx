@@ -5,6 +5,17 @@ import { Link } from "wouter";
 
 const ARTICLES = [
   {
+    slug: "okupaemost-vebinarov-dlya-onlajn-shkoly",
+    tag: "Экономика",
+    date: "Июнь 2026",
+    title: "Окупается ли ваш вебинар. Считаем по цифрам",
+    excerpt:
+      "Вебинар приносит деньги и сжигает их одновременно. Считаем ROI по формуле, разбираем 5 метрик и 4 точки, где у онлайн-школ утекает окупаемость.",
+    image:
+      "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgMzQwIj48cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjM0MCIgZmlsbD0iIzBBMEEwQSIvPjxwb2x5Z29uIHBvaW50cz0iODAsNDAgNTIwLDQwIDM5MCwxMjAgMjEwLDEyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSw0NSwzMiwwLjE4KSIgc3Ryb2tlLXdpZHRoPSIyIi8+PHBvbHlnb24gcG9pbnRzPSIyMTAsMTI2IDM5MCwxMjYgMzQ1LDE3NSAyNTUsMTc1IiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDQ1LDMyLDAuMTIpIiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSIzMDAiIHk9IjIxOCIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTY1IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjRkYyRDIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBvcGFjaXR5PSIwLjkyIj5ST0k8L3RleHQ+PGNpcmNsZSBjeD0iNDY1IiBjeT0iODIiIHI9IjgiIGZpbGw9IiNGRjJEMjAiLz48bGluZSB4MT0iNDY1IiB5MT0iOTAiIHgyPSI0NjUiIHkyPSIxMTgiIHN0cm9rZT0iI0ZGMkQyMCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1kYXNoYXJyYXk9IjQsMyIvPjxyZWN0IHg9IjAiIHk9IjMwMCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSI0MCIgZmlsbD0iIzExMSIvPjx0ZXh0IHg9IjMwMCIgeT0iMzI2IiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjI1KSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgbGV0dGVyLXNwYWNpbmc9IjMiPkdJUE9URVpBLlJVPC90ZXh0Pjwvc3ZnPgo=",
+    readTime: "9 мин",
+  },
+  {
     slug: "edtech-2026-konchilos-detstvo",
     tag: "Аналитика",
     date: "Март 2026",
