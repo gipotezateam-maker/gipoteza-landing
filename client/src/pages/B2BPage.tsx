@@ -5,6 +5,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
 import { motion, useInView } from "framer-motion";
+import TeamSection from "@/components/TeamSection";
 
 const TG_BOT_TOKEN = "8672812865:AAGt98zHZj_Q2r5DnSNXxMl_fNe_Ti9DPxw";
 const TG_CHAT_IDS = ["1342421992", "683646991"];
@@ -464,6 +465,9 @@ export default function B2BPage() {
           </FadeUp>
         </div>
       </section>
+
+      {/* ── Команда ── */}
+      <TeamSection />
 
       {/* ── CTA + Форма ── */}
       <section id="zayavka" style={{ ...sec, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
