@@ -419,6 +419,26 @@ export default function TrafficPage() {
                 </div>
               </FadeUp>
             ))}
+            {/* 6-я ячейка: CTA */}
+            <FadeUp delay={0.35} style={{ height: "100%" }}>
+              <div style={{ background: "#0A0A0A", border: "1px solid rgba(255,45,32,0.35)", padding: "1.5rem 1.25rem", height: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", justifyContent: "space-between", gap: "1.25rem" }}>
+                <div>
+                  <div className="font-display" style={{ fontSize: "1rem", fontWeight: 900, color: "#F5F5F0", marginBottom: "0.6rem", lineHeight: 1.2 }}>
+                    Не знаете, какой канал ваш?
+                  </div>
+                  <div style={{ fontFamily: "Inter", fontSize: "0.82rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>
+                    Подберём связку под вашу нишу и бюджет на бесплатном разборе.
+                  </div>
+                </div>
+                <button
+                  onClick={scrollToForm}
+                  className="font-display"
+                  style={{ background: "#FF2D20", color: "#fff", border: "none", padding: "0.75rem 1.25rem", fontSize: "0.82rem", fontWeight: 700, letterSpacing: "0.06em", cursor: "pointer", width: "100%", textAlign: "center" }}
+                >
+                  Получить разбор →
+                </button>
+              </div>
+            </FadeUp>
           </div>
           <style>{`
             @media (max-width: 540px) {
