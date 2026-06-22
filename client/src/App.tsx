@@ -23,6 +23,7 @@ import MarketingThanksPage from "@/pages/MarketingThanksPage";
 import ExpertPage from "@/pages/ExpertPage";
 import B2BPage from "@/pages/B2BPage";
 import TrafficPage from "@/pages/TrafficPage";
+import NeuroPage from "@/pages/NeuroPage";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -46,6 +47,7 @@ function Router() {
       <Route path={"/expert"} component={ExpertPage} />
       <Route path={"/b2b"} component={B2BPage} />
       <Route path={"/traffic"} component={TrafficPage} />
+      <Route path={"/neuro"} component={NeuroPage} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
