@@ -131,7 +131,7 @@ function NeuroForm() {
 function NeuralSvg() {
   return (
     <svg viewBox="0 0 600 500" fill="none" xmlns="http://www.w3.org/2000/svg"
-      style={{ position: "absolute", right: 0, top: 0, width: "55%", height: "100%", opacity: 0.18, pointerEvents: "none" }}>
+      style={{ position: "absolute", right: 0, top: 0, width: "55%", height: "100%", opacity: 0.12, pointerEvents: "none" }}>
       {/* Узлы */}
       {[
         [480, 80], [540, 200], [500, 320], [420, 420], [350, 160],
@@ -195,10 +195,12 @@ export default function NeuroPage() {
       {/* ── Hero ── */}
       <section style={{ position: "relative", minHeight: "90svh", display: "flex", alignItems: "center", overflow: "hidden" }}>
         {/* Радиальное свечение фоном */}
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 60% at 80% 40%, rgba(255,45,32,0.12) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 60% at 80% 40%, rgba(255,45,32,0.10) 0%, transparent 70%)", pointerEvents: "none" }} />
         <NeuralSvg />
+        {/* Тёмный скрим — поверх SVG/свечения, под текстом */}
+        <div style={{ position: "absolute", inset: 0, background: "rgba(10,10,10,0.55)", pointerEvents: "none", zIndex: 1 }} />
 
-        <div style={{ position: "relative", padding: "5rem 1.25rem 4rem", width: "100%", boxSizing: "border-box" }}>
+        <div style={{ position: "relative", zIndex: 2, padding: "5rem 1.25rem 4rem", width: "100%", boxSizing: "border-box" }}>
           <div style={{ maxWidth: "640px" }}>
             <FadeUp>
               {/* Тег-чип */}
@@ -213,7 +215,7 @@ export default function NeuroPage() {
               <p className="font-display" style={{ fontSize: "clamp(1.1rem, 3.5vw, 1.5rem)", fontWeight: 900, color: "#F5F5F0", lineHeight: 1.2, marginBottom: "1.5rem", letterSpacing: "-0.01em" }}>
                 AI-система, которая сама сегментирует лидов, прогревает их и доводит до оплаты <span style={{ color: "#FF2D20" }}>24/7</span>
               </p>
-              <p style={{ fontFamily: "Inter", fontSize: "clamp(0.875rem, 2.8vw, 1rem)", color: "rgba(255,255,255,0.55)", lineHeight: 1.75, maxWidth: "560px", marginBottom: "1.75rem" }}>
+              <p style={{ fontFamily: "Inter", fontSize: "clamp(0.875rem, 2.8vw, 1rem)", color: "rgba(255,255,255,0.82)", lineHeight: 1.75, maxWidth: "560px", marginBottom: "1.75rem" }}>
                 Настраиваем автоворонку и AI-бота, который мгновенно подключается к каждому лиду, проводит мини-кастдев, квалифицирует и передаёт горячего клиента в отдел продаж — или сразу закрывает сделку. Без менеджеров на первой линии.
               </p>
 
@@ -227,14 +229,14 @@ export default function NeuroPage() {
                 ].map(b => (
                   <div key={b} style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
                     <span style={{ color: "#FF2D20", flexShrink: 0, marginTop: "0.05rem" }}>→</span>
-                    <span style={{ fontFamily: "Inter", fontSize: "0.9rem", color: "rgba(255,255,255,0.6)", lineHeight: 1.5 }}>{b}</span>
+                    <span style={{ fontFamily: "Inter", fontSize: "0.9rem", color: "rgba(255,255,255,0.82)", lineHeight: 1.5 }}>{b}</span>
                   </div>
                 ))}
               </div>
 
-              <button onClick={scrollToForm} className="font-display"
-                style={{ background: "#FF2D20", color: "#fff", border: "none", padding: "1rem 2rem", fontSize: "0.9rem", fontWeight: 700, letterSpacing: "0.07em", cursor: "pointer", width: "100%", maxWidth: "340px", display: "block" }}>
-                Получить консультацию →
+              <button onClick={scrollToForm} className="font-display neuro-hero-btn"
+                style={{ background: "#FF2D20", color: "#fff", border: "none", padding: "1rem 2rem", fontSize: "clamp(0.78rem, 3.5vw, 0.9rem)", fontWeight: 700, letterSpacing: "0.05em", cursor: "pointer", width: "100%", maxWidth: "340px", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", whiteSpace: "normal", textAlign: "center", lineHeight: 1.2 }}>
+                <span>Получить консультацию</span><span>→</span>
               </button>
               <p style={{ fontFamily: "Inter", fontSize: "0.72rem", color: "rgba(255,255,255,0.25)", marginTop: "0.75rem" }}>
                 Бесплатно · 30 минут · покажем, как это работает на вашей нише
@@ -243,6 +245,12 @@ export default function NeuroPage() {
           </div>
         </div>
       </section>
+
+      <style>{`
+        @media (max-width: 480px) {
+          .neuro-hero-btn { padding: 0.85rem 1.25rem !important; max-width: 100% !important; }
+        }
+      `}</style>
 
       {/* ── 6 проблем ── */}
       <section style={{ ...sec, borderBottom: "1px solid rgba(255,255,255,0.06)", background: "#0D0D0D" }}>
