@@ -58,6 +58,22 @@ export function serveStatic(app: Express) {
     );
   }
 
+  // Пре-рендеренные blog-страницы: полный HTML + пер-страничная OG/SEO-мета
+  // (важно для краулеров и соцпревью, которые не исполняют JS). Отдаём ДО
+  // express.static/SPA-фолбэка. Если файла нет (legacy .tsx-статьи) — next() → SPA.
+  app.get("/blog", (_req, res, next) => {
+    const file = path.resolve(distPath, "blog-list.html");
+    if (fs.existsSync(file)) return res.sendFile(file);
+    next();
+  });
+  app.get("/blog/:slug", (req, res, next) => {
+    const slug = req.params.slug;
+    if (!/^[a-z0-9-]+$/i.test(slug)) return next();
+    const file = path.resolve(distPath, "blog", `${slug}.html`);
+    if (fs.existsSync(file)) return res.sendFile(file);
+    next();
+  });
+
   app.use(express.static(distPath));
 
   // fall through to index.html if the file doesn't exist
