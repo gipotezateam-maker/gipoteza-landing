@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://gipoteza.agency/sitemap.xml
+Sitemap: https://gipoteza-agency.ru/sitemap.xml

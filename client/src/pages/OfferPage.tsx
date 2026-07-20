@@ -406,7 +406,7 @@ export default function OfferPage() {
                 {/* Ссылка на демо */}
                 <div style={{ marginBottom: "1.5rem" }}>
                   <a
-                    href="https://gipoteza.agency/marketos"
+                    href="https://gipoteza-agency.ru/marketos"
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -447,7 +447,7 @@ export default function OfferPage() {
             </p>
           </div>
           <div style={{ display: "flex", gap: "1.5rem" }}>
-            <a href="https://gipoteza.agency/" target="_blank" rel="noopener noreferrer"
+            <a href="https://gipoteza-agency.ru/" target="_blank" rel="noopener noreferrer"
               style={{ fontFamily: "Inter", fontSize: "0.78rem", color: "rgba(255,255,255,0.35)", textDecoration: "none" }}
               onMouseEnter={e => (e.currentTarget.style.color = "#F5F5F0")}
               onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.35)")}>

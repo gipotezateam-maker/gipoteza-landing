@@ -949,7 +949,7 @@ function Contact() {
     setSending(true);
     setError("");
     const text = [
-      "\uD83D\uDCE9 *Новая заявка с gipoteza.agency*",
+      "\uD83D\uDCE9 *Новая заявка с gipoteza-agency.ru*",
       "",
       `\uD83D\uDC64 *Имя:* ${form.name}`,
       `\uD83C\uDFAF *Ниша / продукт:* ${form.company}`,
@@ -1482,7 +1482,7 @@ function ContactModal({ onClose }: { onClose: () => void }) {
     setSending(true);
     setError("");
     const text = [
-      "\uD83D\uDCE9 *Новая заявка с gipoteza.agency*",
+      "\uD83D\uDCE9 *Новая заявка с gipoteza-agency.ru*",
       "",
       `\uD83D\uDC64 *Имя:* ${form.name}`,
       `\uD83C\uDFAF *Ниша / продукт:* ${form.company}`,

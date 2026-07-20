@@ -43,7 +43,7 @@ export function parsePresentationFromText(text: string, topic: string): Presenta
   const slides: Slide[] = [];
 
   // Cover
-  slides.push({ type: "cover", title: topic, content: ["Маркетинговая презентация", "Подготовлено MarketOS · gipoteza.agency"] });
+  slides.push({ type: "cover", title: topic, content: ["Маркетинговая презентация", "Подготовлено MarketOS · gipoteza-agency.ru"] });
 
   let current: Slide | null = null;
 
@@ -73,7 +73,7 @@ export function parsePresentationFromText(text: string, topic: string): Presenta
   if (current && current.title) slides.push(current);
 
   // Closing
-  slides.push({ type: "closing", title: "Спасибо!", content: ["Создано с помощью MarketOS", "gipoteza.agency"] });
+  slides.push({ type: "closing", title: "Спасибо!", content: ["Создано с помощью MarketOS", "gipoteza-agency.ru"] });
 
   return { title: topic, slides };
 }
@@ -171,7 +171,7 @@ function renderContent(doc: PDFKit.PDFDocument, slide: Slide, W: number, H: numb
   });
 
   bar(doc, 0, H - 4, W, 4);
-  doc.font("Helvetica").fontSize(8).fillColor(C.gray).text("MarketOS · gipoteza.agency", 50, H - 20);
+  doc.font("Helvetica").fontSize(8).fillColor(C.gray).text("MarketOS · gipoteza-agency.ru", 50, H - 20);
 }
 
 function renderClosing(doc: PDFKit.PDFDocument, slide: Slide, W: number, H: number) {
