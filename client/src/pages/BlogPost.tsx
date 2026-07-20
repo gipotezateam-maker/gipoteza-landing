@@ -82,9 +82,17 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
             {article.date} · {article.readTime}
           </span>
         </div>
-        <h1 className="font-display" style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.03em", lineHeight: 1.05, margin: "0 0 2.5rem" }}>
+        <h1 className="font-display" style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", fontWeight: 900, color: "#F5F5F0", letterSpacing: "-0.03em", lineHeight: 1.05, margin: "0 0 2rem" }}>
           {article.title}
         </h1>
+
+        {article.image && (
+          <img
+            src={article.image}
+            alt={article.title}
+            style={{ width: "100%", aspectRatio: "16 / 9", objectFit: "cover", borderRadius: "12px", margin: "0 0 2.5rem", display: "block" }}
+          />
+        )}
 
         <div className="article-md" dangerouslySetInnerHTML={{ __html: article.html }} />
 
