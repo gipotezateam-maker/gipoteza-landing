@@ -1,9 +1,14 @@
 // Design: Dark editorial, Unbounded display font, red accents #FF2D20, background #0A0A0A
 // Same visual language as the main landing page
 
+import { useEffect } from "react";
 import { Link } from "wouter";
+import { mdArticles } from "@/content/blog/loader";
+import { setPageMeta } from "@/lib/seo";
 
-const ARTICLES = [
+// 3 исходные статьи написаны как отдельные .tsx-компоненты (богатая вёрстка) —
+// оставляем их как есть, добавляем карточками в конец списка.
+const LEGACY_ARTICLES = [
   {
     slug: "okupaemost-vebinarov-dlya-onlajn-shkoly",
     tag: "Экономика",
@@ -39,7 +44,19 @@ const ARTICLES = [
   },
 ];
 
+// Новые статьи (markdown) — сверху, отсортированы по дате; legacy — следом.
+const mdSlugs = new Set(mdArticles.map((a) => a.slug));
+const ARTICLES = [...mdArticles, ...LEGACY_ARTICLES.filter((a) => !mdSlugs.has(a.slug))];
+
 export default function Blog() {
+  useEffect(() => {
+    setPageMeta({
+      title: "Статьи — Гипотеза: EdTech, вебинарные воронки и запуски",
+      description: "Разбираем EdTech, вебинарные воронки и запуски онлайн-курсов. Практика без воды — только то, что работает.",
+      path: "/blog",
+    });
+  }, []);
+
   return (
     <div style={{ background: "#0A0A0A", minHeight: "100vh" }}>
       {/* Nav */}

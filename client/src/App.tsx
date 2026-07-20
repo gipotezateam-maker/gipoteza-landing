@@ -6,6 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import ArticleEdtech2026 from "./pages/ArticleEdtech2026";
 import ArticleWebinar from "./pages/ArticleWebinar";
 import ArticleWebinarROI from "./pages/ArticleWebinarROI";
@@ -33,6 +34,7 @@ function Router() {
       <Route path={"/blog/edtech-2026-konchilos-detstvo"} component={ArticleEdtech2026} />
       <Route path={"/blog/iz-chego-sostoit-zapusk-vebinara"} component={ArticleWebinar} />
       <Route path={"/blog/okupaemost-vebinarov-dlya-onlajn-shkoly"} component={ArticleWebinarROI} />
+      <Route path={"/blog/:slug"} component={BlogPost} />
       <Route path={"/cases/:id"} component={CasePage} />
       <Route path={"/offer"} component={OfferPage} />
       <Route path={"/marketos"} component={MarketosPage} />

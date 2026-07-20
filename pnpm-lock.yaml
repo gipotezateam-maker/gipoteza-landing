@@ -163,6 +163,9 @@ importers:
       lucide-react:
         specifier: ^0.453.0
         version: 0.453.0(react@19.2.1)
+      marked:
+        specifier: ^18.0.6
+        version: 18.0.6
       mysql2:
         specifier: ^3.15.0
         version: 3.20.0(@types/node@24.7.0)
@@ -3600,6 +3603,11 @@ packages:
 
   marked@16.4.1:
     resolution: {integrity: sha512-ntROs7RaN3EvWfy3EZi14H4YxmT6A5YvywfhO+0pm+cH/dnSQRmdAmoFIc3B9aiwTehyk7pESH4ofyBY+V5hZg==}
+    engines: {node: '>= 20'}
+    hasBin: true
+
+  marked@18.0.6:
+    resolution: {integrity: sha512-MrV5puXBfuiy6wl6DLaq3BtIJQAJToAd5zt/ZKhRfGRAuFPALE7/4Y7jnxRQoEgK/pBgurGqLyAuRgZ2xOjr6w==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -8129,6 +8137,8 @@ snapshots:
   markdown-table@3.0.4: {}
 
   marked@16.4.1: {}
+
+  marked@18.0.6: {}
 
   math-intrinsics@1.1.0: {}
 
