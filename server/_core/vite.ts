@@ -74,6 +74,24 @@ export function serveStatic(app: Express) {
     next();
   });
 
+  // Пре-рендеренные маркетинговые роуты: пер-страничная мета + <h1> для краулеров
+  // (см. scripts/prerender-pages.mjs). "/" покрыт самим index.html через static.
+  const PRERENDERED_PAGES = {
+    "/offer": "offer.html",
+    "/expert": "expert.html",
+    "/b2b": "b2b.html",
+    "/traffic": "traffic.html",
+    "/neuro": "neuro.html",
+    "/course": "course.html",
+  };
+  for (const [route, fileName] of Object.entries(PRERENDERED_PAGES)) {
+    app.get(route, (_req, res, next) => {
+      const file = path.resolve(distPath, fileName);
+      if (fs.existsSync(file)) return res.sendFile(file);
+      next();
+    });
+  }
+
   app.use(express.static(distPath));
 
   // fall through to index.html if the file doesn't exist
